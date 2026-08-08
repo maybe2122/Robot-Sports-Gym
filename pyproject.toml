@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "multisport-physics-sim"
-version = "0.1.0"
-description = "A standalone MuJoCo campus for tennis, table tennis, football, badminton and basketball."
+version = "0.2.0"
+description = "A standalone MuJoCo and Isaac Sim campus for five regulation ball sports."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
@@ -20,6 +20,7 @@ test = ["pytest>=8", "ruff>=0.6"]
 
 [project.scripts]
 multisport-sim = "multisport_sim.cli:main"
+multisport-isaac = "multisport_sim.isaac_cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/multisport_sim"]
@@ -31,4 +32,3 @@ addopts = "-q"
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-

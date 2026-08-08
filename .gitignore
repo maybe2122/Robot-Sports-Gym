@@ -7,4 +7,7 @@ dist/
 build/
 *.egg-info/
 *.mp4
-
+generated/
+*.usd
+*.usda
+*.usdc

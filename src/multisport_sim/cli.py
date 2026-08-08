@@ -5,8 +5,8 @@ from __future__ import annotations
 import argparse
 from collections.abc import Sequence
 
-from .scene import SCENES
 from .simulation import Simulation
+from .specs import SCENES
 
 
 def parser() -> argparse.ArgumentParser:
@@ -46,4 +46,3 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 if __name__ == "__main__":  # pragma: no cover
     raise SystemExit(main())
-

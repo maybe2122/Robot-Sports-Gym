@@ -5,6 +5,7 @@
 - 全部输入使用 SI 单位：米、千克、秒、牛顿。
 - 世界坐标 `+Z` 向上，重力为 `9.81 m/s²`。
 - MuJoCo 使用 1 ms 固定步长和 `implicitfast` 积分器。
+- Isaac Sim 使用 240 Hz 固定步长、PhysX TGS 求解器与连续碰撞检测（CCD）。
 - 球体使用六维接触约束，分别设置滑动、扭转和滚动摩擦。
 
 ## 球与地面/球桌回弹
@@ -23,6 +24,12 @@ MuJoCo 的 `solref=(timeconst, dampratio)` 描述柔性接触动态，而不是�
 
 场地表面使用不同摩擦与滚阻；乒乓球桌拥有独立于周围地面的接触参数。
 
+Isaac 后端用 PhysX 恢复系数和 `max` 恢复系数组合规则实现同一目标，并提供 `--drop-test` 实测入口。在当前 Isaac Sim 5.0/CPU PhysX 验收中：
+
+- 网球：2.54 m 落下，首次回弹 1.408 m。
+- 乒乓球：球桌上方 0.30 m 落下，首次回弹 0.221 m。
+- 篮球：1.80 m 落下，首次回弹 1.059 m。
+
 ## 空气动力
 
 普通球体的阻力为：
@@ -31,7 +38,7 @@ MuJoCo 的 `solref=(timeconst, dampratio)` 描述柔性接触动态，而不是�
 F_drag = -0.5 * rho * Cd * A * |v_rel| * v_rel
 ```
 
-其中 `rho=1.225 kg/m³`，相对风速 `v_rel = v_ball - v_wind`。网球、乒乓球、足球和篮球还使用有界升力系数计算 `ω × v` 方向的 Magnus 力，所以旋转会形成可见弧线。
+其中 `rho=1.225 kg/m³`，相对风速 `v_rel = v_ball - v_wind`。网球、乒乓球、足球和篮球还使用有界升力系数计算 `ω × v` 方向的 Magnus 力，所以旋转会形成可见弧线。MuJoCo 通过 passive callback 施力，Isaac Sim 通过 `RigidObject.set_external_force_and_torque()` 每步施力。
 
 羽毛球采用相同的二次阻力基础式，但投影面积会随羽轴和来流夹角变化。阻力作用点放在质心后方 45 mm，因此压心偏置产生稳定力矩，使软木头自然朝飞行方向；另有小幅角速度阻尼。羽毛裙只参与视觉渲染，软木球头承担接触，从而避免细羽毛产生数值不稳定碰撞。
 
@@ -44,4 +51,3 @@ F_drag = -0.5 * rho * Cd * A * |v_rel| * v_rel
 - [FIBA Official Basketball Rules and Equipment](https://assets.fiba.basketball/image/upload/documents-corporate-fiba-official-rules-2024-official-basketball-rules-and-basketball-equipment.pdf)：28 × 15 m 场地、3.05 m 篮圈、7 号球质量/周长和 1.8 m 落球回弹范围。
 
 气动系数是面向交互式刚体模拟的代表值，不是对特定品牌、缝线、湿度或雷诺数的风洞拟合。所有系数都集中在 `specs.py`，便于实验校准和域随机化。
-

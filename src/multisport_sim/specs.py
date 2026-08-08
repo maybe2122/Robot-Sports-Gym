@@ -15,6 +15,9 @@ class Sport(str, Enum):
     BASKETBALL = "basketball"
 
 
+SCENES = ("campus", *(sport.value for sport in Sport))
+
+
 @dataclass(frozen=True)
 class BallSpec:
     mass: float
@@ -45,7 +48,8 @@ BALLS: dict[Sport, BallSpec] = {
         mass=0.0577,
         radius=0.0335,
         drag_coefficient=0.55,
-        restitution=0.75,
+        # PhysX contact restitution calibrated to the ITF 2.54 m drop test.
+        restitution=0.777,
         rolling_friction=0.003,
         color=(0.78, 1.0, 0.08, 1.0),
         launch_velocity=(12.0, 0.5, 7.0),
@@ -81,7 +85,9 @@ BALLS: dict[Sport, BallSpec] = {
         mass=0.600,
         radius=0.120,
         drag_coefficient=0.50,
-        restitution=0.77,
+        # 0.795 yields the FIBA 1.035-1.085 m PhysX rebound window after
+        # aerodynamic losses at the 240 Hz Isaac timestep.
+        restitution=0.795,
         rolling_friction=0.012,
         color=(0.93, 0.32, 0.055, 1.0),
         launch_velocity=(8.5, 0.0, 8.3),
@@ -101,4 +107,3 @@ COURTS: dict[Sport, CourtSpec] = {
 AIR_DENSITY = 1.225
 SHUTTLE_SKIRT_RADIUS = 0.033
 SHUTTLE_CENTER_OF_PRESSURE_OFFSET = 0.045
-

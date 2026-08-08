@@ -7,9 +7,8 @@ from math import cos, pi, sin
 
 import mujoco
 
-from .specs import BALLS, COURTS, Sport
+from .specs import BALLS, COURTS, SCENES, Sport
 
-SCENES = ("campus", *(sport.value for sport in Sport))
 WHITE = "0.96 0.96 0.94 1"
 
 

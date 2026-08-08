@@ -1,8 +1,16 @@
-"""Physically grounded multi-sport MuJoCo scenes."""
+"""Physically grounded multi-sport scenes for MuJoCo and Isaac Sim."""
 
-from .scene import SCENES, build_model, build_xml
-from .specs import BALLS, COURTS, Sport
+from .isaac_scene import build_isaac_scene_spec
+from .scene import build_model, build_xml
+from .specs import BALLS, COURTS, SCENES, Sport
 
-__all__ = ["BALLS", "COURTS", "SCENES", "Sport", "build_model", "build_xml"]
-__version__ = "0.1.0"
-
+__all__ = [
+    "BALLS",
+    "COURTS",
+    "SCENES",
+    "Sport",
+    "build_isaac_scene_spec",
+    "build_model",
+    "build_xml",
+]
+__version__ = "0.2.0"
