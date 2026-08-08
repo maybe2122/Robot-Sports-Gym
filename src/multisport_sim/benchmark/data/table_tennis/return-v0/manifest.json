@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "benchmark": "multisport-shot-skill-v0",
+  "task": "table-tennis-return-v0",
+  "sport": "table_tennis",
+  "status": "experimental",
+  "leaderboard_eligible": false,
+  "warning": "Experimental development fixture only. The small return-v0 splits are not suitable for publication or leaderboard claims.",
+  "units": "SI",
+  "coordinate_system": {
+    "origin": "table_center_at_floor_projection",
+    "x_axis": "robot_side_to_opponent_side",
+    "y_axis": "table_lateral",
+    "z_axis": "up",
+    "net_plane_x_m": 0.0,
+    "robot_side": "x < 0",
+    "opponent_side": "x > 0",
+    "table_top_z_m": 0.76,
+    "table_bounds_m": {
+      "x": [-1.37, 1.37],
+      "y": [-0.7625, 0.7625]
+    }
+  },
+  "episode": {
+    "timeout_s": 2.0,
+    "success_sequence": [
+      "robot_racket_contact",
+      "cross_net_toward_opponent",
+      "first_post_hit_landing_on_opponent_table"
+    ],
+    "timeout_is_truncation": true
+  },
+  "levels": {
+    "L0": {
+      "name": "Physics",
+      "distribution": "fixed center trajectories without robot action",
+      "primary_metric": "incoming_valid_rate",
+      "pass_threshold": 1.0
+    },
+    "L1": {
+      "name": "Intercept",
+      "distribution": "center, slow, no-spin or low-spin",
+      "primary_metric": "hit_rate",
+      "pass_threshold": 0.9
+    },
+    "L2": {
+      "name": "Return",
+      "distribution": "forehand/backhand lateral variation at normal speed",
+      "primary_metric": "valid_return_rate",
+      "pass_threshold": 0.8
+    },
+    "L3": {
+      "name": "Placement",
+      "distribution": "left, center, right and deep circular landing targets",
+      "primary_metric": "target_rate",
+      "pass_threshold": 0.7
+    },
+    "L4": {
+      "name": "Robustness",
+      "distribution": "fixed combinations of fast, spin, edge, short/deep and low shots",
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "pass_threshold": 0.6,
+      "pass_buckets": ["fast", "spin", "edge", "depth", "low"]
+    },
+    "L5": {
+      "name": "Generalization",
+      "distribution": "fixed held-out trajectory combinations; randomization, observation noise and latency are not implemented in return-v0",
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "pass_threshold": 0.5,
+      "aggregate_metric": "valid_return_rate",
+      "aggregate_threshold": 0.6,
+      "pass_buckets": ["fast", "spin", "edge_or_depth", "low", "held-out"]
+    }
+  },
+  "difficulty_ranges": {
+    "L0": {"lateral_y_m": [-0.1, 0.1], "speed_x_mps": [-4.5, -3.8], "spin_y_radps": [0.0, 0.0]},
+    "L1": {"lateral_y_m": [-0.12, 0.12], "speed_x_mps": [-4.7, -4.1], "spin_y_radps": [-8.0, 8.0]},
+    "L2": {"lateral_y_m": [-0.42, 0.42], "speed_x_mps": [-6.0, -4.9], "spin_y_radps": [0.0, 55.0]},
+    "L3": {"lateral_y_m": [-0.36, 0.36], "speed_x_mps": [-5.8, -5.1], "spin_y_radps": [10.0, 30.0]},
+    "L4": {"lateral_y_m": [-0.6, 0.6], "speed_x_mps": [-7.7, -5.9], "spin_y_radps": [-50.0, 80.0]},
+    "L5": {"lateral_y_m": [-0.58, 0.58], "speed_x_mps": [-8.1, -6.2], "spin_y_radps": [-65.0, 85.0]}
+  },
+  "targets": {
+    "representation": "circle",
+    "center_field": "target.center_xy",
+    "radius_field": "target.radius_m",
+    "landing_error": "euclidean distance from target center in table x-y coordinates"
+  },
+  "bucket_groups": {
+    "spin": ["topspin", "underspin", "sidespin", "mixed-spin"],
+    "depth": ["short", "deep"],
+    "edge_or_depth": ["edge", "short", "deep"]
+  },
+  "l5_conditions": {
+    "domain_randomization": "not_implemented_in_v0",
+    "observation_noise": "not_implemented_in_v0",
+    "latency": "not_implemented_in_v0"
+  },
+  "failure_reasons": ["miss", "net", "own_side", "out", "floor", "timeout", "safety", "numerical"],
+  "ordering": "shot_id_lexicographic",
+  "digest": {
+    "algorithm": "sha256",
+    "scope": "exact UTF-8 JSONL file bytes including the final newline"
+  },
+  "splits": {
+    "dev": {
+      "file": "dev.jsonl",
+      "count": 12,
+      "level_counts": {"L0": 2, "L1": 2, "L2": 2, "L3": 2, "L4": 2, "L5": 2},
+      "sha256": "d42e257ac2d14229da32e103aa2f8b67ed294d01de296ba15ea57ac3efff67e8"
+    },
+    "test": {
+      "file": "test.jsonl",
+      "count": 24,
+      "level_counts": {"L0": 4, "L1": 4, "L2": 4, "L3": 4, "L4": 4, "L5": 4},
+      "sha256": "39627b091d614ac1513a33a2746351718bc61361f46a0a4331001b3f418ae572"
+    }
+  }
+}

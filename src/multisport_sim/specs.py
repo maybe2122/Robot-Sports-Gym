@@ -41,6 +41,36 @@ class CourtSpec:
     color: tuple[float, float, float, float]
 
 
+@dataclass(frozen=True)
+class TableTennisSpec:
+    """Regulation table geometry and the canonical return-task frame.
+
+    ``CourtSpec`` describes the surrounding play area for table tennis.  This
+    separate specification prevents task rules from accidentally treating that
+    8 m x 5 m floor area as the playing surface of the table itself.
+    """
+
+    table_length: float
+    table_width: float
+    table_height: float
+    net_height: float
+    net_span: float
+    net_plane_x: float = 0.0
+    robot_side_sign: int = -1
+
+    @property
+    def half_length(self) -> float:
+        return self.table_length / 2.0
+
+    @property
+    def half_width(self) -> float:
+        return self.table_width / 2.0
+
+    @property
+    def net_top_height(self) -> float:
+        return self.table_height + self.net_height
+
+
 # Regulation midpoint values. Restitution is the effective normal coefficient used
 # to calibrate MuJoCo contact softness; it is intentionally surface-specific in scene.py.
 BALLS: dict[Sport, BallSpec] = {
@@ -104,6 +134,18 @@ COURTS: dict[Sport, CourtSpec] = {
     Sport.BADMINTON: CourtSpec(13.40, 6.10, "synthetic mat", (0.10, 0.48, 0.40, 1.0)),
     Sport.BASKETBALL: CourtSpec(28.0, 15.0, "hardwood", (0.72, 0.47, 0.23, 1.0)),
 }
+
+
+# The table long axis is world X, its width is world Y, and the reference
+# robot occupies X < 0.  These conventions are shared by the shot benchmark
+# backends and rule engine.
+TABLE_TENNIS = TableTennisSpec(
+    table_length=2.74,
+    table_width=1.525,
+    table_height=0.76,
+    net_height=0.1525,
+    net_span=1.83,
+)
 
 
 AIR_DENSITY = 1.225

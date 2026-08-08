@@ -7,7 +7,7 @@ from math import cos, pi, sin
 
 import mujoco
 
-from .specs import BALLS, COURTS, SCENES, Sport
+from .specs import BALLS, COURTS, SCENES, TABLE_TENNIS, Sport
 
 WHITE = "0.96 0.96 0.94 1"
 
@@ -253,6 +253,30 @@ def _paddle_body(prefix: str, pos: tuple[float, float, float], red: bool) -> str
     )
 
 
+def _benchmark_paddle() -> str:
+    """Create the optional kinematic blade used by the MuJoCo shot harness.
+
+    The body starts parked outside the playing width.  Benchmark controllers
+    move it through ``mjData.mocap_pos`` and ``mjData.mocap_quat``.  Keeping it
+    separate from the decorative paddles leaves every default scene unchanged.
+    """
+
+    return "".join(
+        [
+            '<body name="table_tennis_benchmark_paddle" mocap="true" '
+            'pos="-1.58 1.25 1.0">',
+            _geom(
+                "table_tennis_benchmark_paddle_blade",
+                "ellipsoid",
+                size="0.085 0.008 0.10",
+                rgba="0.82 0.05 0.035 1",
+                friction="0.85 0.01 0.001",
+            ),
+            "</body>",
+        ]
+    )
+
+
 def _ball(sport: Sport, x: float, y: float, z: float) -> str:
     spec = BALLS[sport]
     if sport is Sport.BADMINTON:
@@ -403,7 +427,9 @@ def _tennis(x: float, y: float) -> list[str]:
 
 def _table_tennis_net(x: float, y: float) -> list[str]:
     """Create a regulation net with a collision panel and visible cord mesh."""
-    bottom, top, span = 0.76, 0.9125, 1.83
+    bottom = TABLE_TENNIS.table_height
+    top = TABLE_TENNIS.net_top_height
+    span = TABLE_TENNIS.net_span
     items = [
         _geom(
             "table_tennis_net",
@@ -471,21 +497,44 @@ def _table_tennis_net(x: float, y: float) -> list[str]:
 def _table_tennis(x: float, y: float) -> list[str]:
     items = [_court_surface(Sport.TABLE_TENNIS, x, y)]
     items += _rectangle_lines("table_tennis_zone", x, y, 8.0, 5.0)
-    tabletop_z, tabletop_t = 0.76, 0.04
+    tabletop_z, tabletop_t = TABLE_TENNIS.table_height, 0.04
+    half_length, half_width = TABLE_TENNIS.half_length, TABLE_TENNIS.half_width
     items += [
         _geom(
             "table_tennis_table",
             pos=f"{x} {y} {tabletop_z - tabletop_t / 2}",
-            size=f"{2.74 / 2} {1.525 / 2} {tabletop_t / 2}",
+            size=f"{half_length} {half_width} {tabletop_t / 2}",
             rgba="0.025 0.27 0.52 1",
             friction="0.35 0.003 0.0005",
             condim="6",
         ),
-        _line_box("table_tennis_center_line", (x, y), (1.37, 0.0015), tabletop_z + 0.006),
-        _line_box("table_tennis_edge_north", (x, y + 0.7525), (1.37, 0.010), tabletop_z + 0.006),
-        _line_box("table_tennis_edge_south", (x, y - 0.7525), (1.37, 0.010), tabletop_z + 0.006),
-        _line_box("table_tennis_edge_east", (x + 1.36, y), (0.010, 0.7625), tabletop_z + 0.006),
-        _line_box("table_tennis_edge_west", (x - 1.36, y), (0.010, 0.7625), tabletop_z + 0.006),
+        _line_box(
+            "table_tennis_center_line", (x, y), (half_length, 0.0015), tabletop_z + 0.006
+        ),
+        _line_box(
+            "table_tennis_edge_north",
+            (x, y + half_width - 0.010),
+            (half_length, 0.010),
+            tabletop_z + 0.006,
+        ),
+        _line_box(
+            "table_tennis_edge_south",
+            (x, y - half_width + 0.010),
+            (half_length, 0.010),
+            tabletop_z + 0.006,
+        ),
+        _line_box(
+            "table_tennis_edge_east",
+            (x + half_length - 0.010, y),
+            (0.010, half_width),
+            tabletop_z + 0.006,
+        ),
+        _line_box(
+            "table_tennis_edge_west",
+            (x - half_length + 0.010, y),
+            (0.010, half_width),
+            tabletop_z + 0.006,
+        ),
         _geom(
             "table_tennis_apron_north",
             pos=f"{x} {y + 0.745} 0.69",
@@ -792,10 +841,12 @@ def _contact_pairs(sports: list[Sport]) -> str:
     return "".join(pairs)
 
 
-def build_xml(scene: str = "campus") -> str:
+def build_xml(scene: str = "campus", *, benchmark_paddle: bool = False) -> str:
     """Build a complete MJCF string for one sport or the complete campus."""
     if scene not in SCENES:
         raise ValueError(f"unknown scene {scene!r}; expected one of {', '.join(SCENES)}")
+    if benchmark_paddle and scene != Sport.TABLE_TENNIS.value:
+        raise ValueError("benchmark_paddle is only available for the table_tennis scene")
 
     if scene == "campus":
         sports = list(Sport)
@@ -823,6 +874,8 @@ def build_xml(scene: str = "campus") -> str:
     ]
     for sport in sports:
         world.extend(BUILDERS[sport](*offsets[sport]))
+    if benchmark_paddle:
+        world.append(_benchmark_paddle())
     if scene == "campus":
         world.append(
             '<camera name="campus_camera" pos="-92 -100 112" xyaxes="0.735 -0.678 0 0.43 0.466 0.773"/>'
@@ -848,6 +901,8 @@ def build_xml(scene: str = "campus") -> str:
 </mujoco>"""
 
 
-def build_model(scene: str = "campus") -> mujoco.MjModel:
+def build_model(scene: str = "campus", *, benchmark_paddle: bool = False) -> mujoco.MjModel:
     """Compile and return a MuJoCo model, raising with MJCF diagnostics on errors."""
-    return mujoco.MjModel.from_xml_string(build_xml(scene))
+    return mujoco.MjModel.from_xml_string(
+        build_xml(scene, benchmark_paddle=benchmark_paddle)
+    )

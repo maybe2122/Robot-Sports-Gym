@@ -1,6 +1,6 @@
 # Contributing
 
-感谢你改进 MultiSport Physics Sim。这个项目同时维护 MuJoCo 和 Isaac Sim/PhysX 后端；场景、物理或评测改动必须说明对两个后端的影响。
+感谢你改进 Robot Sports Gym。这个项目同时维护 MuJoCo 和 Isaac Sim/PhysX 后端；场景、物理或评测改动必须说明对两个后端的影响。
 
 ## 开始之前
 
@@ -68,4 +68,3 @@ make evaluate-isaac ISAAC_PYTHON=/path/to/isaac/python PYTHON=.venv/bin/python
 ## 报告问题
 
 Bug 报告请包含操作系统、Python/MuJoCo/Isaac Sim/Isaac Lab 版本、完整命令、随机种子、日志和最小复现。安全问题不要公开披露，参见 [`SECURITY.md`](SECURITY.md)。
-

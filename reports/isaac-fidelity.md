@@ -1,4 +1,4 @@
-# MultiSport fidelity report — isaacsim
+# Robot Sports Gym fidelity report — isaacsim
 
 - Suite: `multisport-fidelity-v1`
 - Coverage: **first-rebound contact dynamics only**

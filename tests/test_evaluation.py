@@ -44,7 +44,9 @@ def test_report_separates_official_and_engineering_metrics(tmp_path) -> None:
     saved = json.loads(output.read_text(encoding="utf-8"))
     assert saved["schema_version"] == 1
     assert saved["metrics"][0]["derived"]["effective_restitution"] > 0.0
-    assert "acceptance boundary scores 50" in report_markdown(report)
+    markdown = report_markdown(report)
+    assert markdown.startswith("# Robot Sports Gym fidelity report — test")
+    assert "acceptance boundary scores 50" in markdown
 
 
 def test_single_sport_backend_reports_can_be_aggregated() -> None:

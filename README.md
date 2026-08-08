@@ -1,14 +1,15 @@
-# MultiSport Physics Sim（多球类物理仿真）
+# Robot Sports Gym（机器人球类运动训练与评测平台）
 
 [English](README.en.md) | 简体中文
 
-一个独立、无外部美术资产依赖的 **MuJoCo + Isaac Sim/PhysX 双后端** 3D 运动场仓库。项目按国际比赛尺寸程序化建立网球、乒乓球、足球、羽毛球和篮球场景，并为每项运动提供球、球拍/球台/球门/篮架以及差异化物理。
+Robot Sports Gym（RSG）是面向多种机器人形态的球类运动训练与评测平台，目标是在统一任务、物理规范和指标下，通过网球、乒乓球、足球、羽毛球和篮球训练并评测机器人在感知、规划、控制、鲁棒性与 sim-to-real 方面的能力。当前仓库提供无外部美术资产依赖的 **MuJoCo + Isaac Sim/PhysX 双后端** 物理基础层，并按国际比赛尺寸程序化构建场地、球体和运动器材。
 
-> **项目状态：Alpha / Physics foundation。** 场景、球体物理和回弹量化已可运行；机器人、Gymnasium/Isaac Lab RL 环境、标准任务和参考策略仍在路线图中。当前版本不应宣传为已完成的机器人球类 benchmark。
+> **项目状态：Alpha。** 场景、球体物理和回弹量化已可运行，并提供实验性的乒乓球 Shot Skill 测试系统；真实机器人适配、Gymnasium/Isaac Lab RL 环境、其他标准任务和参考策略仍在路线图中。当前版本不应宣传为已完成的机器人球类 benchmark。
 
 ## 文档导航
 
 - [机器人 benchmark 协议草案](docs/BENCHMARK_SPEC.md)
+- [乒乓球 Shot Skill 测试系统](docs/TABLE_TENNIS_SHOT_SKILL.md)
 - [开源 benchmark 路线图](docs/ROADMAP.md)
 - [复现规范](docs/REPRODUCIBILITY.md)
 - [物理模型与真实度评测](docs/PHYSICS.md)
@@ -26,6 +27,18 @@
 | 篮球 | 28 × 15 m 球场、中圈/罚球区/三分线、3.05 m 双篮架、篮球 | 600 g 7 号球、木地板摩擦/滚阻、FIBA 落球回弹、空气阻力与旋转 |
 
 `campus` 模式会同时加载以上全部运动；每项运动也有独立场景，便于近距离观察和训练环境扩展。两个后端共享尺寸、质量、气动参数和场景布局，不是互不相关的两个示例。
+
+## 双后端场景预览
+
+以下图片由当前仓库代码和各单项场景的默认相机直接渲染，不是概念图。点击图片可在 GitHub 中查看原始分辨率。
+
+| 运动 | MuJoCo | Isaac Sim / PhysX |
+|:---:|:---:|:---:|
+| 网球 | [![MuJoCo 网球场景](docs/images/rendered/mujoco/tennis.png)](docs/images/rendered/mujoco/tennis.png) | [![Isaac Sim 网球场景](docs/images/rendered/isaac/tennis.png)](docs/images/rendered/isaac/tennis.png) |
+| 乒乓球 | [![MuJoCo 乒乓球场景](docs/images/rendered/mujoco/table_tennis.png)](docs/images/rendered/mujoco/table_tennis.png) | [![Isaac Sim 乒乓球场景](docs/images/rendered/isaac/table_tennis.png)](docs/images/rendered/isaac/table_tennis.png) |
+| 足球 | [![MuJoCo 足球场景](docs/images/rendered/mujoco/football.png)](docs/images/rendered/mujoco/football.png) | [![Isaac Sim 足球场景](docs/images/rendered/isaac/football.png)](docs/images/rendered/isaac/football.png) |
+| 羽毛球 | [![MuJoCo 羽毛球场景](docs/images/rendered/mujoco/badminton.png)](docs/images/rendered/mujoco/badminton.png) | [![Isaac Sim 羽毛球场景](docs/images/rendered/isaac/badminton.png)](docs/images/rendered/isaac/badminton.png) |
+| 篮球 | [![MuJoCo 篮球场景](docs/images/rendered/mujoco/basketball.png)](docs/images/rendered/mujoco/basketball.png) | [![Isaac Sim 篮球场景](docs/images/rendered/isaac/basketball.png)](docs/images/rendered/isaac/basketball.png) |
 
 ## MuJoCo 快速开始
 
@@ -125,10 +138,26 @@ for _ in range(1_000):
 make test
 make lint
 make verify
+make benchmark
 make test-isaac ISAAC_PYTHON=/path/to/isaac/python
 ```
 
 普通测试会编译全部 MuJoCo 场景、验证全部 Isaac 场景描述、核对球体质量/尺寸与器材名称、验证阻力方向和速度平方律，并实际仿真 MuJoCo 的 ITF/ITTF/FIBA 落球回弹。`test-isaac` 会真正启动 Isaac Sim、初始化全部五个 PhysX 球体并运行 campus。
+
+## 乒乓球 Shot Skill
+
+实验性的 `table-tennis-return-v0` 已实现固定 Shot Bank、MuJoCo 自动发球、真实球拍接触、合法回球/目标落点 Judge、分桶指标，以及 JSON/Markdown 报告。内置脚本 mocap 球拍只用于验证测试链路，不属于可提交的机器人策略。
+
+```bash
+# 完整链路基线
+multisport-benchmark --level L1 --split dev --controller scripted \
+  --report reports/table-tennis-l1.json --markdown reports/table-tennis-l1.md
+
+# 无动作失败基线
+multisport-benchmark --level L1 --split dev --controller noop
+```
+
+坐标约定、L0–L5 门槛、报告字段、固定集完整性和机器人 adapter 要求见 [乒乓球 Shot Skill 文档](docs/TABLE_TENNIS_SHOT_SKILL.md)。
 
 ## 真实度量化评测
 
@@ -151,9 +180,9 @@ multisport-isaac --headless --device cpu --scene basketball \
 
 ## 设计边界
 
-这是刚体动力学和接触/气动力仿真，不是有限元球体变形模型。球拍目前固定在场边作为带碰撞的器材，场景没有人体运动员或自动比赛规则；后续可在稳定的 `Simulation` API 上接控制器、机器人、强化学习环境或轨迹回放。
+这是刚体动力学和接触/气动力仿真，不是有限元球体变形模型。普通展示场景中的球拍固定在场边；Shot Skill 模式会额外加载独立 mocap 拍面作为测试夹具，但它不具备真实机器人的关节、执行器、动力学或安全约束。项目仍没有人体运动员或完整比赛规则。
 
-拟议的首批机器人任务、state/vision/robustness 轨道、指标、结果包和发布门槛见 [benchmark 协议](docs/BENCHMARK_SPEC.md)。在这些门槛满足前，仓库定位是 benchmark 的物理基础层。
+拟议的首批机器人任务、state/vision/robustness 轨道、指标、结果包和发布门槛见 [benchmark 协议](docs/BENCHMARK_SPEC.md)。实验性 Shot Skill 可用于开发和回归测试，但在这些门槛满足前不能作为完整机器人 benchmark 或排行榜发布。
 
 ## 开源协作与引用
 

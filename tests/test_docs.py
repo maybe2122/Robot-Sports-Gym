@@ -17,6 +17,7 @@ REQUIRED_PUBLIC_FILES = (
     "CHANGELOG.md",
     "CITATION.cff",
     "docs/BENCHMARK_SPEC.md",
+    "docs/TABLE_TENNIS_SHOT_SKILL.md",
     "docs/REPRODUCIBILITY.md",
     "docs/ROADMAP.md",
     ".github/PULL_REQUEST_TEMPLATE.md",
@@ -43,4 +44,3 @@ def test_local_markdown_links_resolve() -> None:
             if not resolved.exists():
                 broken.append(f"{document.relative_to(ROOT)} -> {target}")
     assert not broken
-

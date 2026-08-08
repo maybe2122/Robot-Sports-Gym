@@ -1,7 +1,7 @@
 PYTHON ?= python
 ISAAC_PYTHON ?= python
 
-.PHONY: test lint verify test-isaac verify-all evaluate evaluate-isaac run run-isaac
+.PHONY: test lint verify test-isaac verify-all evaluate evaluate-isaac benchmark run run-isaac
 
 test:
 	PYTHONPATH=src $(PYTHON) -m pytest
@@ -30,6 +30,12 @@ evaluate-isaac:
 	PYTHONPATH=src $(PYTHON) -m multisport_sim.evaluation_cli \
 		--aggregate reports/isaac/*.json --output reports/isaac-fidelity.json \
 		--markdown reports/isaac-fidelity.md
+
+benchmark:
+	PYTHONPATH=src $(PYTHON) -m multisport_sim.benchmark_cli \
+		--level L1 --split dev --controller scripted \
+		--report reports/table-tennis-l1.json \
+		--markdown reports/table-tennis-l1.md
 
 run:
 	PYTHONPATH=src $(PYTHON) -m multisport_sim --scene campus

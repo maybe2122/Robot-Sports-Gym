@@ -1,4 +1,4 @@
-# MultiSport Robot Benchmark Specification
+# Robot Sports Gym Benchmark Specification
 
 状态：**Draft v0.1**。本文件定义拟议协议；当前仓库还不是可提交策略成绩的完整机器人 benchmark。
 
@@ -25,7 +25,7 @@
 | Task | 任务 | 主成功条件 | 状态 |
 |---|---|---|---|
 | `TennisReturn` | 机械臂回击来球 | 球越网并落入目标区 | Planned |
-| `TableTennisReturn` | 高速乒乓回球 | 合法触台且目标误差最小 | Planned |
+| `TableTennisReturn` | 高速乒乓回球 | 合法触台且目标误差最小 | Experimental Shot Skill v0（MuJoCo 测试夹具） |
 | `FootballKickToTarget` | 双足或单腿机器人定点射门 | 球进入指定球门区域 | Planned |
 | `BadmintonServe` | 机械臂发高远球 | 越网并落入发球区 | Planned |
 | `BasketballShoot` | 机械臂定点投篮 | 球自上而下穿过篮圈 | Planned |
@@ -129,7 +129,7 @@ submission/
 
 ## 10. 当前发布门槛
 
-在满足以下条件前，README 应继续标记为“benchmark planned”：
+实验性的 `table-tennis-return-v0` 已用于验证固定发球、真接触事件、规则 Judge 和结果 schema，但不等于可提交的机器人环境。在满足以下条件前，README 应继续明确标记为“完整机器人 benchmark 尚未发布”：
 
 1. 至少一个 Gymnasium 环境和一个 Isaac Lab 向量化环境通过 API 检查；
 2. 至少一个开源机器人适配器在两个后端完成同一任务；

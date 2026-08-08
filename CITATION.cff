@@ -1,16 +1,17 @@
 cff-version: 1.2.0
-message: "If you use this software or benchmark in research, please cite this repository and the archived release DOI when one becomes available."
-title: "MultiSport Physics Sim"
+message: "If you use this project in research, please cite this repository and the archived release DOI when one becomes available."
+title: "Robot Sports Gym"
 type: software
 version: 0.2.0
 date-released: 2026-08-08
 license: MIT
 authors:
-  - name: "MultiSport Physics Sim contributors"
-abstract: "Programmatic MuJoCo and Isaac Sim/PhysX scenes and fidelity benchmarks for robot ball-sports research."
+  - name: "Robot Sports Gym contributors"
+abstract: "An in-development cross-embodiment robot ball-sports training and evaluation platform; this release provides its programmatic MuJoCo and Isaac Sim/PhysX physics foundation plus an experimental MuJoCo table-tennis Shot Skill harness."
 keywords:
   - robotics
   - reinforcement learning
   - MuJoCo
   - Isaac Sim
+  - robot benchmark
   - sports simulation

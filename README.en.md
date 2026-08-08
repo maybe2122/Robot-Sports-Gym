@@ -1,14 +1,15 @@
-# MultiSport Physics Sim
+# Robot Sports Gym
 
 [简体中文](README.md) | English
 
-MultiSport Physics Sim is a standalone, asset-free collection of programmatic sports scenes for **MuJoCo** and **Isaac Sim/PhysX**. It currently includes regulation-scale tennis, table tennis, football, badminton, and basketball environments with sport-specific rigid-contact and aerodynamic models.
+Robot Sports Gym (RSG) is an in-development, cross-embodiment platform for training and evaluating robot perception, planning, control, robustness, and sim-to-real performance across tennis, table tennis, football, badminton, and basketball under shared tasks, physics specifications, and metrics. The current repository provides the asset-free **MuJoCo + Isaac Sim/PhysX** physics foundation with regulation-scale scenes and sport-specific dynamics.
 
-> **Status: Alpha / physics foundation.** The scenes, ball dynamics, and rebound-fidelity reports are operational. Robots, Gymnasium/Isaac Lab RL environments, canonical tasks, and reference policies are planned. Do not describe the current release as a completed robot ball-sports benchmark.
+> **Status: Alpha.** The scenes, ball dynamics, rebound-fidelity reports, and an experimental table-tennis Shot Skill harness are operational. Real robot adapters, Gymnasium/Isaac Lab RL environments, the remaining canonical tasks, and reference policies are planned. Do not describe the current release as a completed robot ball-sports benchmark.
 
 ## Documentation
 
 - [Draft robot benchmark specification](docs/BENCHMARK_SPEC.md)
+- [Table-tennis Shot Skill harness](docs/TABLE_TENNIS_SHOT_SKILL.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Reproducibility requirements](docs/REPRODUCIBILITY.md)
 - [Physics and fidelity evaluation](docs/PHYSICS.md)
@@ -26,6 +27,18 @@ MultiSport Physics Sim is a standalone, asset-free collection of programmatic sp
 | Basketball | 28 × 15 m court, two framed backboards, rims/nets, ball | Hardwood contact, FIBA-scale rebound and spin |
 
 The `campus` scene loads all sports at once. Each sport also has a standalone close-up scene. Shared dimensions, mass, and aerodynamic parameters are defined in `src/multisport_sim/specs.py`.
+
+## Backend render gallery
+
+These images are rendered directly from the current repository code using each standalone scene's default camera; they are not concept art. Click an image to view it at its original resolution on GitHub.
+
+| Sport | MuJoCo | Isaac Sim / PhysX |
+|:---:|:---:|:---:|
+| Tennis | [![MuJoCo tennis scene](docs/images/rendered/mujoco/tennis.png)](docs/images/rendered/mujoco/tennis.png) | [![Isaac Sim tennis scene](docs/images/rendered/isaac/tennis.png)](docs/images/rendered/isaac/tennis.png) |
+| Table tennis | [![MuJoCo table tennis scene](docs/images/rendered/mujoco/table_tennis.png)](docs/images/rendered/mujoco/table_tennis.png) | [![Isaac Sim table tennis scene](docs/images/rendered/isaac/table_tennis.png)](docs/images/rendered/isaac/table_tennis.png) |
+| Football | [![MuJoCo football scene](docs/images/rendered/mujoco/football.png)](docs/images/rendered/mujoco/football.png) | [![Isaac Sim football scene](docs/images/rendered/isaac/football.png)](docs/images/rendered/isaac/football.png) |
+| Badminton | [![MuJoCo badminton scene](docs/images/rendered/mujoco/badminton.png)](docs/images/rendered/mujoco/badminton.png) | [![Isaac Sim badminton scene](docs/images/rendered/isaac/badminton.png)](docs/images/rendered/isaac/badminton.png) |
+| Basketball | [![MuJoCo basketball scene](docs/images/rendered/mujoco/basketball.png)](docs/images/rendered/mujoco/basketball.png) | [![Isaac Sim basketball scene](docs/images/rendered/isaac/basketball.png)](docs/images/rendered/isaac/basketball.png) |
 
 ## MuJoCo quick start
 
@@ -55,6 +68,19 @@ multisport-isaac --headless --device cpu --scene tennis \
 
 The validated local combination is Isaac Sim 5.0.0, Isaac Lab 0.46.2, Python 3.11, and CPU PhysX. See [docs/ISAAC_SIM.md](docs/ISAAC_SIM.md) for lifecycle and headless-exit details.
 
+## Table-tennis Shot Skill
+
+The experimental `table-tennis-return-v0` task provides fixed Shot Banks, MuJoCo ball launch, true racket-contact events, legal-return and placement judging, bucketed metrics, and JSON/Markdown reports. Its scripted mocap paddle is a test fixture, not an eligible robot policy.
+
+```bash
+multisport-benchmark --level L1 --split dev --controller scripted \
+  --report reports/table-tennis-l1.json --markdown reports/table-tennis-l1.md
+
+multisport-benchmark --level L1 --split dev --controller noop
+```
+
+See the [Shot Skill documentation](docs/TABLE_TENNIS_SHOT_SKILL.md) for the coordinate frame, L0–L5 criteria, report schema, fixed-bank integrity checks, and robot-adapter contract.
+
 ## Quantitative fidelity
 
 The `multisport-fidelity-v1` suite runs real drop simulations and records measured rebound, reference intervals, absolute/relative error, tolerance utilization, effective restitution, pass/fail, and a continuous score.
@@ -68,7 +94,7 @@ Committed baselines are available for [MuJoCo](reports/mujoco-fidelity.md) and [
 
 ## Toward a robot benchmark
 
-The proposed first release contains five single-episode tasks: tennis return, table-tennis return, football kick-to-target, badminton serve, and basketball shooting. The draft protocol defines state, vision, robustness, and sim-to-real tracks; raw metrics; seeding; robot adapters; and reproducible submission artifacts.
+The experimental table-tennis Shot Skill validates fixed launches, true-contact events, judging, and report schemas with a MuJoCo fixture; it is not yet a robot environment or submission track. The proposed first public release contains five single-episode tasks: tennis return, table-tennis return, football kick-to-target, badminton serve, and basketball shooting. The draft protocol defines state, vision, robustness, and sim-to-real tracks; raw metrics; seeding; robot adapters; and reproducible submission artifacts.
 
 The repository remains a physics foundation until at least one versioned Gymnasium environment, one vectorized Isaac Lab environment, licensed robot assets, fixed evaluation splits, and reproducible reference policies are available.
 
@@ -78,6 +104,7 @@ The repository remains a physics foundation until at least one versioned Gymnasi
 make lint
 make test
 make verify
+make benchmark
 make test-isaac ISAAC_PYTHON=/path/to/isaac/python
 ```
 
@@ -86,4 +113,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Physics ch
 ## Citation and license
 
 Citation metadata is provided in [CITATION.cff](CITATION.cff). The project is licensed under the [MIT License](LICENSE); third-party robot assets, datasets, and weights must carry their own compatible licenses and provenance.
-

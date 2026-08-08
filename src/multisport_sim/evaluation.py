@@ -181,7 +181,7 @@ def report_markdown(report: dict[str, Any]) -> str:
     overall = summary["overall_score"]
     official = summary["official_metrics_score"]
     lines = [
-        f"# MultiSport fidelity report — {report['backend']}",
+        f"# Robot Sports Gym fidelity report — {report['backend']}",
         "",
         f"- Suite: `{report['suite']}`",
         "- Coverage: **first-rebound contact dynamics only**",

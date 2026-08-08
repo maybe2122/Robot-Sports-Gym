@@ -1,4 +1,4 @@
-# MultiSport fidelity report — mujoco
+# Robot Sports Gym fidelity report — mujoco
 
 - Suite: `multisport-fidelity-v1`
 - Coverage: **first-rebound contact dynamics only**

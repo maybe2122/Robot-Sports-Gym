@@ -1,4 +1,4 @@
-# Roadmap to an Open Robot Ball-Sports Benchmark
+# Robot Sports Gym Roadmap
 
 路线图按发布门槛排序，不代表时间承诺。
 
@@ -11,6 +11,8 @@
 - [x] 基础测试、许可证和公开协作文档
 
 ## M1 — Benchmark API（P0）
+
+先行实验实现：`table-tennis-return-v0` 已具备固定 Shot Bank、后端无关事件/Judge、逐 episode schema、确定性 MuJoCo Runner 和报告 CLI；它尚不是 Gymnasium 环境，也不使本里程碑完成。
 
 - [ ] 引入 Gymnasium，注册版本化环境 ID
 - [ ] 明确定义 observation/action/reward/termination/truncation
@@ -28,6 +30,8 @@
 - [ ] 定义速度、力矩、碰撞和工作空间安全限制
 
 ## M3 — Five canonical tasks（P0）
+
+`TableTennisReturn` 目前只有 experimental Shot Skill v0 和 mocap 测试夹具；在真实机器人 adapter、正式规模固定集和双后端环境完成前仍保持未勾选。
 
 - [ ] TennisReturn
 - [ ] TableTennisReturn
@@ -66,4 +70,3 @@
 ## 暂缓项
 
 连续对打、多机器人比赛、柔性球网、球体有限元变形和机器人搏击不进入首个 benchmark release。它们应在核心单回合任务稳定后作为独立版本扩展。
-

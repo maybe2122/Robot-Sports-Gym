@@ -3,19 +3,21 @@ requires = ["hatchling>=1.25"]
 build-backend = "hatchling.build"
 
 [project]
+# Legacy distribution identifier retained for install compatibility after the branding rename.
 name = "multisport-physics-sim"
 version = "0.2.0"
-description = "A standalone MuJoCo and Isaac Sim campus for five regulation ball sports."
+description = "Cross-embodiment robot ball-sports training and evaluation gym."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
-authors = [{name = "Multisport Physics Sim contributors"}]
+authors = [{name = "Robot Sports Gym contributors"}]
 keywords = [
   "robotics",
   "reinforcement-learning",
   "mujoco",
   "isaac-sim",
   "physics-simulation",
+  "robot-benchmark",
   "sports",
 ]
 classifiers = [
@@ -41,6 +43,7 @@ test = ["pytest>=8", "ruff>=0.6"]
 multisport-sim = "multisport_sim.cli:main"
 multisport-isaac = "multisport_sim.isaac_cli:main"
 multisport-eval = "multisport_sim.evaluation_cli:main"
+multisport-benchmark = "multisport_sim.benchmark_cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/multisport_sim"]
