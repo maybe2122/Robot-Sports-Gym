@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "suite": "multisport-fidelity-v1",
+  "backend": "isaacsim",
+  "generated_at": "2026-08-08T03:38:45.443849+00:00",
+  "coverage": {
+    "categories": [
+      "contact_dynamics"
+    ],
+    "claim": "Scores apply only to the listed measured metrics, not total simulator realism."
+  },
+  "metadata": {
+    "component_reports": 5
+  },
+  "summary": {
+    "metric_count": 5,
+    "passed": 5,
+    "failed": 0,
+    "overall_score": 98.66716636387281,
+    "official_metrics_score": 99.92872303157581
+  },
+  "metrics": [
+    {
+      "metric_id": "badminton.first_rebound_height",
+      "category": "contact_dynamics",
+      "sport": "badminton",
+      "measured": 0.018447568058967592,
+      "ideal": 0.0,
+      "lower": 0.0,
+      "upper": 0.06,
+      "unit": "m",
+      "absolute_error": 0.018447568058967592,
+      "relative_error_percent": null,
+      "tolerance_ratio": 0.30745946764945986,
+      "score": 93.65764554420535,
+      "passed": true,
+      "source_kind": "engineering",
+      "source": "Project cork-first low-rebound acceptance limit",
+      "source_url": null,
+      "derived": {
+        "effective_restitution": 0.10123561093631363
+      }
+    },
+    {
+      "metric_id": "basketball.first_rebound_height",
+      "category": "contact_dynamics",
+      "sport": "basketball",
+      "measured": 1.0593261766433715,
+      "ideal": 1.06,
+      "lower": 1.035,
+      "upper": 1.085,
+      "unit": "m",
+      "absolute_error": 0.0006738233566285778,
+      "relative_error_percent": 0.06356824119137526,
+      "tolerance_ratio": 0.02695293426514297,
+      "score": 99.9496582595005,
+      "passed": true,
+      "source_kind": "official",
+      "source": "FIBA Basketball Equipment, ball rebound",
+      "source_url": "https://assets.fiba.basketball/image/upload/documents-corporate-fiba-official-rules-2024-official-basketball-rules-and-basketball-equipment.pdf",
+      "derived": {
+        "effective_restitution": 0.7671470149714792
+      }
+    },
+    {
+      "metric_id": "football.first_rebound_height",
+      "category": "contact_dynamics",
+      "sport": "football",
+      "measured": 0.994077935218811,
+      "ideal": 1.0,
+      "lower": 0.85,
+      "upper": 1.15,
+      "unit": "m",
+      "absolute_error": 0.0059220647811889515,
+      "relative_error_percent": 0.5922064781188952,
+      "tolerance_ratio": 0.039480431874593006,
+      "score": 99.89201718043127,
+      "passed": true,
+      "source_kind": "engineering",
+      "source": "Project natural-grass interaction calibration range",
+      "source_url": null,
+      "derived": {
+        "effective_restitution": 0.7050099060363659
+      }
+    },
+    {
+      "metric_id": "table_tennis.first_rebound_height",
+      "category": "contact_dynamics",
+      "sport": "table_tennis",
+      "measured": 0.24442920207977295,
+      "ideal": 0.245,
+      "lower": 0.23,
+      "upper": 0.26,
+      "unit": "m",
+      "absolute_error": 0.0005707979202270452,
+      "relative_error_percent": 0.23297874294981438,
+      "tolerance_ratio": 0.03805319468180298,
+      "score": 99.8996794804503,
+      "passed": true,
+      "source_kind": "official",
+      "source": "ITTF Technical Leaflet T1, table bounce/restitution",
+      "source_url": "https://documents.ittf.sport/sites/default/files/public/2024-03/2024_ITTF_Council_documents_EN.pdf",
+      "derived": {
+        "effective_restitution": 0.902642790328808
+      }
+    },
+    {
+      "metric_id": "tennis.first_rebound_height",
+      "category": "contact_dynamics",
+      "sport": "tennis",
+      "measured": 1.4081884183883666,
+      "ideal": 1.41,
+      "lower": 1.35,
+      "upper": 1.47,
+      "unit": "m",
+      "absolute_error": 0.0018115816116333061,
+      "relative_error_percent": 0.12848096536406428,
+      "tolerance_ratio": 0.030193026860555076,
+      "score": 99.93683135477666,
+      "passed": true,
+      "source_kind": "official",
+      "source": "ITF 2025 Technical Booklet, Type 2 ball rebound",
+      "source_url": "https://m.itftennis.com/media/13753/2025-technical-booklet.pdf",
+      "derived": {
+        "effective_restitution": 0.7445837018960851
+      }
+    }
+  ]
+}

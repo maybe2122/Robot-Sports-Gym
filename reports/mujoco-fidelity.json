@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "suite": "multisport-fidelity-v1",
+  "backend": "mujoco",
+  "generated_at": "2026-08-08T03:38:40.794607+00:00",
+  "coverage": {
+    "categories": [
+      "contact_dynamics"
+    ],
+    "claim": "Scores apply only to the listed measured metrics, not total simulator realism."
+  },
+  "metadata": {
+    "timestep_seconds": 0.001,
+    "integrator": "implicitfast"
+  },
+  "summary": {
+    "metric_count": 5,
+    "passed": 5,
+    "failed": 0,
+    "overall_score": 98.08436146308247,
+    "official_metrics_score": 98.97944862169548
+  },
+  "metrics": [
+    {
+      "metric_id": "tennis.first_rebound_height",
+      "category": "contact_dynamics",
+      "sport": "tennis",
+      "measured": 1.3999291950927557,
+      "ideal": 1.41,
+      "lower": 1.35,
+      "upper": 1.47,
+      "unit": "m",
+      "absolute_error": 0.010070804907244213,
+      "relative_error_percent": 0.7142414827832776,
+      "tolerance_ratio": 0.16784674845407008,
+      "score": 98.06617202750503,
+      "passed": true,
+      "source_kind": "official",
+      "source": "ITF 2025 Technical Booklet, Type 2 ball rebound",
+      "source_url": "https://m.itftennis.com/media/13753/2025-technical-booklet.pdf",
+      "derived": {
+        "effective_restitution": 0.7423969466629498
+      }
+    },
+    {
+      "metric_id": "table_tennis.first_rebound_height",
+      "category": "contact_dynamics",
+      "sport": "table_tennis",
+      "measured": 0.24315850133756325,
+      "ideal": 0.245,
+      "lower": 0.23,
+      "upper": 0.26,
+      "unit": "m",
+      "absolute_error": 0.0018414986624367413,
+      "relative_error_percent": 0.7516321071170373,
+      "tolerance_ratio": 0.12276657749578264,
+      "score": 98.96075193016665,
+      "passed": true,
+      "source_kind": "official",
+      "source": "ITTF Technical Leaflet T1, table bounce/restitution",
+      "source_url": "https://documents.ittf.sport/sites/default/files/public/2024-03/2024_ITTF_Council_documents_EN.pdf",
+      "derived": {
+        "effective_restitution": 0.9002934731474385
+      }
+    },
+    {
+      "metric_id": "football.first_rebound_height",
+      "category": "contact_dynamics",
+      "sport": "football",
+      "measured": 1.0091797946308134,
+      "ideal": 1.0,
+      "lower": 0.85,
+      "upper": 1.15,
+      "unit": "m",
+      "absolute_error": 0.00917979463081342,
+      "relative_error_percent": 0.917979463081342,
+      "tolerance_ratio": 0.06119863087208946,
+      "score": 99.74073417401416,
+      "passed": true,
+      "source_kind": "engineering",
+      "source": "Project natural-grass interaction calibration range",
+      "source_url": null,
+      "derived": {
+        "effective_restitution": 0.7103449143306417
+      }
+    },
+    {
+      "metric_id": "badminton.first_rebound_height",
+      "category": "contact_dynamics",
+      "sport": "badminton",
+      "measured": 0.01831930065854269,
+      "ideal": 0.0,
+      "lower": 0.0,
+      "upper": 0.06,
+      "unit": "m",
+      "absolute_error": 0.01831930065854269,
+      "relative_error_percent": null,
+      "tolerance_ratio": 0.30532167764237816,
+      "score": 93.74272727631178,
+      "passed": true,
+      "source_kind": "engineering",
+      "source": "Project cork-first low-rebound acceptance limit",
+      "source_url": null,
+      "derived": {
+        "effective_restitution": 0.10088304741008738
+      }
+    },
+    {
+      "metric_id": "basketball.first_rebound_height",
+      "category": "contact_dynamics",
+      "sport": "basketball",
+      "measured": 1.0591061047116659,
+      "ideal": 1.06,
+      "lower": 1.035,
+      "upper": 1.085,
+      "unit": "m",
+      "absolute_error": 0.0008938952883341678,
+      "relative_error_percent": 0.08432974418246865,
+      "tolerance_ratio": 0.03575581153336652,
+      "score": 99.91142190741475,
+      "passed": true,
+      "source_kind": "official",
+      "source": "FIBA Basketball Equipment, ball rebound",
+      "source_url": "https://assets.fiba.basketball/image/upload/documents-corporate-fiba-official-rules-2024-official-basketball-rules-and-basketball-equipment.pdf",
+      "derived": {
+        "effective_restitution": 0.7670673245520043
+      }
+    }
+  ]
+}

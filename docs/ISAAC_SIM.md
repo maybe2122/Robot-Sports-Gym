@@ -49,11 +49,16 @@ multisport-isaac --headless --device cpu --scene campus --duration 0.1 \
 
 # 标准落球测试
 multisport-isaac --headless --device cpu --scene tennis --drop-test
+
+# 输出与 MuJoCo 相同 schema 的量化报告
+multisport-isaac --headless --device cpu --scene tennis \
+  --evaluate --report reports/isaac/tennis.json
 ```
 
 `--duration 0` 在 GUI 中表示运行到用户关闭窗口；无头模式没有给时长时自动运行 5 秒。
 
+Isaac Sim 每个 Kit 进程只评测一个单项场景，以避免重复创建 `SimulationContext`。`make evaluate-isaac` 会依次启动五个进程，并将结果聚合为 `reports/isaac-fidelity.json` 和 Markdown 报告。
+
 ## 无头快速退出
 
 部分同时装有 AMD 核显与 NVIDIA 独显的 Linux 工作站会在仿真完成后卡在 Kit 的 `Framework::unload_all_plugins`。无头 CLI 在输出和 USD 完全刷新后使用快速进程退出，避免 CI 永久挂起；GUI 模式仍执行标准 `SimulationApp.close()`。这不会跳过仿真、USD 写入或验证结果，只跳过进程结束前的插件卸载。
-

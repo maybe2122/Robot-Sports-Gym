@@ -117,6 +117,25 @@ make test-isaac ISAAC_PYTHON=/path/to/isaac/python
 
 普通测试会编译全部 MuJoCo 场景、验证全部 Isaac 场景描述、核对球体质量/尺寸与器材名称、验证阻力方向和速度平方律，并实际仿真 MuJoCo 的 ITF/ITTF/FIBA 落球回弹。`test-isaac` 会真正启动 Isaac Sim、初始化全部五个 PhysX 球体并运行 campus。
 
+## 真实度量化评测
+
+仓库提供统一的 `multisport-fidelity-v1` 报告格式。它不是只检查参数，而是实际执行落球仿真，测量第一次回弹最高点，并输出绝对误差、相对误差、容差占用率、等效恢复系数、PASS/FAIL、单项分数和总分。ITF、ITTF、FIBA 指标与项目工程指标分别统计，避免混淆官方标准和经验校准范围。
+
+```bash
+# MuJoCo：一次评测五种球，生成 JSON 和 Markdown
+make evaluate PYTHON=/path/to/python
+
+# Isaac Sim：每种球在独立 Kit 进程中评测，再聚合为同格式报告
+make evaluate-isaac ISAAC_PYTHON=/path/to/isaac/python PYTHON=/path/to/python
+
+# 也可只评测指定项目
+multisport-eval --sports tennis table_tennis basketball
+multisport-isaac --headless --device cpu --scene basketball \
+  --evaluate --report reports/isaac/basketball.json
+```
+
+当前提交附带的基线报告：MuJoCo 为 [`reports/mujoco-fidelity.md`](reports/mujoco-fidelity.md)，Isaac Sim 为 [`reports/isaac-fidelity.md`](reports/isaac-fidelity.md)。评分公式、参考区间和解释见 [`docs/PHYSICS.md`](docs/PHYSICS.md)。高分表示这些已测指标接近参考值，不代表尚未测量的球拍碰撞、柔性网或完整比赛行为已经得到验证。
+
 ## 设计边界
 
 这是刚体动力学和接触/气动力仿真，不是有限元球体变形模型。球拍目前固定在场边作为带碰撞的器材，场景没有人体运动员或自动比赛规则；后续可在稳定的 `Simulation` API 上接控制器、机器人、强化学习环境或轨迹回放。

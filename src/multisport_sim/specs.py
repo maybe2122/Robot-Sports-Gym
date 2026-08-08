@@ -58,7 +58,8 @@ BALLS: dict[Sport, BallSpec] = {
         mass=0.0027,
         radius=0.020,
         drag_coefficient=0.47,
-        restitution=0.89,
+        # PhysX coefficient calibrated to the ITTF 0.230-0.260 m table range.
+        restitution=0.937,
         rolling_friction=0.001,
         color=(1.0, 0.45, 0.06, 1.0),
         launch_velocity=(5.5, 0.25, 2.3),
@@ -76,7 +77,8 @@ BALLS: dict[Sport, BallSpec] = {
         mass=0.0050,
         radius=0.0135,  # cork/base collision radius; skirt is represented separately
         drag_coefficient=0.58,
-        restitution=0.30,
+        # Cork-first impact is deliberately inelastic; the skirt is visual-only.
+        restitution=0.13,
         rolling_friction=0.004,
         color=(0.96, 0.96, 0.90, 1.0),
         launch_velocity=(18.0, 0.0, 8.0),

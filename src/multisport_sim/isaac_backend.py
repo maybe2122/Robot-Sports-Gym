@@ -17,6 +17,7 @@ from isaaclab.utils.math import quat_apply
 from isaacsim.core.utils.stage import get_current_stage
 
 from .isaac_scene import IsaacPrimitive, IsaacSceneSpec, build_isaac_scene_spec
+from .evaluation import BOUNCE_TARGETS
 from .specs import (
     AIR_DENSITY,
     BALLS,
@@ -341,13 +342,9 @@ class IsaacSportsSimulation:
         """Measure the first rebound clearance using the sport's regulation drop."""
         if sport not in self.balls:
             raise ValueError(f"{sport.value} ball is not present in scene {self.scene_spec.name}")
-        drop_height, surface_height = {
-            Sport.TENNIS: (2.54, 0.0),
-            Sport.TABLE_TENNIS: (0.30, 0.76),
-            Sport.FOOTBALL: (2.00, 0.0),
-            Sport.BADMINTON: (1.80, 0.0),
-            Sport.BASKETBALL: (1.80, 0.0),
-        }[sport]
+        target = BOUNCE_TARGETS[sport]
+        drop_height = target.drop_height_m
+        surface_height = target.surface_height_m
         ball = self.balls[sport]
         self.reset()
         pose = ball.data.default_root_state[:, :7].clone()

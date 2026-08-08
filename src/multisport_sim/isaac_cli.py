@@ -35,6 +35,16 @@ def parser() -> argparse.ArgumentParser:
         action="store_true",
         help="run the regulation first-rebound test (requires a single-sport scene)",
     )
+    result.add_argument(
+        "--evaluate",
+        action="store_true",
+        help="score a single-sport rebound against the shared fidelity benchmark",
+    )
+    result.add_argument(
+        "--report",
+        default=None,
+        help="with --evaluate, write a JSON or Markdown report based on the suffix",
+    )
     result.add_argument("--export-usd", default=None, help="export the generated stage to this USD path")
     result.add_argument(
         "--wind",
@@ -67,16 +77,33 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.export_usd:
             output = simulation.export_usd(args.export_usd)
             print(f"exported_usd={output}", flush=True)
-        if args.drop_test:
+        if args.drop_test or args.evaluate:
             if args.scene == "campus":
-                raise ValueError("--drop-test requires a single-sport --scene")
+                raise ValueError("--drop-test/--evaluate requires a single-sport --scene")
             from .specs import Sport
 
-            rebound = simulation.regulation_drop_test(Sport(args.scene), render=not args.headless)
-            print(
-                f"backend=isaacsim scene={args.scene} drop_test_rebound={rebound:.3f}m",
-                flush=True,
-            )
+            sport = Sport(args.scene)
+            rebound = simulation.regulation_drop_test(sport, render=not args.headless)
+            if args.evaluate:
+                from .evaluation import build_report, report_markdown, score_bounce, write_report
+
+                report = build_report(
+                    "isaacsim",
+                    [score_bounce(sport, rebound)],
+                    metadata={"timestep_seconds": simulation.dt, "solver": "PhysX TGS"},
+                )
+                if args.report:
+                    output = write_report(report, args.report)
+                    print(f"fidelity_report={output}", flush=True)
+                else:
+                    print(report_markdown(report), flush=True)
+                if report["summary"]["failed"]:
+                    raise RuntimeError(f"{sport.value} fidelity benchmark failed")
+            else:
+                print(
+                    f"backend=isaacsim scene={args.scene} drop_test_rebound={rebound:.3f}m",
+                    flush=True,
+                )
         else:
             steps = simulation.run(
                 simulation_app,

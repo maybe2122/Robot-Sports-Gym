@@ -27,8 +27,29 @@ MuJoCo 的 `solref=(timeconst, dampratio)` 描述柔性接触动态，而不是�
 Isaac 后端用 PhysX 恢复系数和 `max` 恢复系数组合规则实现同一目标，并提供 `--drop-test` 实测入口。在当前 Isaac Sim 5.0/CPU PhysX 验收中：
 
 - 网球：2.54 m 落下，首次回弹 1.408 m。
-- 乒乓球：球桌上方 0.30 m 落下，首次回弹 0.221 m。
+- 乒乓球：球桌上方 0.30 m 落下，首次回弹 0.244 m。
 - 篮球：1.80 m 落下，首次回弹 1.059 m。
+
+## 真实度评分方法
+
+`multisport-fidelity-v1` 对每项实测值使用以下可复现评分：
+
+```text
+tolerance_ratio = abs(measured - ideal) / tolerance
+score = 100 * exp(-ln(2) * tolerance_ratio^2)
+```
+
+参考区间中点得到 100 分，落在接受边界时得到 50 分，超出区间即 FAIL。报告同时保留原始实测值，因此使用者可以采用自己的评分函数重新计算。回弹报告还给出由高度比推导的等效恢复系数：
+
+```text
+effective_restitution = sqrt(rebound_height / drop_height)
+```
+
+网球采用 ITF Type 2 的 1.35–1.47 m 区间；乒乓球桌采用 ITTF 从球底 0.30 m 释放、回弹 0.230–0.260 m 的区间；篮球采用 FIBA 从球底 1.80 m 释放、回弹 1.035–1.085 m 的区间。足球规则与羽毛球规则没有同类的比赛表面落球标准，因此报告将它们标记为 `engineering`，不会计入 `official_metrics_score`。
+
+当前 v1 评分覆盖接触回弹。它不应被解释为整体仿真已达到同等精度；球拍—球、篮圈—球、飞行轨迹、滚动减速、柔性网和机器人接触需要在获得实验轨迹或测力数据后增加独立指标。
+
+当前机器上的可复现基线为：MuJoCo 5/5 通过，总分 98.08、官方指标分 98.98；Isaac Sim/CPU PhysX 5/5 通过，总分 98.67、官方指标分 99.93。完整原始值保存在 `reports/`，后续任何物理参数修改都可以用相同命令检测回归。
 
 ## 空气动力
 

@@ -21,6 +21,7 @@ test = ["pytest>=8", "ruff>=0.6"]
 [project.scripts]
 multisport-sim = "multisport_sim.cli:main"
 multisport-isaac = "multisport_sim.isaac_cli:main"
+multisport-eval = "multisport_sim.evaluation_cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/multisport_sim"]
