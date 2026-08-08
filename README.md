@@ -1,6 +1,19 @@
 # MultiSport Physics Sim（多球类物理仿真）
 
+[English](README.en.md) | 简体中文
+
 一个独立、无外部美术资产依赖的 **MuJoCo + Isaac Sim/PhysX 双后端** 3D 运动场仓库。项目按国际比赛尺寸程序化建立网球、乒乓球、足球、羽毛球和篮球场景，并为每项运动提供球、球拍/球台/球门/篮架以及差异化物理。
+
+> **项目状态：Alpha / Physics foundation。** 场景、球体物理和回弹量化已可运行；机器人、Gymnasium/Isaac Lab RL 环境、标准任务和参考策略仍在路线图中。当前版本不应宣传为已完成的机器人球类 benchmark。
+
+## 文档导航
+
+- [机器人 benchmark 协议草案](docs/BENCHMARK_SPEC.md)
+- [开源 benchmark 路线图](docs/ROADMAP.md)
+- [复现规范](docs/REPRODUCIBILITY.md)
+- [物理模型与真实度评测](docs/PHYSICS.md)
+- [Isaac Sim 使用说明](docs/ISAAC_SIM.md)
+- [贡献指南](CONTRIBUTING.md) · [治理](GOVERNANCE.md) · [安全策略](SECURITY.md) · [变更记录](CHANGELOG.md)
 
 ## 已实现内容
 
@@ -139,6 +152,12 @@ multisport-isaac --headless --device cpu --scene basketball \
 ## 设计边界
 
 这是刚体动力学和接触/气动力仿真，不是有限元球体变形模型。球拍目前固定在场边作为带碰撞的器材，场景没有人体运动员或自动比赛规则；后续可在稳定的 `Simulation` API 上接控制器、机器人、强化学习环境或轨迹回放。
+
+拟议的首批机器人任务、state/vision/robustness 轨道、指标、结果包和发布门槛见 [benchmark 协议](docs/BENCHMARK_SPEC.md)。在这些门槛满足前，仓库定位是 benchmark 的物理基础层。
+
+## 开源协作与引用
+
+提交代码前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。资产、数据和权重必须具有可再分发的许可证与明确来源。研究使用可引用 [CITATION.cff](CITATION.cff)；获得归档 DOI 后会更新正式引用信息。
 
 ## License
 

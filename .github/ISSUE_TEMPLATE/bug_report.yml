@@ -1,0 +1,54 @@
+name: Bug report
+description: Report a reproducible simulator, scene, physics, packaging, or documentation defect.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Do not report security vulnerabilities here; follow SECURITY.md."
+  - type: dropdown
+    id: backend
+    attributes:
+      label: Backend
+      options:
+        - MuJoCo
+        - Isaac Sim / PhysX
+        - Backend-neutral
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python, simulator, Isaac Lab, CUDA/driver, CPU/GPU, and commit.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include the full command, scene/task, seed, and smallest reproducing code.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and logs
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues.
+          required: true
+        - label: I removed credentials, personal data, and private asset links.
+          required: true
+

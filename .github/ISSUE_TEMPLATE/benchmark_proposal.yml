@@ -1,0 +1,39 @@
+name: Benchmark proposal
+description: Propose a robot, sport, task, metric, dataset, or protocol change.
+title: "[Benchmark]: "
+labels: ["benchmark"]
+body:
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Research question and motivation
+    validations:
+      required: true
+  - type: textarea
+    id: protocol
+    attributes:
+      label: Proposed protocol
+      description: Define robot, scene, actions, observations, success, termination, randomization, and metrics.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Standards, data, and references
+      description: Link primary sources and state whether data can be redistributed.
+    validations:
+      required: true
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Backend and compatibility impact
+      description: Explain MuJoCo/Isaac support and whether results remain comparable.
+    validations:
+      required: true
+  - type: textarea
+    id: licensing
+    attributes:
+      label: Asset, data, and model licenses
+    validations:
+      required: true
+
