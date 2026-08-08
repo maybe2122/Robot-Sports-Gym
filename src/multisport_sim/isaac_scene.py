@@ -213,7 +213,9 @@ def _net(
     ]
 
 
-def _racket(prefix: str, x: float, y: float, z: float, scale: float, color: Color) -> list[IsaacPrimitive]:
+def _racket(
+    prefix: str, x: float, y: float, z: float, scale: float, color: Color
+) -> list[IsaacPrimitive]:
     result = [
         _capsule_between(
             f"{prefix}_racket_handle",
@@ -287,6 +289,57 @@ def _paddle(prefix: str, x: float, y: float, z: float, color: Color) -> list[Isa
     ]
 
 
+def _table_tennis_net(x: float, y: float) -> list[IsaacPrimitive]:
+    """Create a regulation 1.83 m by 15.25 cm net with visible mesh and tape."""
+    bottom, top, span = 0.76, 0.9125, 1.83
+    parts = [
+        # The thin panel supplies reliable ball collision; cords are visual only.
+        _box(
+            "table_tennis_net",
+            (x, y, (bottom + top) / 2),
+            (0.012, span, top - bottom),
+            (0.04, 0.07, 0.11),
+            opacity=0.20,
+            friction=(0.30, 0.25),
+        ),
+        _cylinder("table_tennis_post_a", (x, y - span / 2, 0.82), 0.018, 0.31, BLACK),
+        _cylinder("table_tennis_post_b", (x, y + span / 2, 0.82), 0.018, 0.31, BLACK),
+        _capsule_between(
+            "table_tennis_net_top_tape",
+            (x, y - span / 2, top),
+            (x, y + span / 2, top),
+            0.010,
+            WHITE,
+            collision=False,
+        ),
+    ]
+    for index in range(1, 12):
+        cord_y = y - span / 2 + span * index / 12
+        parts.append(
+            _capsule_between(
+                f"table_tennis_net_vertical_{index}",
+                (x, cord_y, bottom),
+                (x, cord_y, top),
+                0.0022,
+                (0.84, 0.87, 0.88),
+                collision=False,
+            )
+        )
+    for index in range(1, 4):
+        cord_z = bottom + (top - bottom) * index / 4
+        parts.append(
+            _capsule_between(
+                f"table_tennis_net_horizontal_{index}",
+                (x, y - span / 2, cord_z),
+                (x, y + span / 2, cord_z),
+                0.0022,
+                (0.84, 0.87, 0.88),
+                collision=False,
+            )
+        )
+    return parts
+
+
 def _tennis(x: float, y: float) -> tuple[list[IsaacPrimitive], IsaacBall]:
     parts = [_surface(Sport.TENNIS, x, y)]
     parts += _rectangle_lines("doubles", x, y, 23.77, 10.97)
@@ -310,14 +363,28 @@ def _table_tennis(x: float, y: float) -> tuple[list[IsaacPrimitive], IsaacBall]:
             "table",
             (x, y, 0.74),
             (2.74, 1.525, 0.04),
-            (0.04, 0.24, 0.43),
+            (0.025, 0.27, 0.52),
             friction=(0.35, 0.25),
         ),
-        _line_box("table_center", (x, y), (1.37, 0.0015), z=0.768),
+        _line_box("table_center", (x, y), (1.37, 0.0015), z=0.766),
+        _line_box("table_edge_north", (x, y + 0.7525), (1.37, 0.010), z=0.766),
+        _line_box("table_edge_south", (x, y - 0.7525), (1.37, 0.010), z=0.766),
+        _line_box("table_edge_east", (x + 1.36, y), (0.010, 0.7625), z=0.766),
+        _line_box("table_edge_west", (x - 1.36, y), (0.010, 0.7625), z=0.766),
+        _box("table_apron_north", (x, y + 0.745, 0.69), (2.66, 0.035, 0.10), BLACK),
+        _box("table_apron_south", (x, y - 0.745, 0.69), (2.66, 0.035, 0.10), BLACK),
     ]
-    for index, (dx, dy) in enumerate(((-1.15, -0.62), (-1.15, 0.62), (1.15, -0.62), (1.15, 0.62))):
-        parts.append(_box(f"table_leg_{index}", (x + dx, y + dy, 0.36), (0.05, 0.05, 0.72), BLACK))
-    parts += _net("table_tennis", x, y, 1.83, 0.9125, bottom=0.76)
+    for index, (dx, dy) in enumerate(((-1.05, -0.55), (-1.05, 0.55), (1.05, -0.55), (1.05, 0.55))):
+        parts.append(_box(f"table_leg_{index}", (x + dx, y + dy, 0.35), (0.06, 0.06, 0.70), BLACK))
+    parts += [
+        _capsule_between(
+            "table_brace_w", (x - 1.05, y - 0.55, 0.48), (x - 1.05, y + 0.55, 0.48), 0.025, BLACK
+        ),
+        _capsule_between(
+            "table_brace_e", (x + 1.05, y - 0.55, 0.48), (x + 1.05, y + 0.55, 0.48), 0.025, BLACK
+        ),
+    ]
+    parts += _table_tennis_net(x, y)
     parts += _paddle("a", x - 1.7, y - 0.95, 0.23, (0.75, 0.04, 0.03))
     parts += _paddle("b", x + 1.7, y + 0.95, 0.23, BLACK)
     return parts, IsaacBall(Sport.TABLE_TENNIS, (x - 0.7, y, 1.25))
@@ -370,18 +437,112 @@ def _badminton(x: float, y: float) -> tuple[list[IsaacPrimitive], IsaacBall]:
     return parts, IsaacBall(Sport.BADMINTON, (x - 3.0, y, 2.2))
 
 
+def _basket_net(prefix: str, rim_x: float, y: float) -> list[IsaacPrimitive]:
+    """Create the hanging tapered cord net below a basketball rim."""
+    parts: list[IsaacPrimitive] = []
+    strands, rim_z, bottom_z = 12, 3.045, 2.62
+    for index in range(strands):
+        angle = 2 * pi * index / strands
+        next_angle = 2 * pi * (index + 1) / strands
+        parts += [
+            _capsule_between(
+                f"{prefix}_net_strand_{index}_a",
+                (rim_x + 0.225 * cos(angle), y + 0.225 * sin(angle), rim_z),
+                (rim_x + 0.13 * cos(next_angle), y + 0.13 * sin(next_angle), bottom_z),
+                0.004,
+                WHITE,
+                collision=False,
+            ),
+            _capsule_between(
+                f"{prefix}_net_strand_{index}_b",
+                (rim_x + 0.225 * cos(next_angle), y + 0.225 * sin(next_angle), rim_z),
+                (rim_x + 0.13 * cos(angle), y + 0.13 * sin(angle), bottom_z),
+                0.004,
+                WHITE,
+                collision=False,
+            ),
+        ]
+    for tier, (radius, z) in enumerate(((0.19, 2.90), (0.16, 2.76), (0.13, bottom_z))):
+        for index in range(strands):
+            a0, a1 = 2 * pi * index / strands, 2 * pi * (index + 1) / strands
+            parts.append(
+                _capsule_between(
+                    f"{prefix}_net_ring_{tier}_{index}",
+                    (rim_x + radius * cos(a0), y + radius * sin(a0), z),
+                    (rim_x + radius * cos(a1), y + radius * sin(a1), z),
+                    0.0035,
+                    WHITE,
+                    collision=False,
+                )
+            )
+    return parts
+
+
 def _basket(prefix: str, x: float, y: float, facing: float) -> list[IsaacPrimitive]:
-    rim_x = x + facing * 1.2
-    support_x = x - facing * 0.35
+    # FIBA geometry: board face is 1.20 m in court from the end line and the
+    # rim center is another 0.375 m in front of the board.
+    board_x = x + facing * 1.20
+    rim_x = x + facing * 1.575
+    support_x = x - facing * 0.45
+    front_x = board_x + facing * 0.041
     parts = [
         _cylinder(f"{prefix}_support", (support_x, y, 1.6), 0.10, 3.2, BLACK),
-        _capsule_between(f"{prefix}_arm", (support_x, y, 3.0), (x, y, 3.0), 0.07, BLACK),
+        _box(f"{prefix}_support_base", (support_x, y, 0.12), (0.75, 1.05, 0.24), BLACK),
+        _capsule_between(f"{prefix}_arm", (support_x, y, 3.15), (board_x, y, 3.15), 0.07, BLACK),
         _box(
             f"{prefix}_backboard",
-            (x, y, 3.40),
+            (board_x, y, 3.40),
             (0.07, 1.80, 1.05),
-            (0.88, 0.91, 0.92),
-            opacity=0.55,
+            (0.82, 0.91, 0.96),
+            opacity=0.82,
+        ),
+        _box(
+            f"{prefix}_board_top", (board_x, y, 3.91), (0.085, 1.80, 0.045), WHITE, collision=False
+        ),
+        _box(
+            f"{prefix}_board_bottom",
+            (board_x, y, 2.89),
+            (0.085, 1.80, 0.045),
+            WHITE,
+            collision=False,
+        ),
+        _box(
+            f"{prefix}_board_left",
+            (board_x, y - 0.88, 3.40),
+            (0.085, 0.045, 1.05),
+            WHITE,
+            collision=False,
+        ),
+        _box(
+            f"{prefix}_board_right",
+            (board_x, y + 0.88, 3.40),
+            (0.085, 0.045, 1.05),
+            WHITE,
+            collision=False,
+        ),
+        _box(
+            f"{prefix}_target_top", (front_x, y, 3.65), (0.012, 0.59, 0.035), WHITE, collision=False
+        ),
+        _box(
+            f"{prefix}_target_bottom",
+            (front_x, y, 3.20),
+            (0.012, 0.59, 0.035),
+            WHITE,
+            collision=False,
+        ),
+        _box(
+            f"{prefix}_target_left",
+            (front_x, y - 0.2775, 3.425),
+            (0.012, 0.035, 0.45),
+            WHITE,
+            collision=False,
+        ),
+        _box(
+            f"{prefix}_target_right",
+            (front_x, y + 0.2775, 3.425),
+            (0.012, 0.035, 0.45),
+            WHITE,
+            collision=False,
         ),
     ]
     for index in range(32):
@@ -395,6 +556,7 @@ def _basket(prefix: str, x: float, y: float, facing: float) -> list[IsaacPrimiti
                 (0.95, 0.23, 0.03),
             )
         )
+    parts += _basket_net(prefix, rim_x, y)
     return parts
 
 

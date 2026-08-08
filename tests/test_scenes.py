@@ -25,10 +25,13 @@ def test_campus_contains_every_ball_surface_and_equipment() -> None:
         "tennis_a_racket_handle",
         "table_tennis_table",
         "table_tennis_a_paddle_blade",
+        "table_tennis_net_top_tape",
         "football_goal_w_crossbar",
         "badminton_a_racket_handle",
         "basketball_w_backboard",
+        "basketball_w_board_top",
         "basketball_w_rim_0",
+        "basketball_w_net_strand_0_a",
     )
     for name in required_geometries:
         assert mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name) >= 0, name
@@ -51,10 +54,9 @@ def test_regulation_dimensions_are_embedded_in_mjcf() -> None:
     assert COURTS[Sport.BASKETBALL].length == 28.0
     xml = build_xml("table_tennis")
     assert 'size="1.37 0.7625 0.02"' in xml
-    assert '0.025 0.03' in xml
+    assert "0.025 0.03" in xml
 
 
 def test_unknown_scene_has_actionable_error() -> None:
     with pytest.raises(ValueError, match="expected one of"):
         build_xml("volleyball")
-

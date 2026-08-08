@@ -18,9 +18,7 @@ def _rgba(values: tuple[float, float, float, float]) -> str:
 
 def _geom(name: str, geom_type: str = "box", **attributes: object) -> str:
     attrs = {"name": name, "type": geom_type, **attributes}
-    encoded = " ".join(
-        f'{key.rstrip("_")}="{escape(str(value))}"' for key, value in attrs.items()
-    )
+    encoded = " ".join(f'{key.rstrip("_")}="{escape(str(value))}"' for key, value in attrs.items())
     return f"<geom {encoded}/>"
 
 
@@ -101,8 +99,8 @@ def _arc_lines(
                 f"{prefix}_{index}",
                 "capsule",
                 fromto=(
-                    f"{x + radius*cos(a0)} {y + radius*sin(a0)} 0.013 "
-                    f"{x + radius*cos(a1)} {y + radius*sin(a1)} 0.013"
+                    f"{x + radius * cos(a0)} {y + radius * sin(a0)} 0.013 "
+                    f"{x + radius * cos(a1)} {y + radius * sin(a1)} 0.013"
                 ),
                 size=width,
                 rgba=WHITE,
@@ -138,7 +136,11 @@ def _net(
 ) -> list[str]:
     post_a = (x, y - span / 2) if along_y else (x - span / 2, y)
     post_b = (x, y + span / 2) if along_y else (x + span / 2, y)
-    net_size = f"0.012 {span / 2} {(height - bottom) / 2}" if along_y else f"{span / 2} 0.012 {(height - bottom) / 2}"
+    net_size = (
+        f"0.012 {span / 2} {(height - bottom) / 2}"
+        if along_y
+        else f"{span / 2} 0.012 {(height - bottom) / 2}"
+    )
     return [
         _geom(
             f"{prefix}_net",
@@ -366,8 +368,8 @@ def _shuttlecock(x: float, y: float, z: float) -> str:
                     f"shuttle_ring_{ring}_{index}",
                     "capsule",
                     fromto=(
-                        f"{radius*cos(a0)} {radius*sin(a0)} {z_ring} "
-                        f"{radius*cos(a1)} {radius*sin(a1)} {z_ring}"
+                        f"{radius * cos(a0)} {radius * sin(a0)} {z_ring} "
+                        f"{radius * cos(a1)} {radius * sin(a1)} {z_ring}"
                     ),
                     size="0.0008",
                     rgba="0.85 0.85 0.80 1",
@@ -399,6 +401,73 @@ def _tennis(x: float, y: float) -> list[str]:
     return items
 
 
+def _table_tennis_net(x: float, y: float) -> list[str]:
+    """Create a regulation net with a collision panel and visible cord mesh."""
+    bottom, top, span = 0.76, 0.9125, 1.83
+    items = [
+        _geom(
+            "table_tennis_net",
+            pos=f"{x} {y} {(bottom + top) / 2}",
+            size=f"0.006 {span / 2} {(top - bottom) / 2}",
+            rgba="0.04 0.07 0.11 0.20",
+            friction="0.3 0.005 0.0001",
+        ),
+        _geom(
+            "table_tennis_post_a",
+            "cylinder",
+            pos=f"{x} {y - span / 2} 0.82",
+            size="0.018 0.155",
+            rgba="0.06 0.07 0.08 1",
+        ),
+        _geom(
+            "table_tennis_post_b",
+            "cylinder",
+            pos=f"{x} {y + span / 2} 0.82",
+            size="0.018 0.155",
+            rgba="0.06 0.07 0.08 1",
+        ),
+        _geom(
+            "table_tennis_net_top_tape",
+            "capsule",
+            fromto=f"{x} {y - span / 2} {top} {x} {y + span / 2} {top}",
+            size="0.010",
+            rgba=WHITE,
+            contype="0",
+            conaffinity="0",
+            mass="0",
+        ),
+    ]
+    for index in range(1, 12):
+        cord_y = y - span / 2 + span * index / 12
+        items.append(
+            _geom(
+                f"table_tennis_net_vertical_{index}",
+                "capsule",
+                fromto=f"{x} {cord_y} {bottom} {x} {cord_y} {top}",
+                size="0.0022",
+                rgba="0.84 0.87 0.88 1",
+                contype="0",
+                conaffinity="0",
+                mass="0",
+            )
+        )
+    for index in range(1, 4):
+        cord_z = bottom + (top - bottom) * index / 4
+        items.append(
+            _geom(
+                f"table_tennis_net_horizontal_{index}",
+                "capsule",
+                fromto=f"{x} {y - span / 2} {cord_z} {x} {y + span / 2} {cord_z}",
+                size="0.0022",
+                rgba="0.84 0.87 0.88 1",
+                contype="0",
+                conaffinity="0",
+                mass="0",
+            )
+        )
+    return items
+
+
 def _table_tennis(x: float, y: float) -> list[str]:
     items = [_court_surface(Sport.TABLE_TENNIS, x, y)]
     items += _rectangle_lines("table_tennis_zone", x, y, 8.0, 5.0)
@@ -407,29 +476,61 @@ def _table_tennis(x: float, y: float) -> list[str]:
         _geom(
             "table_tennis_table",
             pos=f"{x} {y} {tabletop_z - tabletop_t / 2}",
-            size=f"{2.74/2} {1.525/2} {tabletop_t/2}",
-            rgba="0.04 0.24 0.43 1",
+            size=f"{2.74 / 2} {1.525 / 2} {tabletop_t / 2}",
+            rgba="0.025 0.27 0.52 1",
             friction="0.35 0.003 0.0005",
             condim="6",
         ),
-        _line_box("table_tennis_center_line", (x, y), (1.37, 0.0015), tabletop_z + 0.008),
+        _line_box("table_tennis_center_line", (x, y), (1.37, 0.0015), tabletop_z + 0.006),
+        _line_box("table_tennis_edge_north", (x, y + 0.7525), (1.37, 0.010), tabletop_z + 0.006),
+        _line_box("table_tennis_edge_south", (x, y - 0.7525), (1.37, 0.010), tabletop_z + 0.006),
+        _line_box("table_tennis_edge_east", (x + 1.36, y), (0.010, 0.7625), tabletop_z + 0.006),
+        _line_box("table_tennis_edge_west", (x - 1.36, y), (0.010, 0.7625), tabletop_z + 0.006),
+        _geom(
+            "table_tennis_apron_north",
+            pos=f"{x} {y + 0.745} 0.69",
+            size="1.33 0.0175 0.05",
+            rgba="0.06 0.07 0.08 1",
+        ),
+        _geom(
+            "table_tennis_apron_south",
+            pos=f"{x} {y - 0.745} 0.69",
+            size="1.33 0.0175 0.05",
+            rgba="0.06 0.07 0.08 1",
+        ),
     ]
-    for ix in (-1.15, 1.15):
-        for iy in (-0.62, 0.62):
+    for ix in (-1.05, 1.05):
+        for iy in (-0.55, 0.55):
             items.append(
                 _geom(
                     f"table_leg_{ix}_{iy}",
-                    pos=f"{x+ix} {y+iy} 0.36",
-                    size="0.025 0.025 0.36",
+                    pos=f"{x + ix} {y + iy} 0.35",
+                    size="0.03 0.03 0.35",
                     rgba="0.15 0.16 0.17 1",
                 )
             )
-    items += _net("table_tennis", x, y, 1.83, tabletop_z + 0.1525, bottom=tabletop_z)
+    items += [
+        _geom(
+            "table_tennis_brace_w",
+            "capsule",
+            fromto=f"{x - 1.05} {y - 0.55} 0.48 {x - 1.05} {y + 0.55} 0.48",
+            size="0.025",
+            rgba="0.06 0.07 0.08 1",
+        ),
+        _geom(
+            "table_tennis_brace_e",
+            "capsule",
+            fromto=f"{x + 1.05} {y - 0.55} 0.48 {x + 1.05} {y + 0.55} 0.48",
+            size="0.025",
+            rgba="0.06 0.07 0.08 1",
+        ),
+    ]
+    items += _table_tennis_net(x, y)
     items += [
         _paddle_body("table_tennis_a", (x - 1.7, y - 0.95, 0.23), True),
         _paddle_body("table_tennis_b", (x + 1.7, y + 0.95, 0.23), False),
         _ball(Sport.TABLE_TENNIS, x - 0.7, y, 1.25),
-        f'<camera name="table_tennis_camera" pos="{x-4.5} {y-4.5} 3.3" xyaxes="0.707 -0.707 0 0.35 0.35 0.87"/>',
+        f'<camera name="table_tennis_camera" pos="{x - 4.5} {y - 4.5} 3.3" xyaxes="0.707 -0.707 0 0.35 0.35 0.87"/>',
     ]
     return items
 
@@ -437,13 +538,31 @@ def _table_tennis(x: float, y: float) -> list[str]:
 def _goal(prefix: str, x: float, y: float, facing: float) -> list[str]:
     depth = 2.0 * facing
     return [
-        _geom(f"{prefix}_left_post", "cylinder", pos=f"{x} {y-3.66} 1.22", size="0.06 1.22", rgba=WHITE),
-        _geom(f"{prefix}_right_post", "cylinder", pos=f"{x} {y+3.66} 1.22", size="0.06 1.22", rgba=WHITE),
-        _geom(f"{prefix}_crossbar", "capsule", fromto=f"{x} {y-3.66} 2.44 {x} {y+3.66} 2.44", size="0.06", rgba=WHITE),
+        _geom(
+            f"{prefix}_left_post",
+            "cylinder",
+            pos=f"{x} {y - 3.66} 1.22",
+            size="0.06 1.22",
+            rgba=WHITE,
+        ),
+        _geom(
+            f"{prefix}_right_post",
+            "cylinder",
+            pos=f"{x} {y + 3.66} 1.22",
+            size="0.06 1.22",
+            rgba=WHITE,
+        ),
+        _geom(
+            f"{prefix}_crossbar",
+            "capsule",
+            fromto=f"{x} {y - 3.66} 2.44 {x} {y + 3.66} 2.44",
+            size="0.06",
+            rgba=WHITE,
+        ),
         _geom(
             f"{prefix}_goal_net",
-            pos=f"{x + depth/2} {y} 1.22",
-            size=f"{abs(depth)/2} 3.66 1.22",
+            pos=f"{x + depth / 2} {y} 1.22",
+            size=f"{abs(depth) / 2} 3.66 1.22",
             rgba="0.9 0.9 0.9 0.12",
             friction="0.2 0.001 0.0001",
         ),
@@ -461,7 +580,7 @@ def _football(x: float, y: float) -> list[str]:
     items += _goal("football_goal_e", x + 52.5, y, 1.0)
     items += [
         _ball(Sport.FOOTBALL, x - 18.0, y, 1.0),
-        f'<camera name="football_camera" pos="{x-60} {y-50} 55" xyaxes="0.64 -0.77 0 0.44 0.37 0.82"/>',
+        f'<camera name="football_camera" pos="{x - 60} {y - 50} 55" xyaxes="0.64 -0.77 0 0.44 0.37 0.82"/>',
     ]
     return items
 
@@ -481,14 +600,63 @@ def _badminton(x: float, y: float) -> list[str]:
         _racket_body("badminton_a", (x - 2.4, y - 2.7, 0.28), 0.68, "0.08 0.08 0.09 1"),
         _racket_body("badminton_b", (x + 2.4, y + 2.7, 0.28), 0.68, "0.18 0.36 0.64 1"),
         _ball(Sport.BADMINTON, x - 3.0, y, 2.2),
-        f'<camera name="badminton_camera" pos="{x-9} {y-9} 6.5" xyaxes="0.707 -0.707 0 0.36 0.36 0.86"/>',
+        f'<camera name="badminton_camera" pos="{x - 9} {y - 9} 6.5" xyaxes="0.707 -0.707 0 0.36 0.36 0.86"/>',
     ]
     return items
 
 
+def _basket_net(prefix: str, rim_x: float, y: float) -> list[str]:
+    """Create a visible tapered basketball net from non-colliding cords."""
+    items: list[str] = []
+    strands, rim_z, bottom_z = 12, 3.045, 2.62
+    for index in range(strands):
+        angle = 2 * pi * index / strands
+        next_angle = 2 * pi * (index + 1) / strands
+        for suffix, top_angle, lower_angle in (
+            ("a", angle, next_angle),
+            ("b", next_angle, angle),
+        ):
+            items.append(
+                _geom(
+                    f"{prefix}_net_strand_{index}_{suffix}",
+                    "capsule",
+                    fromto=(
+                        f"{rim_x + 0.225 * cos(top_angle)} {y + 0.225 * sin(top_angle)} {rim_z} "
+                        f"{rim_x + 0.13 * cos(lower_angle)} {y + 0.13 * sin(lower_angle)} {bottom_z}"
+                    ),
+                    size="0.004",
+                    rgba=WHITE,
+                    contype="0",
+                    conaffinity="0",
+                    mass="0",
+                )
+            )
+    for tier, (radius, z) in enumerate(((0.19, 2.90), (0.16, 2.76), (0.13, bottom_z))):
+        for index in range(strands):
+            a0, a1 = 2 * pi * index / strands, 2 * pi * (index + 1) / strands
+            items.append(
+                _geom(
+                    f"{prefix}_net_ring_{tier}_{index}",
+                    "capsule",
+                    fromto=(
+                        f"{rim_x + radius * cos(a0)} {y + radius * sin(a0)} {z} "
+                        f"{rim_x + radius * cos(a1)} {y + radius * sin(a1)} {z}"
+                    ),
+                    size="0.0035",
+                    rgba=WHITE,
+                    contype="0",
+                    conaffinity="0",
+                    mass="0",
+                )
+            )
+    return items
+
+
 def _basket_structure(prefix: str, x: float, y: float, facing: float) -> list[str]:
-    rim_x = x + facing * 1.2
-    support_x = x - facing * 0.35
+    board_x = x + facing * 1.20
+    rim_x = x + facing * 1.575
+    support_x = x - facing * 0.45
+    front_x = board_x + facing * 0.041
     items = [
         _geom(
             f"{prefix}_support",
@@ -498,20 +666,47 @@ def _basket_structure(prefix: str, x: float, y: float, facing: float) -> list[st
             rgba="0.12 0.13 0.15 1",
         ),
         _geom(
+            f"{prefix}_support_base",
+            pos=f"{support_x} {y} 0.12",
+            size="0.375 0.525 0.12",
+            rgba="0.12 0.13 0.15 1",
+        ),
+        _geom(
             f"{prefix}_arm",
             "capsule",
-            fromto=f"{support_x} {y} 3.0 {x} {y} 3.0",
+            fromto=f"{support_x} {y} 3.15 {board_x} {y} 3.15",
             size="0.07",
             rgba="0.12 0.13 0.15 1",
         ),
         _geom(
             f"{prefix}_backboard",
-            pos=f"{x} {y} 3.40",
+            pos=f"{board_x} {y} 3.40",
             size="0.035 0.90 0.525",
-            rgba="0.88 0.91 0.92 0.55",
+            rgba="0.82 0.91 0.96 0.82",
             friction="0.55 0.005 0.0005",
         ),
     ]
+    for name, pos, size in (
+        ("board_top", (board_x, y, 3.91), (0.0425, 0.90, 0.0225)),
+        ("board_bottom", (board_x, y, 2.89), (0.0425, 0.90, 0.0225)),
+        ("board_left", (board_x, y - 0.88, 3.40), (0.0425, 0.0225, 0.525)),
+        ("board_right", (board_x, y + 0.88, 3.40), (0.0425, 0.0225, 0.525)),
+        ("target_top", (front_x, y, 3.65), (0.006, 0.295, 0.0175)),
+        ("target_bottom", (front_x, y, 3.20), (0.006, 0.295, 0.0175)),
+        ("target_left", (front_x, y - 0.2775, 3.425), (0.006, 0.0175, 0.225)),
+        ("target_right", (front_x, y + 0.2775, 3.425), (0.006, 0.0175, 0.225)),
+    ):
+        items.append(
+            _geom(
+                f"{prefix}_{name}",
+                pos=f"{pos[0]} {pos[1]} {pos[2]}",
+                size=f"{size[0]} {size[1]} {size[2]}",
+                rgba=WHITE,
+                contype="0",
+                conaffinity="0",
+                mass="0",
+            )
+        )
     for index in range(32):
         a0, a1 = 2 * pi * index / 32, 2 * pi * (index + 1) / 32
         items.append(
@@ -519,14 +714,15 @@ def _basket_structure(prefix: str, x: float, y: float, facing: float) -> list[st
                 f"{prefix}_rim_{index}",
                 "capsule",
                 fromto=(
-                    f"{rim_x + 0.225*cos(a0)} {y + 0.225*sin(a0)} 3.05 "
-                    f"{rim_x + 0.225*cos(a1)} {y + 0.225*sin(a1)} 3.05"
+                    f"{rim_x + 0.225 * cos(a0)} {y + 0.225 * sin(a0)} 3.05 "
+                    f"{rim_x + 0.225 * cos(a1)} {y + 0.225 * sin(a1)} 3.05"
                 ),
                 size="0.01",
                 rgba="0.95 0.23 0.03 1",
                 friction="0.5 0.003 0.0003",
             )
         )
+    items += _basket_net(prefix, rim_x, y)
     return items
 
 
@@ -540,7 +736,9 @@ def _basketball(x: float, y: float) -> list[str]:
         items += _circle_lines(f"basketball_free_throw_{side}", x + dx, y, 1.80, width=0.025)
     # FIBA three-point radius is 6.75 m; baseline straight segments complete each arc.
     items += _arc_lines("basketball_three_w", x - 12.425, y, 6.75, -1.20, 1.20, width=0.025)
-    items += _arc_lines("basketball_three_e", x + 12.425, y, 6.75, pi - 1.20, pi + 1.20, width=0.025)
+    items += _arc_lines(
+        "basketball_three_e", x + 12.425, y, 6.75, pi - 1.20, pi + 1.20, width=0.025
+    )
     items += [
         _line_box("basketball_three_w_n", (x - 11.0, y + 6.60), (3.0, 0.025)),
         _line_box("basketball_three_w_s", (x - 11.0, y - 6.60), (3.0, 0.025)),
@@ -551,7 +749,7 @@ def _basketball(x: float, y: float) -> list[str]:
     items += _basket_structure("basketball_e", x + 14.0, y, -1.0)
     items += [
         _ball(Sport.BASKETBALL, x - 4.0, y, 1.5),
-        f'<camera name="basketball_camera" pos="{x-19} {y-18} 12" xyaxes="0.69 -0.72 0 0.36 0.35 0.86"/>',
+        f'<camera name="basketball_camera" pos="{x - 19} {y - 18} 12" xyaxes="0.69 -0.72 0 0.36 0.35 0.86"/>',
     ]
     return items
 
@@ -645,7 +843,7 @@ def build_xml(scene: str = "campus") -> str:
   <default>
     <geom solref="0.006 0.7" solimp="0.94 0.99 0.001" friction="0.7 0.01 0.001" condim="4"/>
   </default>
-  <worldbody>{''.join(world)}</worldbody>
+  <worldbody>{"".join(world)}</worldbody>
   <contact>{_contact_pairs(sports)}</contact>
 </mujoco>"""
 
