@@ -237,6 +237,12 @@ class IsaacSportsSimulation:
         }
         self.wind = torch.tensor(wind, dtype=torch.float32, device=self.sim.device)
         self.sim.reset()
+        # Reset/play initialization can replace the active viewport camera in
+        # interactive Kit. Re-apply the authored scene view afterwards.
+        self.sim.set_camera_view(
+            eye=self.scene_spec.camera_eye,
+            target=self.scene_spec.camera_target,
+        )
         for ball in self.balls.values():
             ball.update(self.dt)
 
