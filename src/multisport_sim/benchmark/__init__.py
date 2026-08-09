@@ -1,10 +1,13 @@
 """Versioned robot Shot Skill benchmark primitives."""
 
+from .envs import TableTennisReturnEnv, register_envs
 from .metrics import aggregate_results, assess_level, build_benchmark_report
 from .rules.table_tennis import TableTennisReturnJudge
 from .runner import RunConfig, RunOutput, run_shots
 from .shot_bank import ShotBank, ShotBankError
 from .types import BallState, EpisodeResult, SemanticContact, ShotSpec, TargetSpec
+
+register_envs()
 
 __all__ = [
     "BallState",
@@ -15,10 +18,12 @@ __all__ = [
     "ShotBank",
     "ShotBankError",
     "ShotSpec",
+    "TableTennisReturnEnv",
     "TableTennisReturnJudge",
     "TargetSpec",
     "aggregate_results",
     "assess_level",
     "build_benchmark_report",
+    "register_envs",
     "run_shots",
 ]

@@ -4,7 +4,7 @@
 
 Robot Sports Gym (RSG) is an in-development, cross-embodiment platform for training and evaluating robot perception, planning, control, robustness, and sim-to-real performance across tennis, table tennis, football, badminton, and basketball under shared tasks, physics specifications, and metrics. The current repository provides the asset-free **MuJoCo + Isaac Sim/PhysX** physics foundation with regulation-scale scenes and sport-specific dynamics.
 
-> **Status: Alpha.** The scenes, ball dynamics, rebound-fidelity reports, and an experimental table-tennis Shot Skill harness are operational. Real robot adapters, Gymnasium/Isaac Lab RL environments, the remaining canonical tasks, and reference policies are planned. Do not describe the current release as a completed robot ball-sports benchmark.
+> **Status: Alpha.** The scenes, ball dynamics, rebound-fidelity reports, an experimental table-tennis Shot Skill harness, and a MuJoCo Gymnasium fixture are operational. Real robot adapters, Isaac Lab RL environments, the remaining canonical tasks, and reference policies are planned. Do not describe the current release as a completed robot ball-sports benchmark.
 
 ## Documentation
 

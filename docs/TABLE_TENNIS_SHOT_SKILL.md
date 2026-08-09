@@ -2,6 +2,32 @@
 
 `table-tennis-return-v0` 是 [Benchmark 设计稿](Benchmark.md) 的第一项可执行实现。它用固定单球分布分别测量机器人或控制器能否碰到来球、完成合法回球，以及把首次合法落点送入目标区。
 
+## Gymnasium 实验环境
+
+安装项目后，导入 `multisport_sim.benchmark` 会注册
+`MultiSportRobot/TableTennisReturn-v0`。这是连接已有 Shot Bank、MuJoCo 后端和
+Judge 的单回合环境，动作是世界坐标下的 mocap 拍面 pose
+`[x, y, z, qw, qx, qy, qz]`（米、单位四元数）；观测依次是球的位置、线速度、角速度和拍面 pose。
+每个 control step 保持动作若干 physics step。首次 hit 得 1 分，合法回球得 3 分，命中目标另得 1 分。
+规则失败使用 `terminated=True`，超时使用 `truncated=True`；终止时的 `info["episode_result"]`
+是可直接 JSON 序列化的逐 episode 记录。`reset(seed=...)` 决定固定 Shot Bank 中的抽样，亦可通过
+`options={"shot_id": "..."}` 固定指定来球。
+
+```python
+import gymnasium as gym
+import multisport_sim.benchmark  # 注册环境
+
+env = gym.make("MultiSportRobot/TableTennisReturn-v0", split="dev")
+observation, info = env.reset(seed=0)
+while True:
+    observation, reward, terminated, truncated, info = env.step(env.action_space.sample())
+    if terminated or truncated:
+        print(info["episode_result"])
+        break
+```
+
+该环境仍使用 mocap 拍面测试夹具，不是可提交的真实机器人 adapter 或 Isaac Lab 环境。
+
 > **状态：experimental v0 / non-leaderboard。** 当前仓库提供 MuJoCo 参考后端、版本化开发/测试 Shot Bank 和一个 mocap 脚本球拍夹具，用于验证发球、接触事件、规则 Judge 与报告链路。脚本夹具不是机器人提交；v1 固定集、Isaac Sim adapter、Gymnasium 环境和可提交的机器人 adapter 仍需后续发布。
 
 ## 测试链路

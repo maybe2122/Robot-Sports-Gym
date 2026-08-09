@@ -11,4 +11,4 @@
 | [`PHYSICS.md`](PHYSICS.md) | 物理模型、量化评分和标准来源 |
 | [`ISAAC_SIM.md`](ISAAC_SIM.md) | Isaac Sim/PhysX 安装、运行和评测 |
 
-当前发布状态是 **Alpha**：场景和球体物理可运行，`table-tennis-return-v0` 已提供实验性 MuJoCo Shot Skill 链路，但真实机器人和 RL 环境尚未实现。任何论文或榜单都应注明使用的 commit、后端、Shot Bank 哈希和任务协议版本；v0 小型固定集不能用于排行榜声明。
+当前发布状态是 **Alpha**：场景和球体物理可运行，`table-tennis-return-v0` 已提供实验性 MuJoCo Shot Skill 链路和 Gymnasium 测试夹具，但真实机器人和 Isaac Lab RL 环境尚未实现。任何论文或榜单都应注明使用的 commit、后端、Shot Bank 哈希和任务协议版本；v0 小型固定集不能用于排行榜声明。

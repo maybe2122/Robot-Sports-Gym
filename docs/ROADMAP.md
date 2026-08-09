@@ -12,12 +12,12 @@
 
 ## M1 — Benchmark API（P0）
 
-先行实验实现：`table-tennis-return-v0` 已具备固定 Shot Bank、后端无关事件/Judge、逐 episode schema、确定性 MuJoCo Runner 和报告 CLI；它尚不是 Gymnasium 环境，也不使本里程碑完成。
+先行实验实现：`table-tennis-return-v0` 已具备固定 Shot Bank、后端无关事件/Judge、逐 episode schema、确定性 MuJoCo Runner、报告 CLI 与实验性 Gymnasium 测试夹具；它没有真实机器人 adapter 或 Isaac Lab 实现，因此本里程碑尚未完成。
 
-- [ ] 引入 Gymnasium，注册版本化环境 ID
-- [ ] 明确定义 observation/action/reward/termination/truncation
-- [ ] 实现 seed、episode recorder 和机器可读结果 schema
-- [ ] 通过 Gymnasium `check_env`
+- [x] 引入 Gymnasium，注册版本化环境 ID（实验性 MuJoCo `MultiSportRobot/TableTennisReturn-v0`）
+- [x] 明确定义 observation/action/reward/termination/truncation（见 Shot Skill 文档）
+- [x] 实现 seed、episode recorder 和机器可读结果 schema（固定 Shot Bank 和 `EpisodeResult`）
+- [x] 通过 Gymnasium `check_env`（MuJoCo 乒乓球测试夹具）
 - [ ] Isaac Lab `ManagerBasedRLEnv` 向量化实现
 - [ ] 建立 MuJoCo/Isaac 共享任务配置和坐标约定
 
