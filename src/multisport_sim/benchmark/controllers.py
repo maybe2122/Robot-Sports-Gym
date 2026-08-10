@@ -8,7 +8,6 @@ from typing import Protocol, TypeVar, runtime_checkable
 
 from .types import BallState, ShotSpec
 
-
 Vec3 = tuple[float, float, float]
 Quaternion = tuple[float, float, float, float]
 ObservationT = TypeVar("ObservationT", contravariant=True)

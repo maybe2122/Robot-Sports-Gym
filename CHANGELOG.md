@@ -12,6 +12,7 @@
 - 实验性 `table-tennis-return-v0` Shot Skill：固定 Shot Bank、MuJoCo 真接触后端、规则 Judge、分桶指标、报告 CLI 与脚本球拍测试夹具。
 - 后端共享任务配置 `TableTennisReturnTaskConfig`：坐标约定、`TaskFrame` 平移、球台几何、control rate、动作/观测边界与 reward 权重集中定义；MuJoCo 环境、Runner 和 CLI 全部由它派生，报告新增 `task_config` 字段。
 - 实验性 Isaac Lab `ManagerBasedRLEnv` 向量化环境，复用同一 Shot Bank、Judge 与 `EpisodeResult` schema；仓库 CI 无 Isaac 运行时，相关测试在缺少 `isaaclab` 时自动 skip，尚未实跑验证。
+- 多运动任务框架：sport-agnostic 的 `ShotTaskConfig` 基类、`ShotJudge` 协议与 `RectangularSurface`、可复用的 `NetReturnJudge` 网类回球引擎、按 sport 参数化的 MuJoCo `MujocoSportProfile`，以及 `TaskEntry` 任务注册表（Gymnasium 环境注册改由注册表驱动）。
 
 ### Changed
 

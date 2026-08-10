@@ -7,7 +7,6 @@ from math import isfinite
 from numbers import Real
 from typing import Any, Literal, Mapping, Sequence, TypeAlias, cast
 
-
 Vec2: TypeAlias = tuple[float, float]
 Vec3: TypeAlias = tuple[float, float, float]
 FailureReason: TypeAlias = Literal[

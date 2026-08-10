@@ -1,8 +1,9 @@
-"""MuJoCo reference backend for the table-tennis single-shot benchmark."""
+"""MuJoCo reference backend for single-shot sports benchmarks."""
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
+from dataclasses import dataclass, field
 from math import isfinite, sqrt
 
 import mujoco
@@ -15,51 +16,105 @@ from ..task_config import TaskFrame
 from ..types import BallState, SemanticContact, ShotSpec, Vec3
 
 
-class MujocoShotBackend:
-    """One deterministic table-tennis scene with an optional mocap test blade.
+@dataclass(frozen=True)
+class MujocoSportProfile:
+    """Which geoms of one sport's scene carry which benchmark meaning.
 
-    The mocap blade is a diagnostic fixture rather than a robot.  Only contact
-    involving its blade geom is exposed as ``ball``/``robot_racket``; contacts
-    with decorative paddles or handles can therefore never create a benchmark
-    hit event.
+    Scene geometry is named by convention (``{sport}_ball``, ``{sport}_surface``
+    and so on), so a profile only has to name the pieces that differ: the
+    benchmark effector fixture and the sport's own playing surface and net.
     """
 
-    _BALL_JOINT = "table_tennis_ball_free"
-    _BALL_BODY = "table_tennis_ball"
-    _BALL_GEOM = "table_tennis_ball_geom"
-    _PADDLE_BODY = "table_tennis_benchmark_paddle"
-    _PADDLE_GEOM = "table_tennis_benchmark_paddle_blade"
+    sport: Sport
+    effector_body: str
+    effector_geom: str
+    surface_geoms: tuple[str, ...] = ()
+    net_geoms: tuple[str, ...] = ()
+    floor_geoms: tuple[str, ...] = ()
+    extra_geoms: Mapping[str, str] = field(default_factory=dict)
+
+    @property
+    def ball_joint(self) -> str:
+        return f"{self.sport.value}_ball_free"
+
+    @property
+    def ball_body(self) -> str:
+        return f"{self.sport.value}_ball"
+
+    @property
+    def ball_geom(self) -> str:
+        return f"{self.sport.value}_ball_geom"
+
+    def semantic_geom_names(self) -> dict[str, str]:
+        """Map geom name to semantic category, effector included."""
+        mapping: dict[str, str] = {self.effector_geom: "robot_racket"}
+        for name in self.surface_geoms:
+            mapping[name] = "table"
+        for name in self.net_geoms:
+            mapping[name] = "net"
+        for name in (*self.floor_geoms, f"{self.sport.value}_surface", "campus_ground"):
+            mapping.setdefault(name, "floor")
+        mapping.update(self.extra_geoms)
+        return mapping
+
+
+TABLE_TENNIS_PROFILE = MujocoSportProfile(
+    sport=Sport.TABLE_TENNIS,
+    effector_body="table_tennis_benchmark_paddle",
+    effector_geom="table_tennis_benchmark_paddle_blade",
+    surface_geoms=("table_tennis_table",),
+    net_geoms=("table_tennis_net", "table_tennis_post_a", "table_tennis_post_b"),
+)
+
+PROFILES: dict[Sport, MujocoSportProfile] = {Sport.TABLE_TENNIS: TABLE_TENNIS_PROFILE}
+
+
+class MujocoShotBackend:
+    """One deterministic single-sport scene with a mocap test effector.
+
+    The mocap effector is a diagnostic fixture rather than a robot.  Only
+    contact involving its geom is exposed as ``ball``/``robot_racket``; contacts
+    with decorative rackets or handles can therefore never create a benchmark
+    hit event.
+    """
 
     def __init__(
         self,
         *,
+        sport: Sport | str = Sport.TABLE_TENNIS,
         wind: Vec3 = (0.0, 0.0, 0.0),
     ) -> None:
-        self.model = build_model(Sport.TABLE_TENNIS.value, benchmark_paddle=True)
+        selected = Sport(sport)
+        try:
+            self.profile = PROFILES[selected]
+        except KeyError:
+            raise ValueError(
+                f"no MuJoCo benchmark profile is defined for sport {selected.value!r}"
+            ) from None
+        self.sport = selected
+        self.model = build_model(selected.value, benchmark_paddle=True)
         self.data = mujoco.MjData(self.model)
         validated_wind = self._finite_values(wind, size=3, field="wind")
         self.aerodynamics = Aerodynamics(self.model, Atmosphere(wind=validated_wind))
 
-        joint_id = self._require_id(mujoco.mjtObj.mjOBJ_JOINT, self._BALL_JOINT)
+        joint_id = self._require_id(mujoco.mjtObj.mjOBJ_JOINT, self.profile.ball_joint)
         self._ball_qpos_address = int(self.model.jnt_qposadr[joint_id])
         self._ball_dof_address = int(self.model.jnt_dofadr[joint_id])
-        self._ball_body_id = self._require_id(mujoco.mjtObj.mjOBJ_BODY, self._BALL_BODY)
-        self._ball_geom_id = self._require_id(mujoco.mjtObj.mjOBJ_GEOM, self._BALL_GEOM)
+        self._ball_body_id = self._require_id(mujoco.mjtObj.mjOBJ_BODY, self.profile.ball_body)
+        self._ball_geom_id = self._require_id(mujoco.mjtObj.mjOBJ_GEOM, self.profile.ball_geom)
 
-        paddle_body_id = self._require_id(mujoco.mjtObj.mjOBJ_BODY, self._PADDLE_BODY)
+        effector_body = self.profile.effector_body
+        paddle_body_id = self._require_id(mujoco.mjtObj.mjOBJ_BODY, effector_body)
         self._paddle_mocap_id = int(self.model.body_mocapid[paddle_body_id])
         if self._paddle_mocap_id < 0:  # pragma: no cover - protects scene/backend drift
-            raise RuntimeError(f"{self._PADDLE_BODY} is not a mocap body")
-        self._paddle_geom_id = self._require_id(mujoco.mjtObj.mjOBJ_GEOM, self._PADDLE_GEOM)
+            raise RuntimeError(f"{effector_body} is not a mocap body")
+        self._paddle_geom_id = self._require_id(
+            mujoco.mjtObj.mjOBJ_GEOM, self.profile.effector_geom
+        )
 
         self._semantic_geoms: dict[int, str] = {
-            self._paddle_geom_id: "robot_racket",
-            self._require_id(mujoco.mjtObj.mjOBJ_GEOM, "table_tennis_table"): "table",
-            self._require_id(mujoco.mjtObj.mjOBJ_GEOM, "table_tennis_net"): "net",
-            self._require_id(mujoco.mjtObj.mjOBJ_GEOM, "table_tennis_post_a"): "net",
-            self._require_id(mujoco.mjtObj.mjOBJ_GEOM, "table_tennis_post_b"): "net",
-            self._require_id(mujoco.mjtObj.mjOBJ_GEOM, "table_tennis_surface"): "floor",
-            self._require_id(mujoco.mjtObj.mjOBJ_GEOM, "campus_ground"): "floor",
+            self._require_id(mujoco.mjtObj.mjOBJ_GEOM, name): category
+            for name, category in self.profile.semantic_geom_names().items()
         }
         self.reset()
 
@@ -90,9 +145,9 @@ class MujocoShotBackend:
 
     def launch_ball(self, shot: ShotSpec) -> None:
         """Apply a versioned world-frame pose, velocity, and spin to the ball."""
-        if shot.sport != Sport.TABLE_TENNIS.value:
+        if shot.sport != self.sport.value:
             raise ValueError(
-                f"MuJoCo table-tennis backend cannot launch sport {shot.sport!r}"
+                f"MuJoCo {self.sport.value} backend cannot launch sport {shot.sport!r}"
             )
 
         qpos = self._ball_qpos_address

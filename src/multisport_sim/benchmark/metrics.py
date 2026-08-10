@@ -2,15 +2,14 @@
 
 from __future__ import annotations
 
+import json
 from collections import Counter
 from collections.abc import Mapping, Sequence
-import json
 from math import isfinite, sqrt
 from typing import Any
 
 from .shot_bank import ShotBank
 from .types import EpisodeResult
-
 
 FAILURE_REASONS = (
     "miss",

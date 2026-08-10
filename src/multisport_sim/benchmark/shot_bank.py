@@ -2,18 +2,17 @@
 
 from __future__ import annotations
 
+import json
 from collections import Counter
 from collections.abc import Iterable, Iterator, Mapping, Sequence
 from copy import deepcopy
 from hashlib import sha256
 from importlib import resources
-import json
 from math import isfinite
 from pathlib import Path
 from typing import Any, overload
 
 from .types import ShotSpec
-
 
 VALID_LEVELS = tuple(f"L{index}" for index in range(6))
 

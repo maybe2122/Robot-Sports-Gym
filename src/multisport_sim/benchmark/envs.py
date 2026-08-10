@@ -186,7 +186,10 @@ class TableTennisReturnEnv(gym.Env[np.ndarray, np.ndarray]):
 
 
 def register_envs() -> None:
-    """Register supported environments, allowing repeated imports safely."""
-    environment_id = TABLE_TENNIS_RETURN_V0.env_id
-    if environment_id not in gym.registry:
-        gym.register(environment_id, entry_point="multisport_sim.benchmark.envs:TableTennisReturnEnv")
+    """Register every task in the registry, allowing repeated imports safely."""
+    from . import tasks  # noqa: F401  (importing publishes the built-in tasks)
+    from .registry import iter_tasks
+
+    for entry in iter_tasks():
+        if entry.config.env_id not in gym.registry:
+            gym.register(entry.config.env_id, entry_point=entry.env_entry_point)

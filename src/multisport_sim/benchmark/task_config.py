@@ -211,7 +211,7 @@ class TaskFrame:
 
 
 @dataclass(frozen=True)
-class PaddleWorkspace:
+class EffectorWorkspace:
     """Declared position range of the end-effector pose command, in metres.
 
     These bounds define the published action space.  They are a task-level
@@ -239,6 +239,10 @@ class PaddleWorkspace:
             "position_low": list(self.position_low),
             "position_high": list(self.position_high),
         }
+
+
+# The first task shipped a paddle-specific name; both spell the same envelope.
+PaddleWorkspace = EffectorWorkspace
 
 
 @dataclass(frozen=True)
@@ -310,23 +314,25 @@ class RewardWeights:
 
 
 @dataclass(frozen=True)
-class TableTennisReturnTaskConfig:
-    """Everything a table-tennis return backend must agree on.
+class ShotTaskConfig:
+    """Everything any single-shot sports task must agree on across backends.
 
     ``control_hz`` and ``timeout_s`` are task semantics, so a backend derives
     its decimation and step budget from them via :meth:`decimation` and
     :meth:`max_control_steps` instead of hard-coding a physics timestep.
+    Sport-specific rule geometry lives in a subclass, which also supplies the
+    defaults for the identity fields below.
     """
 
-    task_id: str = "table-tennis-return-v0"
-    env_id: str = "MultiSportRobot/TableTennisReturn-v0"
-    sport: str = Sport.TABLE_TENNIS.value
+    task_id: str
+    env_id: str
+    sport: str
+    bank_resource: str
     split: str = "dev"
     control_hz: float = 200.0
     timeout_s: float = 2.0
     frame: TaskFrame = field(default_factory=TaskFrame)
-    table: TableTennisTableSpec = TABLE_TENNIS_RULES
-    paddle_workspace: PaddleWorkspace = field(default_factory=PaddleWorkspace)
+    workspace: EffectorWorkspace = field(default_factory=EffectorWorkspace)
     ball_limits: BallObservationLimits = field(default_factory=BallObservationLimits)
     reward: RewardWeights = field(default_factory=RewardWeights)
 
@@ -334,7 +340,7 @@ class TableTennisReturnTaskConfig:
     OBSERVATION_DIM = 16
 
     def __post_init__(self) -> None:
-        for name in ("task_id", "env_id", "sport", "split"):
+        for name in ("task_id", "env_id", "sport", "bank_resource", "split"):
             value = getattr(self, name)
             if not isinstance(value, str) or not value.strip():
                 raise ValueError(f"{name} must be a non-empty string")
@@ -342,10 +348,8 @@ class TableTennisReturnTaskConfig:
         object.__setattr__(self, "timeout_s", _positive(self.timeout_s, field="timeout_s"))
         if not isinstance(self.frame, TaskFrame):
             raise TypeError("frame must be a TaskFrame")
-        if not isinstance(self.table, TableTennisTableSpec):
-            raise TypeError("table must be a TableTennisTableSpec")
-        if not isinstance(self.paddle_workspace, PaddleWorkspace):
-            raise TypeError("paddle_workspace must be a PaddleWorkspace")
+        if not isinstance(self.workspace, EffectorWorkspace):
+            raise TypeError("workspace must be an EffectorWorkspace")
         if not isinstance(self.ball_limits, BallObservationLimits):
             raise TypeError("ball_limits must be a BallObservationLimits")
         if not isinstance(self.reward, RewardWeights):
@@ -354,6 +358,10 @@ class TableTennisReturnTaskConfig:
     @property
     def convention(self) -> CoordinateConvention:
         return self.frame.convention
+
+    def rule_geometry(self) -> dict[str, Any]:
+        """Serialize the sport's rule geometry; subclasses fill this in."""
+        return {}
 
     def decimation(self, physics_dt: float) -> int:
         """Physics steps held per control step, at least one."""
@@ -374,8 +382,8 @@ class TableTennisReturnTaskConfig:
 
     def action_bounds(self) -> tuple[tuple[float, ...], tuple[float, ...]]:
         """Low/high bounds of ``[x, y, z, qw, qx, qy, qz]``."""
-        low = (*self.paddle_workspace.position_low, -1.0, -1.0, -1.0, -1.0)
-        high = (*self.paddle_workspace.position_high, 1.0, 1.0, 1.0, 1.0)
+        low = (*self.workspace.position_low, -1.0, -1.0, -1.0, -1.0)
+        high = (*self.workspace.position_high, 1.0, 1.0, 1.0, 1.0)
         return low, high
 
     def observation_bounds(self) -> tuple[tuple[float, ...], tuple[float, ...]]:
@@ -410,26 +418,59 @@ class TableTennisReturnTaskConfig:
         return float(reward)
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "task_id": self.task_id,
             "env_id": self.env_id,
             "sport": self.sport,
+            "bank_resource": self.bank_resource,
             "split": self.split,
             "control_hz": self.control_hz,
             "timeout_s": self.timeout_s,
             "action_dim": self.ACTION_DIM,
             "observation_dim": self.OBSERVATION_DIM,
             "frame": self.frame.to_dict(),
+            "workspace": self.workspace.to_dict(),
+            "ball_limits": self.ball_limits.to_dict(),
+            "reward": self.reward.to_dict(),
+        }
+        payload.update(self.rule_geometry())
+        return payload
+
+
+@dataclass(frozen=True)
+class TableTennisReturnTaskConfig(ShotTaskConfig):
+    """Table-tennis return task: the shared core plus regulation table geometry."""
+
+    task_id: str = "table-tennis-return-v0"
+    env_id: str = "MultiSportRobot/TableTennisReturn-v0"
+    sport: str = Sport.TABLE_TENNIS.value
+    bank_resource: str = "table_tennis/return-v0"
+    table: TableTennisTableSpec = TABLE_TENNIS_RULES
+    workspace: EffectorWorkspace = field(
+        default_factory=lambda: EffectorWorkspace(
+            position_low=(-2.0, -1.5, 0.5), position_high=(0.0, 1.5, 1.8)
+        )
+    )
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if not isinstance(self.table, TableTennisTableSpec):
+            raise TypeError("table must be a TableTennisTableSpec")
+
+    @property
+    def paddle_workspace(self) -> EffectorWorkspace:
+        """Name kept from the first released task; the envelope is shared."""
+        return self.workspace
+
+    def rule_geometry(self) -> dict[str, Any]:
+        return {
             "table": {
                 "length_m": self.table.length_m,
                 "width_m": self.table.width_m,
                 "top_height_m": self.table.top_height_m,
                 "net_plane_x_m": self.table.net_plane_x_m,
                 "center_y_m": self.table.center_y_m,
-            },
-            "paddle_workspace": self.paddle_workspace.to_dict(),
-            "ball_limits": self.ball_limits.to_dict(),
-            "reward": self.reward.to_dict(),
+            }
         }
 
 
