@@ -1,6 +1,6 @@
 # Robot Sports Gym Roadmap
 
-路线图按发布门槛排序，不代表时间承诺。
+路线图按发布门槛排序，不代表时间承诺。进行中里程碑的逐项交付拆解、依赖关系和验收标准见 [`TODO.md`](TODO.md)。
 
 ## M0 — Physics foundation（当前）
 
