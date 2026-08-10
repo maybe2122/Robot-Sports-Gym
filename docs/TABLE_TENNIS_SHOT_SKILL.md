@@ -68,6 +68,30 @@ multisport-benchmark --level L4 --split dev --episodes 1 --controller scripted
 multisport-benchmark --level L4 --split dev --controller scripted --require-pass
 ```
 
+## 共享任务配置
+
+`multisport_sim.benchmark.task_config.TABLE_TENNIS_RETURN_V0` 是所有后端的唯一事实源：任务帧与坐标约定、
+交给 Judge 的球台几何、control rate 与超时、动作/观测边界、benchmark reward 权重都在这里定义一次。
+MuJoCo 环境、Runner、CLI 和 Isaac Lab 环境全部从它派生，不再各自硬编码常量。
+
+```python
+from dataclasses import replace
+from multisport_sim.benchmark import TABLE_TENNIS_RETURN_V0
+
+config = TABLE_TENNIS_RETURN_V0
+config.decimation(physics_dt=0.001)     # 5：每个 control step 保持的物理步数
+config.max_control_steps(0.001)         # 覆盖超时所需的 control step 数
+config.action_bounds()                  # 7 维拍面 pose 的上下界
+config.observation_bounds()             # 16 维观测的上下界
+config.reward_for(result)               # 与后端无关的 benchmark reward
+config.to_dict()                        # 写进报告的 JSON 快照
+
+# 诊断用途可以覆盖执行参数，任务语义（球台、坐标、reward）保持不变
+diagnostic = replace(config, control_hz=50.0, timeout_s=1.0)
+```
+
+CLI 报告中的 `task_config` 字段就是 `to_dict()` 的输出，因此一份结果自带它所依据的坐标约定与配置。
+
 ## 坐标与合法回球
 
 设计稿中的伪代码采用球台长度沿 `y` 的示意坐标；当前项目场景的真实坐标如下，v0 Shot Bank 和报告均以此为准：
@@ -76,6 +100,19 @@ multisport-benchmark --level L4 --split dev --controller scripted --require-pass
 - 机器人半台为 `-1.37 <= x < 0`，对手半台为 `0 < x <= 1.37`。
 - 球台宽度边界为 `abs(y) <= 0.7625`，台面高 `0.76 m`。
 - 网面位于 `x = 0`，网顶高 `0.9125 m`。
+- 姿态四元数一律为 `wxyz` 顺序，长度单位 `m`，角度单位 `rad`。
+
+后端可以把球台建在自己世界坐标的任意位置：`TaskFrame` 描述该平移，后端在自己的边界上把球状态和接触
+样本换算到任务帧，Judge 因此永远只看到台心坐标。MuJoCo 单项场景与 Isaac Lab 的逐 env 场景都是恒等
+变换；Isaac campus 场景把乒乓球台放在 `(-15.0, 48.0)`，对应 `TaskFrame.for_campus("table_tennis")`。
+
+```python
+from multisport_sim.benchmark import TaskFrame
+
+frame = TaskFrame.for_campus("table_tennis")
+frame.to_task_position((-14.0, 48.5, 1.2))   # (1.0, 0.5, 1.2)
+frame.to_task_vector((3.0, -1.0, 2.0))       # 速度与自旋不受平移影响
+```
 
 一次合法回球必须依次发生：
 
@@ -181,7 +218,8 @@ Runner 只依赖后端与 controller 协议，不依赖脚本球拍实现。一�
 
 ## 已知边界
 
-- v0 只实现 MuJoCo Shot Skill 参考后端；Isaac Sim 将通过相同语义接口接入。
+- v0 只有 MuJoCo Shot Skill 参考后端经过验证；Isaac Lab 向量化环境已按同一份共享任务配置实现，但仓库
+  CI 没有 Isaac 运行时，尚未实跑验证，详见 [Isaac Sim 后端](ISAAC_SIM.md)。
 - 当前脚本球拍是测试夹具，不包含机器人动力学、执行器限制、感知噪声或安全包络。
 - 内置固定集规模只适合持续集成和接口开发，不提供统计充分的排行榜结论。
 - 当前球台是刚体 box，边缘/侧面判定会结合接触点和台面法向；尚未模拟球台柔性与球拍胶皮的精细材料模型。

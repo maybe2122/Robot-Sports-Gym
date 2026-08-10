@@ -136,6 +136,18 @@ COURTS: dict[Sport, CourtSpec] = {
 }
 
 
+# Ground-plane placement of each sport inside the shared campus scene. Both
+# scene builders and the benchmark task frames read these offsets, so a venue
+# moves in exactly one place.
+CAMPUS_OFFSETS: dict[Sport, tuple[float, float]] = {
+    Sport.FOOTBALL: (0.0, 0.0),
+    Sport.TENNIS: (-41.0, 48.0),
+    Sport.TABLE_TENNIS: (-15.0, 48.0),
+    Sport.BADMINTON: (2.0, 48.0),
+    Sport.BASKETBALL: (27.0, 48.0),
+}
+
+
 # The table long axis is world X, its width is world Y, and the reference
 # robot occupies X < 0.  These conventions are shared by the shot benchmark
 # backends and rule engine.

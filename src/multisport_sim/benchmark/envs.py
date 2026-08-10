@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from math import isfinite, sqrt
+from dataclasses import replace
+from math import sqrt
 from typing import Any, ClassVar
 
 import gymnasium as gym
@@ -14,17 +15,21 @@ from .backends.mujoco import MujocoTableTennisBackend
 from .controllers import PaddleCommand
 from .rules.table_tennis import TableTennisReturnJudge
 from .shot_bank import ShotBank
+from .task_config import TABLE_TENNIS_RETURN_V0, TableTennisReturnTaskConfig
 from .types import EpisodeResult, ShotSpec
 
 
 class TableTennisReturnEnv(gym.Env[np.ndarray, np.ndarray]):
     """Single-shot MuJoCo table-tennis return task.
 
-    The action is a world-frame mocap paddle pose ``[x, y, z, qw, qx, qy, qz]``.
+    The action is a task-frame mocap paddle pose ``[x, y, z, qw, qx, qy, qz]``.
     Position is measured in metres and the quaternion is normalized before it is
     sent to MuJoCo.  The observation is ``[ball position, linear velocity,
-    angular velocity, paddle position, paddle quaternion]`` in the same world
-    frame.  This fixture is deliberately marked experimental: it is an API and
+    angular velocity, paddle position, paddle quaternion]`` in the same frame.
+    Spaces, control rate, timeout and reward terms all come from the shared
+    :class:`~multisport_sim.benchmark.task_config.TableTennisReturnTaskConfig`,
+    so an Isaac implementation of the same task cannot drift from this one.
+    This fixture is deliberately marked experimental: it is an API and
     rule-engine integration point, not a robot embodiment.
     """
 
@@ -33,38 +38,40 @@ class TableTennisReturnEnv(gym.Env[np.ndarray, np.ndarray]):
     def __init__(
         self,
         *,
-        split: str = "dev",
-        control_hz: float = 200.0,
-        timeout_s: float = 2.0,
+        split: str | None = None,
+        control_hz: float | None = None,
+        timeout_s: float | None = None,
+        config: TableTennisReturnTaskConfig = TABLE_TENNIS_RETURN_V0,
     ) -> None:
         super().__init__()
-        if not isfinite(control_hz) or control_hz <= 0.0:
-            raise ValueError("control_hz must be a positive finite number")
-        if not isfinite(timeout_s) or timeout_s <= 0.0:
-            raise ValueError("timeout_s must be a positive finite number")
-        self.shot_bank = ShotBank.from_resource(split=split)
+        if not isinstance(config, TableTennisReturnTaskConfig):
+            raise TypeError("config must be a TableTennisReturnTaskConfig")
+        overrides = {
+            name: value
+            for name, value in (
+                ("split", split),
+                ("control_hz", control_hz),
+                ("timeout_s", timeout_s),
+            )
+            if value is not None
+        }
+        # The dataclass validates every override, including a non-finite rate.
+        self.config = replace(config, **overrides) if overrides else config
+        self.shot_bank = ShotBank.from_resource(split=self.config.split)
         self.backend = MujocoTableTennisBackend()
-        self.control_hz = float(control_hz)
-        self.timeout_s = float(timeout_s)
-        self._control_decimation = max(
-            1, round(1.0 / (self.control_hz * self.backend.timestep))
-        )
+        self.control_hz = self.config.control_hz
+        self.timeout_s = self.config.timeout_s
+        self._control_decimation = self.config.decimation(self.backend.timestep)
+        action_low, action_high = self.config.action_bounds()
         self.action_space = spaces.Box(
-            low=np.array([-2.0, -1.5, 0.5, -1.0, -1.0, -1.0, -1.0], dtype=np.float32),
-            high=np.array([0.0, 1.5, 1.8, 1.0, 1.0, 1.0, 1.0], dtype=np.float32),
+            low=np.array(action_low, dtype=np.float32),
+            high=np.array(action_high, dtype=np.float32),
             dtype=np.float32,
         )
+        observation_low, observation_high = self.config.observation_bounds()
         self.observation_space = spaces.Box(
-            low=np.array(
-                [-5.0, -5.0, -1.0, -50.0, -50.0, -50.0, -2000.0, -2000.0, -2000.0,
-                 -2.0, -1.5, 0.5, -1.0, -1.0, -1.0, -1.0],
-                dtype=np.float32,
-            ),
-            high=np.array(
-                [5.0, 5.0, 5.0, 50.0, 50.0, 50.0, 2000.0, 2000.0, 2000.0,
-                 0.0, 1.5, 1.8, 1.0, 1.0, 1.0, 1.0],
-                dtype=np.float32,
-            ),
+            low=np.array(observation_low, dtype=np.float32),
+            high=np.array(observation_high, dtype=np.float32),
             dtype=np.float32,
         )
         self._judge: TableTennisReturnJudge | None = None
@@ -92,6 +99,7 @@ class TableTennisReturnEnv(gym.Env[np.ndarray, np.ndarray]):
     def _info(self) -> dict[str, Any]:
         assert self._shot is not None
         return {
+            "task_id": self.config.task_id,
             "shot_id": self._shot.shot_id,
             "shot_bank_digest": self.shot_bank.digest,
             "physics_dt": self.backend.timestep,
@@ -120,7 +128,9 @@ class TableTennisReturnEnv(gym.Env[np.ndarray, np.ndarray]):
             shot = self.shot_bank[int(self.np_random.integers(len(self.shot_bank)))]
         self.backend.reset()
         self.backend.launch_ball(shot)
-        self._judge = TableTennisReturnJudge(timeout_s=self.timeout_s)
+        self._judge = TableTennisReturnJudge(
+            timeout_s=self.config.timeout_s, table_spec=self.config.table
+        )
         self._judge.reset(shot)
         self._shot = shot
         self._elapsed_steps = 0
@@ -162,11 +172,7 @@ class TableTennisReturnEnv(gym.Env[np.ndarray, np.ndarray]):
         result = self._judge.result
         terminated = self._judge.done and result.failure_reason != "timeout"
         truncated = self._judge.done and result.failure_reason == "timeout"
-        reward = float(result.hit and not previously_hit)
-        if result.valid_return:
-            reward += 3.0
-        if result.target_hit:
-            reward += 1.0
+        reward = self.config.reward_for(result, previously_hit=previously_hit)
         info = self._info()
         if terminated or truncated:
             info["episode_result"] = self._result_info(result)
@@ -181,6 +187,6 @@ class TableTennisReturnEnv(gym.Env[np.ndarray, np.ndarray]):
 
 def register_envs() -> None:
     """Register supported environments, allowing repeated imports safely."""
-    environment_id = "MultiSportRobot/TableTennisReturn-v0"
+    environment_id = TABLE_TENNIS_RETURN_V0.env_id
     if environment_id not in gym.registry:
         gym.register(environment_id, entry_point="multisport_sim.benchmark.envs:TableTennisReturnEnv")

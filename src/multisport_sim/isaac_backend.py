@@ -47,7 +47,8 @@ def _physics_material(primitive: IsaacPrimitive) -> sim_utils.RigidBodyMaterialC
     )
 
 
-def _spawn_primitive(root: str, primitive: IsaacPrimitive) -> None:
+def primitive_spawn_cfg(primitive: IsaacPrimitive) -> sim_utils.SpawnerCfg:
+    """Translate one backend-neutral primitive into an Isaac spawner config."""
     common = {
         "collision_props": (
             sim_utils.CollisionPropertiesCfg(contact_offset=0.002, rest_offset=0.0)
@@ -58,15 +59,24 @@ def _spawn_primitive(root: str, primitive: IsaacPrimitive) -> None:
         "physics_material": _physics_material(primitive),
     }
     if primitive.kind == "cuboid":
-        cfg = sim_utils.CuboidCfg(size=primitive.size, **common)
-    elif primitive.kind == "sphere":
-        cfg = sim_utils.SphereCfg(radius=primitive.size[0], **common)
-    elif primitive.kind == "cylinder":
-        cfg = sim_utils.CylinderCfg(radius=primitive.size[0], height=primitive.size[1], **common)
-    elif primitive.kind == "capsule":
-        cfg = sim_utils.CapsuleCfg(radius=primitive.size[0], height=primitive.size[1], **common)
-    else:  # pragma: no cover - protected by backend-neutral tests
-        raise ValueError(f"unsupported Isaac primitive kind: {primitive.kind}")
+        return sim_utils.CuboidCfg(size=primitive.size, **common)
+    if primitive.kind == "sphere":
+        return sim_utils.SphereCfg(radius=primitive.size[0], **common)
+    if primitive.kind == "cylinder":
+        return sim_utils.CylinderCfg(
+            radius=primitive.size[0], height=primitive.size[1], **common
+        )
+    if primitive.kind == "capsule":
+        return sim_utils.CapsuleCfg(
+            radius=primitive.size[0], height=primitive.size[1], **common
+        )
+    raise ValueError(  # pragma: no cover - protected by backend-neutral tests
+        f"unsupported Isaac primitive kind: {primitive.kind}"
+    )
+
+
+def _spawn_primitive(root: str, primitive: IsaacPrimitive) -> None:
+    cfg = primitive_spawn_cfg(primitive)
     cfg.func(
         f"{root}/{primitive.name}",
         cfg,

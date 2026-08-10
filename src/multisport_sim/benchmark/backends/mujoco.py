@@ -11,6 +11,7 @@ from ...physics import Aerodynamics, Atmosphere
 from ...scene import build_model
 from ...specs import Sport
 from ..controllers import ControllerObservation, PaddleCommand
+from ..task_config import TaskFrame
 from ..types import BallState, SemanticContact, ShotSpec, Vec3
 
 
@@ -61,6 +62,11 @@ class MujocoShotBackend:
             self._require_id(mujoco.mjtObj.mjOBJ_GEOM, "campus_ground"): "floor",
         }
         self.reset()
+
+    @property
+    def task_frame(self) -> TaskFrame:
+        """Identity: the single-sport MuJoCo scene builds the table at the origin."""
+        return TaskFrame()
 
     def _require_id(self, object_type: mujoco.mjtObj, name: str) -> int:
         object_id = int(mujoco.mj_name2id(self.model, object_type, name))

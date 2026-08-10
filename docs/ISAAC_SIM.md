@@ -59,6 +59,41 @@ multisport-isaac --headless --device cpu --scene tennis \
 
 Isaac Sim 每个 Kit 进程只评测一个单项场景，以避免重复创建 `SimulationContext`。`make evaluate-isaac` 会依次启动五个进程，并将结果聚合为 `reports/isaac-fidelity.json` 和 Markdown 报告。
 
+## Isaac Lab 向量化 Shot Skill 环境（experimental，未验证）
+
+`src/multisport_sim/benchmark/backends/isaac_lab.py` 提供 `table-tennis-return-v0` 的
+`ManagerBasedRLEnv` 向量化实现，与 MuJoCo 环境共享同一份
+[`TableTennisReturnTaskConfig`](../src/multisport_sim/benchmark/task_config.py)、同一个固定
+Shot Bank、同一个 `TableTennisReturnJudge` 和同一套 `EpisodeResult` schema，因此两个后端只可能在
+物理求解上不同，不会在任务定义、判定规则或 reward 上分叉。
+
+```python
+# 必须先由 AppLauncher 启动 SimulationApp
+from multisport_sim.benchmark.backends.isaac_lab import (
+    IsaacTableTennisReturnEnv,
+    make_env_cfg,
+)
+
+env = IsaacTableTennisReturnEnv(make_env_cfg(num_envs=1024, device="cuda:0"))
+```
+
+设计要点：
+
+- **任务帧即环境原点。** 每个 env 的球台建在自身原点上，观测在返回前减去 `scene.env_origins`，因此
+  `TaskFrame` 在 Isaac 一侧同样是恒等变换，Judge 不需要任何后端偏移。
+- **逐物理步判定。** 乒乓球的一次台面接触远短于一个 control step，所以 Judge 由 physics callback
+  驱动（物理步 1 ms，与 MuJoCo 模型步长一致），而不是每个 control step 采样一次接触。
+- **语义接触来自 filtered contact sensor。** 球上的 `ContactSensor` 过滤 table/net/floor/blade
+  四个刚体；PhysX 的 filtered pair 不提供接触点，Judge 会退回使用球心位置（既有接口本就允许
+  `position=None`）。为了能被过滤，球台、球网和地面是 kinematic 刚体而非静态碰撞体。
+- **空气动力学与 MuJoCo 同式。** 二次阻力与上限 0.35 的 Magnus 升力按 `physics.py` 的同一公式向量化。
+- **场景只包含规则可见的物体**，不含装饰几何；测试用拍面是长方体而非 MuJoCo 的椭球，拍面边缘的接触时刻
+  因此不具备逐步可比性。
+
+> **状态：experimental，尚未在真实 Isaac 运行时验证。** 仓库 CI 没有 Isaac 运行时，
+> `tests/test_isaac_lab_env.py` 在缺少 `isaaclab` 时自动 skip，只保证 MuJoCo 路径不会被 Isaac 导入
+> 污染。在 GPU 工作站完成实跑验证前，不要用它产出任何 benchmark 数字。
+
 ## 无头快速退出
 
 部分同时装有 AMD 核显与 NVIDIA 独显的 Linux 工作站会在仿真完成后卡在 Kit 的 `Framework::unload_all_plugins`。无头 CLI 在输出和 USD 完全刷新后使用快速进程退出，避免 CI 永久挂起；GUI 模式仍执行标准 `SimulationApp.close()`。这不会跳过仿真、USD 写入或验证结果，只跳过进程结束前的插件卸载。

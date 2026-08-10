@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from math import cos, pi, sin, sqrt
 
-from .specs import COURTS, SCENES, Sport
+from .specs import CAMPUS_OFFSETS, COURTS, SCENES, Sport
 
 Color = tuple[float, float, float]
 Vector3 = tuple[float, float, float]
@@ -590,13 +590,7 @@ def build_isaac_scene_spec(scene: str = "campus") -> IsaacSceneSpec:
 
     if scene == "campus":
         sports = list(Sport)
-        offsets = {
-            Sport.FOOTBALL: (0.0, 0.0),
-            Sport.TENNIS: (-41.0, 48.0),
-            Sport.TABLE_TENNIS: (-15.0, 48.0),
-            Sport.BADMINTON: (2.0, 48.0),
-            Sport.BASKETBALL: (27.0, 48.0),
-        }
+        offsets = dict(CAMPUS_OFFSETS)
         camera_eye, camera_target = (-92.0, -100.0, 112.0), (0.0, 14.0, 0.0)
     else:
         sport = Sport(scene)

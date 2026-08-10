@@ -10,9 +10,12 @@
 - GitHub issue、Pull Request 模板和 MuJoCo CI。
 - README 增加 MuJoCo 与 Isaac Sim 五项单项场景的真实渲染对照图。
 - 实验性 `table-tennis-return-v0` Shot Skill：固定 Shot Bank、MuJoCo 真接触后端、规则 Judge、分桶指标、报告 CLI 与脚本球拍测试夹具。
+- 后端共享任务配置 `TableTennisReturnTaskConfig`：坐标约定、`TaskFrame` 平移、球台几何、control rate、动作/观测边界与 reward 权重集中定义；MuJoCo 环境、Runner 和 CLI 全部由它派生，报告新增 `task_config` 字段。
+- 实验性 Isaac Lab `ManagerBasedRLEnv` 向量化环境，复用同一 Shot Bank、Judge 与 `EpisodeResult` schema；仓库 CI 无 Isaac 运行时，相关测试在缺少 `isaaclab` 时自动 skip，尚未实跑验证。
 
 ### Changed
 
+- campus 场景各单项的地面偏移改为 `specs.CAMPUS_OFFSETS` 单一定义，MuJoCo 与 Isaac 场景构造共用。
 - 项目展示名称由 MultiSport Physics Sim 更名为 Robot Sports Gym，突出面向多种机器人形态的球类运动训练与能力评测宗旨；现有 distribution、Python 包、CLI 和版本化 benchmark ID 保持兼容，当前版本仍处于 physics foundation 阶段。
 
 ## [0.2.0] - 2026-08-08

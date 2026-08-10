@@ -7,7 +7,7 @@ from math import cos, pi, sin
 
 import mujoco
 
-from .specs import BALLS, COURTS, SCENES, TABLE_TENNIS, Sport
+from .specs import BALLS, CAMPUS_OFFSETS, COURTS, SCENES, TABLE_TENNIS, Sport
 
 WHITE = "0.96 0.96 0.94 1"
 
@@ -850,13 +850,7 @@ def build_xml(scene: str = "campus", *, benchmark_paddle: bool = False) -> str:
 
     if scene == "campus":
         sports = list(Sport)
-        offsets = {
-            Sport.FOOTBALL: (0.0, 0.0),
-            Sport.TENNIS: (-41.0, 48.0),
-            Sport.TABLE_TENNIS: (-15.0, 48.0),
-            Sport.BADMINTON: (2.0, 48.0),
-            Sport.BASKETBALL: (27.0, 48.0),
-        }
+        offsets = dict(CAMPUS_OFFSETS)
     else:
         sports = [Sport(scene)]
         offsets = {sports[0]: (0.0, 0.0)}

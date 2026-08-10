@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 from collections.abc import Sequence
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 import platform
@@ -18,6 +19,7 @@ from .benchmark.metrics import MetricsError, build_benchmark_report
 from .benchmark.reporting import report_markdown, write_report
 from .benchmark.runner import RunConfig, run_shots
 from .benchmark.shot_bank import ShotBank, ShotBankError, VALID_LEVELS
+from .benchmark.task_config import TABLE_TENNIS_RETURN_V0
 
 
 def _positive_integer(value: str) -> int:
@@ -80,7 +82,9 @@ def parser() -> argparse.ArgumentParser:
         default="scripted",
         help="built-in diagnostic controller",
     )
-    result.add_argument("--control-hz", type=_positive_float, default=200.0)
+    result.add_argument(
+        "--control-hz", type=_positive_float, default=TABLE_TENNIS_RETURN_V0.control_hz
+    )
     result.add_argument("--report", type=Path, help="write the complete strict-JSON report")
     result.add_argument("--markdown", type=Path, help="write a human-readable summary")
     result.add_argument(
@@ -121,16 +125,20 @@ def run_from_args(args: argparse.Namespace) -> dict[str, object]:
 
     controller = _controller(args.controller)
     backend = MujocoShotBackend()
+    # The frozen shot bank owns the episode timeout; everything else the judge
+    # and a future Isaac run must agree on comes from the shared task config.
     timeout_s = float(source_bank.manifest["episode"]["timeout_s"])
+    task = replace(
+        TABLE_TENNIS_RETURN_V0,
+        split=source_bank.split,
+        control_hz=args.control_hz,
+        timeout_s=timeout_s,
+    )
     output = run_shots(
         backend,
         controller,
         shots,
-        config=RunConfig(
-            seed=args.seed,
-            control_hz=args.control_hz,
-            timeout_s=timeout_s,
-        ),
+        config=RunConfig.from_task_config(task, seed=args.seed),
     )
 
     fixture = args.controller == "scripted"
@@ -169,6 +177,7 @@ def run_from_args(args: argparse.Namespace) -> dict[str, object]:
             },
             "level": args.level,
             "assessment": assessment,
+            "task_config": task.to_dict(),
             "shot_bank_digest": source_bank.digest,
             "shot_bank_manifest_digest": source_bank.manifest_digest,
             "shot_bank": {

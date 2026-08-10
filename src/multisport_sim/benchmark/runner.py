@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from hashlib import sha256
 from math import isfinite
 from numbers import Real
@@ -11,20 +11,50 @@ from typing import Sequence
 from .backends.base import ShotBackend
 from .controllers import Controller
 from .rules.table_tennis import TableTennisReturnJudge
+from .task_config import TABLE_TENNIS_RETURN_V0, TableTennisReturnTaskConfig
 from .types import EpisodeResult, ShotSpec
 
 
 @dataclass(frozen=True)
 class RunConfig:
-    """Execution settings that do not alter a frozen shot distribution."""
+    """Execution settings that do not alter a frozen shot distribution.
+
+    ``control_hz`` and ``timeout_s`` default to the shared task configuration
+    and may be overridden for diagnostics; ``task`` supplies everything else the
+    run and the judge must agree on with other backends.
+    """
 
     seed: int = 0
-    control_hz: float = 200.0
-    timeout_s: float = 2.0
+    control_hz: float = TABLE_TENNIS_RETURN_V0.control_hz
+    timeout_s: float = TABLE_TENNIS_RETURN_V0.timeout_s
+    task: TableTennisReturnTaskConfig = TABLE_TENNIS_RETURN_V0
+
+    @classmethod
+    def from_task_config(
+        cls, task: TableTennisReturnTaskConfig, *, seed: int = 0
+    ) -> RunConfig:
+        """Run exactly the published task settings, overriding nothing."""
+        if not isinstance(task, TableTennisReturnTaskConfig):
+            raise TypeError("task must be a TableTennisReturnTaskConfig")
+        return cls(
+            seed=seed,
+            control_hz=task.control_hz,
+            timeout_s=task.timeout_s,
+            task=task,
+        )
+
+    @property
+    def effective_task(self) -> TableTennisReturnTaskConfig:
+        """The shared task configuration with this run's overrides applied."""
+        return replace(
+            self.task, control_hz=self.control_hz, timeout_s=self.timeout_s
+        )
 
     def __post_init__(self) -> None:
         if isinstance(self.seed, bool) or not isinstance(self.seed, int):
             raise ValueError("seed must be an integer")
+        if not isinstance(self.task, TableTennisReturnTaskConfig):
+            raise TypeError("task must be a TableTennisReturnTaskConfig")
         if (
             isinstance(self.control_hz, bool)
             or not isinstance(self.control_hz, Real)
@@ -72,7 +102,8 @@ def run_shots(
     if not isfinite(backend.timestep) or backend.timestep <= 0.0:
         raise ValueError("backend timestep must be a positive finite number")
 
-    decimation = max(1, round(1.0 / (settings.control_hz * backend.timestep)))
+    task = settings.effective_task
+    decimation = task.decimation(backend.timestep)
     episode_seeds = _episode_seeds(settings.seed, len(shots))
     total_steps = 0
     results: list[EpisodeResult] = []
@@ -82,11 +113,13 @@ def run_shots(
         controller.reset(shot, seed=episode_seed)
         backend.launch_ball(shot)
 
-        judge = TableTennisReturnJudge(timeout_s=settings.timeout_s)
+        judge = TableTennisReturnJudge(
+            timeout_s=task.timeout_s, table_spec=task.table
+        )
         judge.reset(shot)
 
         # The extra steps allow floating-point time to reach the exact timeout.
-        maximum_steps = int(settings.timeout_s / backend.timestep) + 2
+        maximum_steps = task.max_physics_steps(backend.timestep)
         for episode_step in range(maximum_steps):
             if episode_step % decimation == 0:
                 backend.apply_action(controller.act(backend.observe()))
