@@ -186,6 +186,7 @@ def _surface(sport: Sport, x: float, y: float) -> IsaacPrimitive:
         Sport.FOOTBALL: (0.90, 0.78),
         Sport.BADMINTON: (0.72, 0.62),
         Sport.BASKETBALL: (0.82, 0.70),
+        Sport.SQUASH: (0.74, 0.64),
     }[sport]
     return _box(
         "surface",
@@ -575,12 +576,133 @@ def _basketball(x: float, y: float) -> tuple[list[IsaacPrimitive], IsaacBall]:
     return parts, IsaacBall(Sport.BASKETBALL, (x - 4.0, y, 1.5))
 
 
+def _squash(x: float, y: float) -> tuple[list[IsaacPrimitive], IsaacBall]:
+    """WSF singles court with four physical enclosing walls."""
+    length, width = 9.75, 6.40
+    front_x, back_x = x - length / 2, x + length / 2
+    front_height, back_height, wall_t = 4.57, 2.13, 0.10
+    wall = (0.87, 0.87, 0.83)
+    parts = [_surface(Sport.SQUASH, x, y)]
+    parts += [
+        _box(
+            "front_wall",
+            (front_x - wall_t / 2, y, front_height / 2),
+            (wall_t, width, front_height),
+            wall,
+            friction=(0.65, 0.55),
+        ),
+        _box(
+            "back_wall",
+            (back_x + wall_t / 2, y, back_height / 2),
+            (wall_t, width, back_height),
+            wall,
+            friction=(0.65, 0.55),
+        ),
+        _box(
+            "side_wall_n",
+            (x, y + width / 2 + wall_t / 2, front_height / 2),
+            (length, wall_t, front_height),
+            wall,
+            friction=(0.65, 0.55),
+        ),
+        _box(
+            "side_wall_s",
+            (x, y - width / 2 - wall_t / 2, front_height / 2),
+            (length, wall_t, front_height),
+            wall,
+            friction=(0.65, 0.55),
+        ),
+        _box(
+            "tin",
+            (front_x + 0.004, y, 0.48),
+            (0.008, width, 0.05),
+            (0.28, 0.08, 0.06),
+            collision=False,
+        ),
+        _line_box("short_line", (front_x + 4.26, y), (0.025, width / 2)),
+        _line_box("half_court_line", (x, y), (0.025, width / 2)),
+    ]
+    parts += _rectangle_lines("service_box_n", x + 0.80, y + 2.40, 1.60, 1.60, 0.035)
+    parts += _rectangle_lines("service_box_s", x + 0.80, y - 2.40, 1.60, 1.60, 0.035)
+    parts += _squash_racket("player_a", x + 3.25, y - 1.35, 0.72, (0.92, 0.22, 0.08))
+    parts += _squash_racket("player_b", x + 2.60, y + 1.35, 0.72, (0.08, 0.32, 0.88))
+    parts += _squash_scoreboard(front_x, y)
+    return parts, IsaacBall(Sport.SQUASH, (x + 1.2, y, 1.2))
+
+
+def _squash_racket(
+    prefix: str, x: float, y: float, z: float, color: Color
+) -> list[IsaacPrimitive]:
+    """A face-on, visual-only squash racket for the scripted demo."""
+    parts = [
+        _capsule_between(
+            f"{prefix}_handle",
+            (x, y, z),
+            (x, y, z + 0.38),
+            0.026,
+            (0.20, 0.10, 0.04),
+            collision=False,
+        )
+    ]
+    center_z, radius_y, radius_z = z + 0.63, 0.19, 0.25
+    for index in range(20):
+        a0, a1 = 2 * pi * index / 20, 2 * pi * (index + 1) / 20
+        parts.append(
+            _capsule_between(
+                f"{prefix}_hoop_{index}",
+                (x, y + radius_y * cos(a0), center_z + radius_z * sin(a0)),
+                (x, y + radius_y * cos(a1), center_z + radius_z * sin(a1)),
+                0.010,
+                color,
+                collision=False,
+            )
+        )
+    for index, offset in enumerate((-0.11, -0.055, 0.0, 0.055, 0.11)):
+        parts.append(
+            _capsule_between(
+                f"{prefix}_string_{index}",
+                (x, y + offset, center_z - 0.20),
+                (x, y + offset, center_z + 0.20),
+                0.0015,
+                WHITE,
+                collision=False,
+            )
+        )
+    return parts
+
+
+def _squash_scoreboard(front_x: float, y: float) -> list[IsaacPrimitive]:
+    """Two in-world seven-segment score displays fixed to the front wall."""
+    parts: list[IsaacPrimitive] = []
+    for player, center_y, color in (("a", y - 0.75, (0.95, 0.50, 0.08)), ("b", y + 0.75, (0.10, 0.45, 0.95))):
+        for segment, dy, dz, size in (
+            ("top", 0.0, 0.30, (0.02, 0.22, 0.035)),
+            ("upper_l", -0.10, 0.15, (0.02, 0.035, 0.22)),
+            ("upper_r", 0.10, 0.15, (0.02, 0.035, 0.22)),
+            ("middle", 0.0, 0.0, (0.02, 0.22, 0.035)),
+            ("lower_l", -0.10, -0.15, (0.02, 0.035, 0.22)),
+            ("lower_r", 0.10, -0.15, (0.02, 0.035, 0.22)),
+            ("bottom", 0.0, -0.30, (0.02, 0.22, 0.035)),
+        ):
+            parts.append(
+                _box(
+                    f"score_{player}_{segment}",
+                    (front_x + 0.025, center_y + dy, 2.35 + dz),
+                    size,
+                    color,
+                    collision=False,
+                )
+            )
+    return parts
+
+
 BUILDERS = {
     Sport.TENNIS: _tennis,
     Sport.TABLE_TENNIS: _table_tennis,
     Sport.FOOTBALL: _football,
     Sport.BADMINTON: _badminton,
     Sport.BASKETBALL: _basketball,
+    Sport.SQUASH: _squash,
 }
 
 
@@ -602,6 +724,7 @@ def build_isaac_scene_spec(scene: str = "campus") -> IsaacSceneSpec:
             Sport.FOOTBALL: ((-60.0, -50.0, 55.0), (0.0, 0.0, 0.0)),
             Sport.BADMINTON: ((-9.0, -9.0, 6.5), (0.0, 0.0, 0.5)),
             Sport.BASKETBALL: ((-19.0, -18.0, 12.0), (0.0, 0.0, 0.5)),
+            Sport.SQUASH: ((4.3, 0.0, 2.3), (-2.0, 0.0, 1.6)),
         }[sport]
         camera_eye, camera_target = camera
 

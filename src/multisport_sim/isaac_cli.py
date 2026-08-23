@@ -7,10 +7,12 @@ imports live in ``main`` after launch.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import sys
 import traceback
 from collections.abc import Sequence
+from pathlib import Path
 
 from .specs import SCENES
 
@@ -25,7 +27,7 @@ def parser() -> argparse.ArgumentParser:
         ) from None
     result = argparse.ArgumentParser(
         prog="multisport-isaac",
-        description="Run the five regulation multi-sport scenes in Isaac Sim/PhysX.",
+        description="Run the six regulation multi-sport scenes in Isaac Sim/PhysX.",
     )
     result.add_argument("--scene", choices=SCENES, default="campus")
     result.add_argument("--duration", type=float, default=0.0, help="simulation seconds; 0 runs until closed")
@@ -47,6 +49,16 @@ def parser() -> argparse.ArgumentParser:
     )
     result.add_argument("--export-usd", default=None, help="export the generated stage to this USD path")
     result.add_argument(
+        "--squash-demo",
+        action="store_true",
+        help="run one complete visible squash scoring rally (requires --scene squash)",
+    )
+    result.add_argument(
+        "--demo-report",
+        default=None,
+        help="write the --squash-demo score and event timeline as JSON",
+    )
+    result.add_argument(
         "--wind",
         nargs=3,
         type=float,
@@ -63,7 +75,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     from isaaclab.app import AppLauncher
 
     if args.headless and args.duration <= 0.0:
-        args.duration = 5.0
+        args.duration = 9.0 if args.squash_demo else 5.0
     app_launcher = AppLauncher(args)
     simulation_app = app_launcher.app
     try:
@@ -77,6 +89,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.export_usd:
             output = simulation.export_usd(args.export_usd)
             print(f"exported_usd={output}", flush=True)
+        if args.squash_demo:
+            if args.scene != "squash":
+                raise ValueError("--squash-demo requires --scene squash")
+            stats = simulation.run_squash_demo(simulation_app, args.duration or 9.0)
+            if args.demo_report:
+                report_path = Path(args.demo_report).expanduser()
+                report_path.parent.mkdir(parents=True, exist_ok=True)
+                with report_path.open("w", encoding="utf-8") as stream:
+                    json.dump(stats, stream, indent=2)
+                    stream.write("\n")
+                print(f"squash_demo_report={report_path}", flush=True)
         if args.drop_test or args.evaluate:
             if args.scene == "campus":
                 raise ValueError("--drop-test/--evaluate requires a single-sport --scene")
@@ -104,7 +127,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     f"backend=isaacsim scene={args.scene} drop_test_rebound={rebound:.3f}m",
                     flush=True,
                 )
-        else:
+        elif not args.squash_demo:
             steps = simulation.run(
                 simulation_app,
                 args.duration,

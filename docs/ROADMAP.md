@@ -4,7 +4,7 @@
 
 ## M0 — Physics foundation（当前）
 
-- [x] 五种球类和比赛尺寸场景
+- [x] 六种球类和比赛尺寸场景
 - [x] MuJoCo + Isaac Sim/PhysX
 - [x] 球体接触、空气阻力、Magnus 力和羽毛球稳定力矩
 - [x] 回弹真实度量化报告

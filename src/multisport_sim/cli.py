@@ -12,7 +12,7 @@ from .specs import SCENES
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(
         prog="multisport-sim",
-        description="Run regulation-size tennis, table-tennis, football, badminton and basketball scenes.",
+        description="Run regulation-size tennis, table-tennis, football, badminton, basketball and squash scenes.",
     )
     result.add_argument("--scene", choices=SCENES, default="campus")
     result.add_argument("--headless", action="store_true", help="simulate without opening a window")

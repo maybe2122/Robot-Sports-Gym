@@ -6,6 +6,7 @@ SimulationApp. Isaac/Omniverse extensions are unavailable before that point.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from math import cos, pi, sin
 from pathlib import Path
 
@@ -16,8 +17,8 @@ from isaaclab.sim import PhysxCfg, SimulationCfg, SimulationContext
 from isaaclab.utils.math import quat_apply
 from isaacsim.core.utils.stage import get_current_stage
 
-from .isaac_scene import IsaacPrimitive, IsaacSceneSpec, build_isaac_scene_spec
 from .evaluation import BOUNCE_TARGETS
+from .isaac_scene import IsaacPrimitive, IsaacSceneSpec, build_isaac_scene_spec
 from .specs import (
     AIR_DENSITY,
     BALLS,
@@ -25,6 +26,7 @@ from .specs import (
     SHUTTLE_SKIRT_RADIUS,
     Sport,
 )
+from .squash import Player, SquashMatch, SquashRallyJudge
 
 
 def _visual(primitive: IsaacPrimitive) -> sim_utils.PreviewSurfaceCfg:
@@ -395,3 +397,160 @@ class IsaacSportsSimulation:
             speed = torch.linalg.vector_norm(ball.data.root_com_lin_vel_w[0]).item()
             fields.append(f"{sport.value}:z={height:.3f}m,v={speed:.3f}m/s")
         return ";".join(fields)
+
+    def run_squash_demo(
+        self,
+        simulation_app: object,
+        duration: float,
+        *,
+        frame_callback: Callable[[float], None] | None = None,
+    ) -> dict[str, object]:
+        """Run one complete, visible serve-return-second-bounce scoring rally.
+
+        PhysX produces both front-wall contacts and floor bounces.  The demo
+        controller applies the two racket impulses; :class:`SquashRallyJudge`
+        turns the observed contact sequence into the final 0-1 score.
+        """
+        if self.scene_spec.name != Sport.SQUASH.value:
+            raise ValueError("squash demo requires the squash scene")
+        if duration <= 0.0:
+            raise ValueError("squash demo duration must be positive")
+        match = SquashMatch()
+        judge = SquashRallyJudge(match)
+        ball = self.balls[Sport.SQUASH]
+        elapsed = 0.0
+        previous_vx, previous_vz = -14.0, 3.1
+        receiver_has_hit = False
+        point_time: float | None = None
+
+        self.reset()
+        self._set_squash_scoreboard(match)
+        server = judge.begin()
+        start_time = float(self.sim.current_time)
+        pose = ball.data.default_root_state[:, :7].clone()
+        pose[0, :3] = torch.tensor((3.60, -1.25, 1.15), device=self.sim.device)
+        velocity = torch.zeros((1, 6), device=self.sim.device)
+        velocity[0, :3] = torch.tensor((-14.0, 1.7, 3.1), device=self.sim.device)
+        velocity[0, 3:] = torch.tensor((0.0, 38.0, 0.0), device=self.sim.device)
+        ball.write_root_pose_to_sim(pose)
+        ball.write_root_velocity_to_sim(velocity)
+        print(f"RALLY event=serve player={server.value} score=0-0", flush=True)
+
+        max_steps = max(1, round(duration / self.dt))
+        for _ in range(max_steps):
+            if not simulation_app.is_running():
+                break
+            self.step(render=True)
+            elapsed = float(self.sim.current_time) - start_time
+            if frame_callback is not None:
+                frame_callback(elapsed)
+            position = ball.data.root_link_pos_w[0]
+            vx = ball.data.root_com_lin_vel_w[0, 0].item()
+            vz = ball.data.root_com_lin_vel_w[0, 2].item()
+
+            reached_front_plane = position[0].item() <= -4.75
+            if (
+                not judge.front_wall_reached
+                and reached_front_plane
+                and previous_vx < 0.0 <= vx
+            ):
+                judge.front_wall(at=elapsed)
+                print(
+                    f"RALLY event=front_wall player={judge.last_striker.value} "
+                    f"time={elapsed:.3f}",
+                    flush=True,
+                )
+
+            near_floor = position[2].item() <= BALLS[Sport.SQUASH].radius + 0.05
+            if judge.result is None and previous_vz < 0.0 <= vz and near_floor:
+                result = judge.floor_bounce(at=elapsed)
+                print(
+                    f"RALLY event=floor_bounce count={judge.floor_bounces} "
+                    f"time={elapsed:.3f}",
+                    flush=True,
+                )
+                if result is not None:
+                    point_time = elapsed
+                    self._set_squash_scoreboard(match)
+                    ball.write_root_velocity_to_sim(
+                        torch.zeros((1, 6), device=self.sim.device)
+                    )
+                    print(
+                        f"POINT winner={result.winner.value} reason={result.reason} "
+                        f"shots={result.shots} score={match.score_a}-{match.score_b}",
+                        flush=True,
+                    )
+
+            if (
+                judge.result is None
+                and judge.front_wall_reached
+                and judge.floor_bounces == 1
+                and not receiver_has_hit
+                and vx > 0.0
+                and position[0].item() >= 2.40
+            ):
+                receiver_has_hit = True
+                result = judge.racket_hit(Player.B, at=elapsed)
+                if result is not None:  # pragma: no cover - guarded by the state above
+                    raise RuntimeError(f"unexpected squash demo point: {result.reason}")
+                return_velocity = torch.zeros((1, 6), device=self.sim.device)
+                return_velocity[0, :3] = torch.tensor(
+                    (-13.0, -1.4, 3.0), device=self.sim.device
+                )
+                return_velocity[0, 3:] = torch.tensor(
+                    (0.0, -34.0, 0.0), device=self.sim.device
+                )
+                ball.write_root_velocity_to_sim(return_velocity)
+                vx, vz = -13.0, 3.0
+                print(f"RALLY event=racket_hit player=B time={elapsed:.3f}", flush=True)
+
+            if point_time is not None and elapsed >= point_time + 1.0:
+                break
+            if point_time is None and elapsed >= duration:
+                break
+
+            previous_vx, previous_vz = vx, vz
+
+        if judge.result is None:
+            observed = ",".join(event.kind.value for event in judge.events)
+            raise RuntimeError(
+                f"squash scoring rally did not complete within {duration:.3f}s; "
+                f"observed events: {observed}"
+            )
+
+        stats = match.statistics()
+        report = {
+            "schema": "squash-score-demo-v1",
+            "complete": True,
+            "duration_s": round(elapsed, 3),
+            **stats,
+            "rally": judge.result.as_dict(),
+            "events": [event.as_dict() for event in judge.events],
+        }
+        print(f"SQUASH_SCORE_DEMO {report}", flush=True)
+        return report
+
+    def _set_squash_scoreboard(self, match: SquashMatch) -> None:
+        """Update the front-wall seven-segment display inside the USD stage."""
+        from pxr import UsdGeom
+
+        digits = {
+            0: {"top", "upper_l", "upper_r", "lower_l", "lower_r", "bottom"},
+            1: {"upper_r", "lower_r"},
+            2: {"top", "upper_r", "middle", "lower_l", "bottom"},
+            3: {"top", "upper_r", "middle", "lower_r", "bottom"},
+            4: {"upper_l", "upper_r", "middle", "lower_r"},
+            5: {"top", "upper_l", "middle", "lower_r", "bottom"},
+            6: {"top", "upper_l", "middle", "lower_l", "lower_r", "bottom"},
+            7: {"top", "upper_r", "lower_r"},
+            8: {"top", "upper_l", "upper_r", "middle", "lower_l", "lower_r", "bottom"},
+            9: {"top", "upper_l", "upper_r", "middle", "lower_r", "bottom"},
+        }
+        stage = get_current_stage()
+        for player, score in (("a", match.score_a), ("b", match.score_b)):
+            visible = digits[score % 10]
+            for segment in digits[8]:
+                prim = stage.GetPrimAtPath(f"/World/Sports/squash/score_{player}_{segment}")
+                UsdGeom.Imageable(prim).GetVisibilityAttr().Set(
+                    "inherited" if segment in visible else "invisible"
+                )

@@ -45,6 +45,7 @@ multisport-sim = "multisport_sim.cli:main"
 multisport-isaac = "multisport_sim.isaac_cli:main"
 multisport-eval = "multisport_sim.evaluation_cli:main"
 multisport-benchmark = "multisport_sim.benchmark_cli:main"
+multisport-squash-demo-verify = "multisport_sim.squash_demo:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/multisport_sim"]

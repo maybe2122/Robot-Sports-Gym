@@ -2,7 +2,7 @@
 
 [简体中文](README.md) | English
 
-Robot Sports Gym (RSG) is an in-development, cross-embodiment platform for training and evaluating robot perception, planning, control, robustness, and sim-to-real performance across tennis, table tennis, football, badminton, and basketball under shared tasks, physics specifications, and metrics. The current repository provides the asset-free **MuJoCo + Isaac Sim/PhysX** physics foundation with regulation-scale scenes and sport-specific dynamics.
+Robot Sports Gym (RSG) is an in-development, cross-embodiment platform for training and evaluating robot perception, planning, control, robustness, and sim-to-real performance across tennis, table tennis, football, badminton, basketball, and squash under shared tasks, physics specifications, and metrics. The current repository provides the asset-free **MuJoCo + Isaac Sim/PhysX** physics foundation with regulation-scale scenes and sport-specific dynamics.
 
 > **Status: Alpha.** The scenes, ball dynamics, rebound-fidelity reports, an experimental table-tennis Shot Skill harness, and a MuJoCo Gymnasium fixture are operational. Real robot adapters, Isaac Lab RL environments, the remaining canonical tasks, and reference policies are planned. Do not describe the current release as a completed robot ball-sports benchmark.
 
@@ -25,6 +25,7 @@ Robot Sports Gym (RSG) is an in-development, cross-embodiment platform for train
 | Football | 105 × 68 m pitch, goals and ball | Grass friction/rolling resistance, drag and curve |
 | Badminton | Singles/doubles court, net, two rackets, shuttle | Orientation-dependent drag and stabilizing torque |
 | Basketball | 28 × 15 m court, two framed backboards, rims/nets, ball | Hardwood contact, FIBA-scale rebound and spin |
+| Squash | 9.75 × 6.40 m enclosed singles court, four walls, service boxes, ball | Floor/wall contact, drag and spin |
 
 The `campus` scene loads all sports at once. Each sport also has a standalone close-up scene. Shared dimensions, mass, and aerodynamic parameters are defined in `src/multisport_sim/specs.py`.
 
@@ -39,6 +40,7 @@ These images are rendered directly from the current repository code using each s
 | Football | [![MuJoCo football scene](docs/images/rendered/mujoco/football.png)](docs/images/rendered/mujoco/football.png) | [![Isaac Sim football scene](docs/images/rendered/isaac/football.png)](docs/images/rendered/isaac/football.png) |
 | Badminton | [![MuJoCo badminton scene](docs/images/rendered/mujoco/badminton.png)](docs/images/rendered/mujoco/badminton.png) | [![Isaac Sim badminton scene](docs/images/rendered/isaac/badminton.png)](docs/images/rendered/isaac/badminton.png) |
 | Basketball | [![MuJoCo basketball scene](docs/images/rendered/mujoco/basketball.png)](docs/images/rendered/mujoco/basketball.png) | [![Isaac Sim basketball scene](docs/images/rendered/isaac/basketball.png)](docs/images/rendered/isaac/basketball.png) |
+| Squash | [![MuJoCo squash scene](docs/images/rendered/mujoco/squash.png)](docs/images/rendered/mujoco/squash.png) | [![Isaac Sim squash scene](docs/images/rendered/isaac/squash.png)](docs/images/rendered/isaac/squash.png) |
 
 ## MuJoCo quick start
 
@@ -49,6 +51,7 @@ python -m pip install -e ".[test]"
 
 multisport-sim --scene campus
 multisport-sim --scene badminton --headless --duration 3 --wind 2 0 0
+multisport-sim --scene squash
 ```
 
 In the native viewer, press `Space` to relaunch and `R` to reset.
@@ -62,9 +65,32 @@ Use a Python environment containing a compatible Isaac Sim and Isaac Lab install
 
 multisport-isaac --scene campus
 multisport-isaac --headless --device cpu --scene tennis --duration 0.1
+multisport-isaac --headless --device cpu --scene squash --duration 0.1
+
+# Complete rally: A serves, B returns, second bounce awards B the point (0:0 -> 0:1)
+multisport-isaac --scene squash --squash-demo --duration 9 \
+  --demo-report reports/isaac/squash-demo.json
+
+# Rebuild both the JSON report and GIF from the same real PhysX rally
+make demo-squash ISAAC_PYTHON=/path/to/isaac/python
+
+# Verify the existing JSON/GIF evidence without launching Isaac
+make verify-squash-demo PYTHON=.venv/bin/python
+
 multisport-isaac --headless --device cpu --scene tennis \
   --evaluate --report reports/isaac/tennis.json
 ```
+
+PhysX produces the front-wall contacts and two floor bounces; the demo script only applies
+the serve and return racket impulses. The JSON report includes the complete event timeline and
+sets `complete: true` only after the observed second bounce awards the point. The GIF generator
+also verifies the fixed event order, final 0:1 score, frame count, and frame-to-frame changes,
+and refuses to overwrite the asset if validation fails.
+The standalone verifier needs neither Isaac nor Pillow and can audit the event timeline and GIF
+container metadata in a regular Python environment or CI. `make demo-squash` writes both committed
+evidence files under `docs/images/shot-skill/`.
+
+![Isaac Sim complete squash scoring rally](docs/images/shot-skill/squash-serve-score-demo.gif)
 
 The validated local combination is Isaac Sim 5.0.0, Isaac Lab 0.46.2, Python 3.11, and CPU PhysX. See [docs/ISAAC_SIM.md](docs/ISAAC_SIM.md) for lifecycle and headless-exit details.
 

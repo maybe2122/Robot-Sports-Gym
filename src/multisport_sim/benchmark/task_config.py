@@ -114,7 +114,7 @@ class TaskFrame:
     Shot banks, judges, targets and reports are expressed in the task frame,
     whose origin sits at the centre of the table's playing surface projected to
     the floor.  A backend that renders the same table somewhere else in its
-    world -- the Isaac campus lays five sports out side by side -- declares that
+    world -- the Isaac campus lays six sports out side by side -- declares that
     placement here and converts at its own boundary, so no rule code ever needs
     a backend-specific offset.
 

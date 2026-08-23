@@ -52,6 +52,8 @@ def test_regulation_dimensions_are_embedded_in_mjcf() -> None:
     assert COURTS[Sport.FOOTBALL].length == 105.0
     assert COURTS[Sport.BADMINTON].width == 6.10
     assert COURTS[Sport.BASKETBALL].length == 28.0
+    assert COURTS[Sport.SQUASH].length == 9.75
+    assert COURTS[Sport.SQUASH].width == 6.40
     xml = build_xml("table_tennis")
     assert 'size="1.37 0.7625 0.02"' in xml
     assert "0.025 0.03" in xml

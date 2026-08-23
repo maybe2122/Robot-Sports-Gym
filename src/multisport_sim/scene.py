@@ -803,12 +803,72 @@ def _basketball(x: float, y: float) -> list[str]:
     return items
 
 
+def _squash(x: float, y: float) -> list[str]:
+    """Build a WSF-size enclosed singles court (front wall is at negative X)."""
+    length, width = 9.75, 6.40
+    front_x, back_x = x - length / 2, x + length / 2
+    front_height, back_height = 4.57, 2.13
+    wall_t = 0.10
+    wall_color = "0.87 0.87 0.83 1"
+    items = [_court_surface(Sport.SQUASH, x, y)]
+    # The walls are collision geometry; floor markings remain visual-only.
+    items += [
+        _geom(
+            "squash_front_wall",
+            pos=f"{front_x - wall_t / 2} {y} {front_height / 2}",
+            size=f"{wall_t / 2} {width / 2} {front_height / 2}",
+            rgba=wall_color,
+            friction="0.65 0.01 0.001",
+        ),
+        _geom(
+            "squash_back_wall",
+            pos=f"{back_x + wall_t / 2} {y} {back_height / 2}",
+            size=f"{wall_t / 2} {width / 2} {back_height / 2}",
+            rgba=wall_color,
+            friction="0.65 0.01 0.001",
+        ),
+        _geom(
+            "squash_side_wall_n",
+            pos=f"{x} {y + width / 2 + wall_t / 2} {front_height / 2}",
+            size=f"{length / 2} {wall_t / 2} {front_height / 2}",
+            rgba=wall_color,
+            friction="0.65 0.01 0.001",
+        ),
+        _geom(
+            "squash_side_wall_s",
+            pos=f"{x} {y - width / 2 - wall_t / 2} {front_height / 2}",
+            size=f"{length / 2} {wall_t / 2} {front_height / 2}",
+            rgba=wall_color,
+            friction="0.65 0.01 0.001",
+        ),
+        _geom(
+            "squash_tin",
+            pos=f"{front_x + 0.004} {y} 0.48",
+            size=f"0.004 {width / 2} 0.025",
+            rgba="0.28 0.08 0.06 1",
+            contype="0",
+            conaffinity="0",
+        ),
+        _line_box("squash_short_line", (front_x + 4.26, y), (0.025, width / 2)),
+        _line_box("squash_half_court_line", (x, y), (0.025, width / 2)),
+        _ball(Sport.SQUASH, x + 1.2, y, 1.2),
+        (
+            f'<camera name="squash_camera" pos="{x + 4.3} {y} 2.3" '
+            'xyaxes="0 1 0 0 0 1"/>'
+        ),
+    ]
+    items += _rectangle_lines("squash_service_box_n", x + 0.80, y + 2.40, 1.60, 1.60, 0.035)
+    items += _rectangle_lines("squash_service_box_s", x + 0.80, y - 2.40, 1.60, 1.60, 0.035)
+    return items
+
+
 BUILDERS = {
     Sport.TENNIS: _tennis,
     Sport.TABLE_TENNIS: _table_tennis,
     Sport.FOOTBALL: _football,
     Sport.BADMINTON: _badminton,
     Sport.BASKETBALL: _basketball,
+    Sport.SQUASH: _squash,
 }
 
 
@@ -820,6 +880,7 @@ CONTACTS = {
     Sport.FOOTBALL: ("0.020 0.10", "0.80 0.018 0.015"),
     Sport.BADMINTON: ("0.008 1.00", "0.45 0.006 0.004"),
     Sport.BASKETBALL: ("0.020 0.075", "0.80 0.018 0.012"),
+    Sport.SQUASH: ("0.016 0.09", "0.72 0.012 0.008"),
 }
 
 

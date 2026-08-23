@@ -1,7 +1,7 @@
 PYTHON ?= python
 ISAAC_PYTHON ?= python
 
-.PHONY: test lint verify test-isaac verify-all evaluate evaluate-isaac benchmark run run-isaac
+.PHONY: test lint verify test-isaac verify-all evaluate evaluate-isaac benchmark demo-squash verify-squash-demo watch-squash-demo run run-isaac
 
 test:
 	PYTHONPATH=src $(PYTHON) -m pytest
@@ -23,7 +23,7 @@ evaluate:
 
 evaluate-isaac:
 	mkdir -p reports/isaac
-	for sport in tennis table_tennis football badminton basketball; do \
+	for sport in tennis table_tennis football badminton basketball squash; do \
 		PYTHONPATH=src $(ISAAC_PYTHON) -m multisport_sim.isaac_cli --headless --device cpu \
 			--scene $$sport --evaluate --report reports/isaac/$$sport.json; \
 	done
@@ -36,6 +36,24 @@ benchmark:
 		--level L1 --split dev --controller scripted \
 		--report reports/table-tennis-l1.json \
 		--markdown reports/table-tennis-l1.md
+
+demo-squash:
+	mkdir -p reports/isaac
+	PYTHONPATH=src $(ISAAC_PYTHON) scripts/capture_squash_demo.py \
+		--headless --device cpu --duration 9 \
+		--output docs/images/shot-skill/squash-serve-score-demo.gif \
+		--report docs/images/shot-skill/squash-serve-score-demo.json
+	$(MAKE) verify-squash-demo PYTHON=$(ISAAC_PYTHON)
+
+verify-squash-demo:
+	PYTHONPATH=src $(PYTHON) -m multisport_sim.squash_demo \
+		--gif docs/images/shot-skill/squash-serve-score-demo.gif \
+		--report docs/images/shot-skill/squash-serve-score-demo.json
+
+watch-squash-demo:
+	PYTHONPATH=src $(ISAAC_PYTHON) -m multisport_sim.isaac_cli \
+		--scene squash --squash-demo --duration 9 \
+		--demo-report reports/isaac/squash-demo.json
 
 run:
 	PYTHONPATH=src $(PYTHON) -m multisport_sim --scene campus

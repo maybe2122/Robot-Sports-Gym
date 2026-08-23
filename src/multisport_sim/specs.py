@@ -13,6 +13,7 @@ class Sport(str, Enum):
     FOOTBALL = "football"
     BADMINTON = "badminton"
     BASKETBALL = "basketball"
+    SQUASH = "squash"
 
 
 SCENES = ("campus", *(sport.value for sport in Sport))
@@ -124,6 +125,16 @@ BALLS: dict[Sport, BallSpec] = {
         color=(0.93, 0.32, 0.055, 1.0),
         launch_velocity=(8.5, 0.0, 8.3),
     ),
+    Sport.SQUASH: BallSpec(
+        # WSF ball diameter 39.5--40.5 mm and mass 23--25 g.
+        mass=0.024,
+        radius=0.020,
+        drag_coefficient=0.47,
+        restitution=0.70,
+        rolling_friction=0.010,
+        color=(0.055, 0.055, 0.050, 1.0),
+        launch_velocity=(15.0, 0.0, 4.5),
+    ),
 }
 
 
@@ -133,6 +144,8 @@ COURTS: dict[Sport, CourtSpec] = {
     Sport.FOOTBALL: CourtSpec(105.0, 68.0, "natural grass", (0.12, 0.43, 0.16, 1.0)),
     Sport.BADMINTON: CourtSpec(13.40, 6.10, "synthetic mat", (0.10, 0.48, 0.40, 1.0)),
     Sport.BASKETBALL: CourtSpec(28.0, 15.0, "hardwood", (0.72, 0.47, 0.23, 1.0)),
+    # WSF singles court, measured between the inside faces of the walls.
+    Sport.SQUASH: CourtSpec(9.75, 6.40, "squash court floor", (0.68, 0.54, 0.34, 1.0)),
 }
 
 
@@ -145,6 +158,7 @@ CAMPUS_OFFSETS: dict[Sport, tuple[float, float]] = {
     Sport.TABLE_TENNIS: (-15.0, 48.0),
     Sport.BADMINTON: (2.0, 48.0),
     Sport.BASKETBALL: (27.0, 48.0),
+    Sport.SQUASH: (47.0, 48.0),
 }
 
 

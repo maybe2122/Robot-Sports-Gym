@@ -1,0 +1,79 @@
+{
+  "schema": "squash-score-demo-v1",
+  "complete": true,
+  "duration_s": 3.833,
+  "score": {
+    "A": 0,
+    "B": 1
+  },
+  "server": "B",
+  "rallies": 1,
+  "longest_rally_shots": 2,
+  "average_rally_shots": 2.0,
+  "points_won": {
+    "A": 0,
+    "B": 1
+  },
+  "game_winner": null,
+  "rally": {
+    "number": 1,
+    "server": "A",
+    "winner": "B",
+    "shots": 2,
+    "reason": "second_bounce"
+  },
+  "events": [
+    {
+      "number": 1,
+      "time_s": 0.0,
+      "kind": "serve",
+      "player": "A"
+    },
+    {
+      "number": 2,
+      "time_s": 0.633,
+      "kind": "front_wall",
+      "player": "A"
+    },
+    {
+      "number": 3,
+      "time_s": 0.983,
+      "kind": "floor_bounce",
+      "player": "A",
+      "detail": "1"
+    },
+    {
+      "number": 4,
+      "time_s": 1.583,
+      "kind": "racket_hit",
+      "player": "B"
+    },
+    {
+      "number": 5,
+      "time_s": 2.167,
+      "kind": "front_wall",
+      "player": "B"
+    },
+    {
+      "number": 6,
+      "time_s": 2.45,
+      "kind": "floor_bounce",
+      "player": "B",
+      "detail": "1"
+    },
+    {
+      "number": 7,
+      "time_s": 2.833,
+      "kind": "floor_bounce",
+      "player": "B",
+      "detail": "2"
+    },
+    {
+      "number": 8,
+      "time_s": 2.833,
+      "kind": "point",
+      "player": "B",
+      "detail": "second_bounce"
+    }
+  ]
+}

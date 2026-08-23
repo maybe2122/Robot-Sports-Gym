@@ -13,16 +13,16 @@
 
 ## 场景构造
 
-`isaac_scene.py` 是不依赖 Omniverse 的场景描述层，生成带名称、位置、姿态、尺寸、颜色、碰撞和材质参数的 primitive 列表。它有普通 pytest 覆盖，因此不启动 Isaac 也能检查五类球、场地和器材是否齐全。
+`isaac_scene.py` 是不依赖 Omniverse 的场景描述层，生成带名称、位置、姿态、尺寸、颜色、碰撞和材质参数的 primitive 列表。它有普通 pytest 覆盖，因此不启动 Isaac 也能检查六类球、场地和器材是否齐全。
 
 运行时 `isaac_backend.py` 将描述转换成：
 
 - `CuboidCfg`：场地、场线、球台、球网、篮板；
 - `CylinderCfg` / `CapsuleCfg`：球网柱、球门、篮圈、球拍框和拍线；
-- `RigidObjectCfg + SphereCfg`：带显式质量、碰撞和 PhysX 材质的五类球；
+- `RigidObjectCfg + SphereCfg`：带显式质量、碰撞和 PhysX 材质的六类球；
 - 羽毛球的 16 根羽毛、足球色块和篮球缝线作为动态球体的纯视觉子 prim。
 
-campus 导出的 ASCII USD 约包含 2955 个 prim。所有五类球都具备 `UsdPhysics.RigidBodyAPI`、质量 schema 和子碰撞网格。
+campus 中的所有六类球都具备 `UsdPhysics.RigidBodyAPI`、质量 schema 和子碰撞网格。
 
 ## 物理循环
 
@@ -50,6 +50,16 @@ multisport-isaac --headless --device cpu --scene campus --duration 0.1 \
 # 标准落球测试
 multisport-isaac --headless --device cpu --scene tennis --drop-test
 
+# 壁球完整得分回合，同时输出得分和事件时间线
+multisport-isaac --scene squash --squash-demo --duration 9 \
+  --demo-report reports/isaac/squash-demo.json
+
+# 无头重建经过校验的演示 GIF 和 JSON
+make demo-squash ISAAC_PYTHON=/path/to/isaac/python
+
+# 普通 Python 环境中独立校验已有演示资产
+make verify-squash-demo PYTHON=/path/to/python
+
 # 输出与 MuJoCo 相同 schema 的量化报告
 multisport-isaac --headless --device cpu --scene tennis \
   --evaluate --report reports/isaac/tennis.json
@@ -57,7 +67,16 @@ multisport-isaac --headless --device cpu --scene tennis \
 
 `--duration 0` 在 GUI 中表示运行到用户关闭窗口；无头模式没有给时长时自动运行 5 秒。
 
-Isaac Sim 每个 Kit 进程只评测一个单项场景，以避免重复创建 `SimulationContext`。`make evaluate-isaac` 会依次启动五个进程，并将结果聚合为 `reports/isaac-fidelity.json` 和 Markdown 报告。
+壁球演示从 `0:0` 开始，顺序为 A 发球、前墙、首次落地、B 回击、前墙、首次落地、
+第二次落地，最后判 B 得分并把场内计分板更新为 `0:1`。前墙接触和落地由 PhysX 速度反向检测，
+脚本只负责两次球拍冲量；若给定时长内没有观察到完整事件链，命令会报错而不会生成伪造分数。
+`scripts/capture_squash_demo.py` 通过 Isaac Camera 捕获同一回合，添加比分/事件字幕和纯视觉球体标记，
+并在覆盖 GIF 前验证事件顺序、最终比分和所有相邻帧均发生变化；视觉标记没有碰撞，不参与物理判定。
+`multisport_sim.squash_demo` 还能在不加载 Isaac/Pillow 的情况下独立检查 JSON 契约和 GIF
+容器的尺寸、帧数、播放时长与体积，适合放入普通 CPU CI。录制目标会将这两个可提交的证据文件
+同时写入 `docs/images/shot-skill/`，避免校验依赖被忽略的本地报告目录。
+
+Isaac Sim 每个 Kit 进程只评测一个单项场景，以避免重复创建 `SimulationContext`。`make evaluate-isaac` 会依次启动六个进程，并将结果聚合为 `reports/isaac-fidelity.json` 和 Markdown 报告。
 
 ## Isaac Lab 向量化 Shot Skill 环境（experimental，未验证）
 

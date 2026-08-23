@@ -49,6 +49,15 @@ def test_regulation_table_and_basket_details_are_visible() -> None:
     assert basket["basketball/west_backboard"].opacity >= 0.8
     assert not basket["basketball/west_net_strand_0_a"].collision
 
+    squash = {item.name: item for item in build_isaac_scene_spec("squash").primitives}
+    assert squash["squash/front_wall"].size == pytest.approx((0.10, 6.40, 4.57))
+    assert squash["squash/back_wall"].size == pytest.approx((0.10, 6.40, 2.13))
+    assert not squash["squash/tin"].collision
+    assert not squash["squash/player_a_handle"].collision
+    assert not squash["squash/player_b_hoop_0"].collision
+    assert squash["squash/score_a_top"].position[2] == pytest.approx(2.65)
+    assert squash["squash/score_b_bottom"].position[2] == pytest.approx(2.05)
+
 
 def test_isaac_collision_and_visual_layers_are_distinct() -> None:
     spec = build_isaac_scene_spec("tennis")

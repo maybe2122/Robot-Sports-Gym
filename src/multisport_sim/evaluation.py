@@ -90,6 +90,17 @@ BOUNCE_TARGETS: dict[Sport, BounceTarget] = {
         "Project cork-first low-rebound acceptance limit",
         None,
     ),
+    Sport.SQUASH: BounceTarget(
+        Sport.SQUASH,
+        2.54,
+        0.0,
+        1.25,
+        1.10,
+        1.40,
+        "engineering",
+        "Project squash-ball floor rebound calibration range",
+        None,
+    ),
 }
 
 

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
+from multisport_sim.squash_demo import validate_gif, validate_score_report
 
 ROOT = Path(__file__).parents[1]
 REQUIRED_PUBLIC_FILES = (
@@ -20,6 +22,8 @@ REQUIRED_PUBLIC_FILES = (
     "docs/TABLE_TENNIS_SHOT_SKILL.md",
     "docs/REPRODUCIBILITY.md",
     "docs/ROADMAP.md",
+    "scripts/capture_squash_demo.py",
+    "docs/images/shot-skill/squash-serve-score-demo.json",
     ".github/PULL_REQUEST_TEMPLATE.md",
     ".github/workflows/ci.yml",
 )
@@ -44,3 +48,17 @@ def test_local_markdown_links_resolve() -> None:
             if not resolved.exists():
                 broken.append(f"{document.relative_to(ROOT)} -> {target}")
     assert not broken
+
+
+def test_squash_score_demo_is_a_real_animation() -> None:
+    asset = ROOT / "docs/images/shot-skill/squash-serve-score-demo.gif"
+    info = validate_gif(asset)
+    assert info.frames == 47
+
+
+def test_squash_score_demo_report_matches_the_expected_rally() -> None:
+    report = ROOT / "docs/images/shot-skill/squash-serve-score-demo.json"
+    with report.open(encoding="utf-8") as stream:
+        summary = validate_score_report(json.load(stream))
+    assert summary["score"] == {"A": 0, "B": 1}
+    assert summary["point_time_s"] == 2.833
