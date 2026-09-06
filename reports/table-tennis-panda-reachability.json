@@ -1,0 +1,144 @@
+{
+  "asset": {
+    "asset_id": "franka_emika_panda",
+    "license": "Apache-2.0",
+    "license_path": "franka_emika_panda/LICENSE",
+    "modifications": [
+      "loaded through mujoco.MjSpec and attached to the table-tennis scene with the joint/actuator prefix 'rb_'; upstream files are not edited",
+      "a benchmark paddle body is added as a child of the 'attachment' body",
+      "a fixed pedestal geom is added under the arm base",
+      "the parent scene's impratio=1 is kept instead of the model's impratio=10, because one scene cannot hold two values"
+    ],
+    "relative_path": "franka_emika_panda/panda_nohand.xml",
+    "upstream_url": "https://github.com/google-deepmind/mujoco_menagerie/tree/main/franka_emika_panda",
+    "version": "menagerie franka_emika_panda CHANGELOG 2024-06-03"
+  },
+  "mount": {
+    "pedestal_radius_m": 0.13,
+    "position": [
+      -1.95,
+      0.0,
+      0.75
+    ]
+  },
+  "reachability": {
+    "grid_points": 49,
+    "mount_coverage": 0.6938775510204082,
+    "per_shot": {
+      "in_time_by_level": {
+        "L0": {
+          "in_time": 200,
+          "shots": 200
+        },
+        "L1": {
+          "in_time": 200,
+          "shots": 200
+        },
+        "L2": {
+          "in_time": 200,
+          "shots": 200
+        },
+        "L3": {
+          "in_time": 200,
+          "shots": 200
+        },
+        "L4": {
+          "in_time": 193,
+          "shots": 197
+        },
+        "L5": {
+          "in_time": 189,
+          "shots": 200
+        }
+      },
+      "reachable": 1196,
+      "reachable_in_time": 1182,
+      "shots": 1197
+    },
+    "search": null,
+    "shortest_intercept_window_s": 0.5430000000000004,
+    "travel_fits_in_window": false,
+    "unreachable_points": 11,
+    "worst_case_travel_time_s": 2.1996231446664973
+  },
+  "ready_qpos": [
+    -1.50953,
+    1.5128,
+    1.65599,
+    -2.62808,
+    -0.94185,
+    1.87744,
+    2.8973
+  ],
+  "robot": "franka-panda-tabletennis-v1",
+  "schema_version": 1,
+  "shot_bank": {
+    "splits": [
+      "train"
+    ],
+    "task": "table_tennis/return-v1"
+  },
+  "strike_plane": {
+    "arrival_time_s": [
+      0.5430000000000004,
+      1.5769999999999371
+    ],
+    "ball_speed_mps": [
+      1.1754051775483598,
+      5.497230828051558
+    ],
+    "plane_x_m": -1.55,
+    "shots": 1197,
+    "y_m": [
+      -0.7101865636711204,
+      0.702899153319057
+    ],
+    "z_m": [
+      0.7110882209365529,
+      1.4125257124036652
+    ]
+  },
+  "strike_speed": {
+    "max_forward_speed_mps": [
+      1.1598781997363874,
+      4.698942073044537
+    ],
+    "median_contact_height_m": 1.0793282136454996,
+    "per_target": null,
+    "required_forward_speed_mps": {
+      "flat_return": [
+        6.074808028962019,
+        11.444154480367159
+      ],
+      "lofted_return": [
+        3.44164956174357,
+        6.483623690510467
+      ]
+    },
+    "velocity_limit_rad_s": [
+      2.175,
+      2.175,
+      2.175,
+      2.175,
+      2.61,
+      2.61,
+      2.61
+    ],
+    "velocity_limit_source": "franka_emika_panda_datasheet"
+  },
+  "task": "table-tennis-return-panda-v1",
+  "verdict": {
+    "can_reach_every_shot_in_time": false,
+    "max_blade_forward_speed_mps": 4.698942073044537,
+    "max_blade_forward_speed_source": "franka_emika_panda_datasheet",
+    "notes": "Interception is a travel-time question and return is a speed question; they fail differently and are reported separately. A robot that reaches every ball but cannot return most of them is a valid benchmark result, not a broken task. Read 'shots_reached_in_time' rather than 'can_reach_every_shot_in_time': the latter scores the corners of a rectangle drawn around the measured crossings, which no ball ever visits. And read the blade speed against 'max_blade_forward_speed_source': where that is not a datasheet, the speed is what the declared envelope permits and not what the servo delivers.",
+    "required_ball_forward_speed_mps": [
+      3.44164956174357,
+      6.483623690510467
+    ],
+    "shortest_intercept_window_s": 0.5430000000000004,
+    "shots_measured": 1197,
+    "shots_reached_in_time": 1182,
+    "worst_case_travel_time_s": 2.1996231446664973
+  }
+}

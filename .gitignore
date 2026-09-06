@@ -12,3 +12,7 @@ generated/
 *.usda
 *.usdc
 reports/isaac/
+MUJOCO_LOG.TXT
+
+# Result packages built by scripts/package_submission.py
+submission/

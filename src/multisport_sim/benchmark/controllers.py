@@ -10,8 +10,8 @@ from .types import BallState, ShotSpec
 
 Vec3 = tuple[float, float, float]
 Quaternion = tuple[float, float, float, float]
-ObservationT = TypeVar("ObservationT", contravariant=True)
-ActionT = TypeVar("ActionT", covariant=True)
+ObservationT_contra = TypeVar("ObservationT_contra", contravariant=True)
+ActionT_co = TypeVar("ActionT_co", covariant=True)
 
 
 @dataclass(frozen=True)
@@ -38,7 +38,7 @@ class ControllerObservation:
 
 
 @runtime_checkable
-class Controller(Protocol[ObservationT, ActionT]):
+class Controller(Protocol[ObservationT_contra, ActionT_co]):
     """Minimal policy contract; backend adapters retain ownership of actions."""
 
     controller_id: str
@@ -46,7 +46,7 @@ class Controller(Protocol[ObservationT, ActionT]):
     def reset(self, shot: ShotSpec, *, seed: int | None = None) -> None:
         ...
 
-    def act(self, observation: ObservationT) -> ActionT:
+    def act(self, observation: ObservationT_contra) -> ActionT_co:
         ...
 
 
@@ -59,8 +59,58 @@ class NoOpController:
         del shot, seed
 
     def act(self, observation: object) -> None:
+        """No action at all: the blade stays where the backend parked it."""
         del observation
-        return None
+
+
+SCRIPTED_DEFAULTS: dict[str, dict[str, float]] = {
+    # Table tennis: the frozen values the v0 fixture was calibrated with.
+    "table_tennis": {
+        "backswing_x": -1.70,
+        "follow_through_x": -1.38,
+        "swing_trigger_x": -1.0,
+        "swing_speed_mps": 3.0,
+        "upward_tilt_degrees": 28.0,
+        "minimum_height": 0.82,
+        "maximum_height": 1.35,
+        "maximum_lateral": 0.70,
+    },
+    # Tennis: the same swing an order of magnitude larger.  The strike happens
+    # behind the baseline rather than at the net, the racket travels metres
+    # instead of centimetres, and it must be moving four times faster because
+    # the incoming ball is.
+    "tennis": {
+        "backswing_x": -11.30,
+        "follow_through_x": -9.40,
+        "swing_trigger_x": -5.0,
+        "swing_speed_mps": 14.0,
+        # Far flatter than table tennis.  A 20 m/s ball leaving a 20-degree face
+        # is lofted, lands beyond the baseline or does not land inside the
+        # three-second episode at all; the swing that returns a tennis ball into
+        # the court is nearly horizontal.
+        "upward_tilt_degrees": 14.0,
+        "minimum_height": 0.35,
+        "maximum_height": 2.20,
+        "maximum_lateral": 4.00,
+    },
+}
+
+
+def scripted_controller_for(sport: str) -> ScriptedPaddleController:
+    """The mocap fixture tuned for one sport's scale.
+
+    The control law is identical; only distances and speeds differ, because
+    that is the only thing that differs between striking a 2.7 g ball across a
+    2.74 m table and a 57 g ball across a 23.77 m court.
+    """
+    try:
+        defaults = SCRIPTED_DEFAULTS[sport]
+    except KeyError:
+        known = ", ".join(sorted(SCRIPTED_DEFAULTS))
+        raise ValueError(
+            f"no scripted fixture is tuned for sport {sport!r}; known: {known}"
+        ) from None
+    return ScriptedPaddleController(**defaults)
 
 
 class ScriptedPaddleController:

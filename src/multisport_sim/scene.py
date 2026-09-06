@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from html import escape
 from math import cos, pi, sin
 
@@ -253,24 +254,87 @@ def _paddle_body(prefix: str, pos: tuple[float, float, float], red: bool) -> str
     )
 
 
-def _benchmark_paddle() -> str:
-    """Create the optional kinematic blade used by the MuJoCo shot harness.
+@dataclass(frozen=True)
+class BenchmarkEffector:
+    """The optional kinematic striking surface one sport's harness uses.
 
-    The body starts parked outside the playing width.  Benchmark controllers
-    move it through ``mjData.mocap_pos`` and ``mjData.mocap_quat``.  Keeping it
-    separate from the decorative paddles leaves every default scene unchanged.
+    Every sport needs the same three things -- a mocap body parked out of play,
+    one geom that is the only legal striking surface, and a size matching the
+    real implement -- so they are declared here rather than written out per
+    sport.  Keeping it separate from the decorative rackets leaves every default
+    scene unchanged.
     """
 
+    sport: Sport
+    parked_at: tuple[float, float, float]
+    half_extents: tuple[float, float, float]
+    rgba: str = "0.82 0.05 0.035 1"
+    friction: str = "0.85 0.01 0.001"
+    # Ball-implement contact, given explicitly rather than inherited.  The
+    # scene default is a damping ratio of 0.7, which returns a ball at a
+    # coefficient of restitution near 0.2: the fixture would be swinging a
+    # sponge, and no reachable speed would produce a legal return.  ``None``
+    # keeps the default, which is what the frozen table-tennis v0 scores were
+    # measured with and must keep being measured with.
+    contact_solref: tuple[float, float] | None = None
+    contact_solimp: tuple[float, float, float] | None = None
+    contact_friction: str = "0.72 0.01 0.001"
+
+    @property
+    def body(self) -> str:
+        return f"{self.sport.value}_benchmark_paddle"
+
+    @property
+    def geom(self) -> str:
+        return f"{self.sport.value}_benchmark_paddle_blade"
+
+
+BENCHMARK_EFFECTORS: dict[Sport, BenchmarkEffector] = {
+    # Blade thin along its own y axis, which is therefore the strike normal.
+    Sport.TABLE_TENNIS: BenchmarkEffector(
+        sport=Sport.TABLE_TENNIS,
+        parked_at=(-1.58, 1.25, 1.0),
+        half_extents=(0.085, 0.008, 0.10),
+    ),
+    # An ITF-legal frame is at most 0.737 x 0.318 m overall; the strung face is
+    # modelled at roughly 0.26 x 0.32 m, the part that can legally return a ball.
+    Sport.TENNIS: BenchmarkEffector(
+        sport=Sport.TENNIS,
+        # Calibrated by the drop test in tests/test_scenes.py: a ball dropped on
+        # a fixed string bed rebounds at a coefficient of restitution near 0.8,
+        # which is where measured ball-on-strings restitution sits.  Inheriting
+        # the scene default instead gives about 0.2.
+        contact_solref=(0.009, 0.115),
+        contact_solimp=(0.97, 0.995, 0.0005),
+        # Parked behind the baseline and outside the singles width, but inside
+        # the task's declared workspace: an effector that starts outside its own
+        # action space makes the environment's first observation invalid.
+        parked_at=(-9.5, 4.9, 1.0),
+        half_extents=(0.130, 0.010, 0.160),
+        rgba="0.06 0.12 0.19 1",
+        friction="0.72 0.01 0.001",
+    ),
+}
+
+
+def _benchmark_paddle(sport: Sport) -> str:
+    """Create one sport's kinematic benchmark effector.
+
+    The body starts parked outside the playing area.  Benchmark controllers move
+    it through ``mjData.mocap_pos`` and ``mjData.mocap_quat``.
+    """
+    effector = BENCHMARK_EFFECTORS[sport]
+    position = " ".join(f"{value}" for value in effector.parked_at)
+    size = " ".join(f"{value}" for value in effector.half_extents)
     return "".join(
         [
-            '<body name="table_tennis_benchmark_paddle" mocap="true" '
-            'pos="-1.58 1.25 1.0">',
+            f'<body name="{effector.body}" mocap="true" pos="{position}">',
             _geom(
-                "table_tennis_benchmark_paddle_blade",
+                effector.geom,
                 "ellipsoid",
-                size="0.085 0.008 0.10",
-                rgba="0.82 0.05 0.035 1",
-                friction="0.85 0.01 0.001",
+                size=size,
+                rgba=effector.rgba,
+                friction=effector.friction,
             ),
             "</body>",
         ]
@@ -902,12 +966,32 @@ def _contact_pairs(sports: list[Sport]) -> str:
     return "".join(pairs)
 
 
+def _benchmark_contact_pair(sport: Sport) -> str:
+    """The effector's own ball contact, when the sport calibrated one."""
+    effector = BENCHMARK_EFFECTORS[sport]
+    if effector.contact_solref is None or effector.contact_solimp is None:
+        return ""
+    solref = " ".join(str(value) for value in effector.contact_solref)
+    solimp = " ".join(str(value) for value in effector.contact_solimp)
+    return (
+        f'<pair name="{sport.value}_benchmark_paddle_contact" '
+        f'geom1="{effector.geom}" geom2="{sport.value}_ball_geom" condim="6" '
+        f'friction="{effector.contact_friction}" solref="{solref}" solimp="{solimp}"/>'
+    )
+
+
 def build_xml(scene: str = "campus", *, benchmark_paddle: bool = False) -> str:
     """Build a complete MJCF string for one sport or the complete campus."""
     if scene not in SCENES:
         raise ValueError(f"unknown scene {scene!r}; expected one of {', '.join(SCENES)}")
-    if benchmark_paddle and scene != Sport.TABLE_TENNIS.value:
-        raise ValueError("benchmark_paddle is only available for the table_tennis scene")
+    if benchmark_paddle and (
+        scene == "campus" or Sport(scene) not in BENCHMARK_EFFECTORS
+    ):
+        available = ", ".join(sorted(sport.value for sport in BENCHMARK_EFFECTORS))
+        raise ValueError(
+            f"benchmark_paddle is not available for the {scene!r} scene; "
+            f"it exists for: {available}"
+        )
 
     if scene == "campus":
         sports = list(Sport)
@@ -930,7 +1014,7 @@ def build_xml(scene: str = "campus", *, benchmark_paddle: bool = False) -> str:
     for sport in sports:
         world.extend(BUILDERS[sport](*offsets[sport]))
     if benchmark_paddle:
-        world.append(_benchmark_paddle())
+        world.append(_benchmark_paddle(Sport(scene)))
     if scene == "campus":
         world.append(
             '<camera name="campus_camera" pos="-92 -100 112" xyaxes="0.735 -0.678 0 0.43 0.466 0.773"/>'
@@ -952,7 +1036,7 @@ def build_xml(scene: str = "campus", *, benchmark_paddle: bool = False) -> str:
     <geom solref="0.006 0.7" solimp="0.94 0.99 0.001" friction="0.7 0.01 0.001" condim="4"/>
   </default>
   <worldbody>{"".join(world)}</worldbody>
-  <contact>{_contact_pairs(sports)}</contact>
+  <contact>{_contact_pairs(sports)}{_benchmark_contact_pair(Sport(scene)) if benchmark_paddle else ""}</contact>
 </mujoco>"""
 
 

@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from math import exp, log, sqrt
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from .specs import BALLS, Sport
 

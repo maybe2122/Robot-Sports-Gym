@@ -107,6 +107,88 @@ multisport-benchmark --level L1 --split dev --controller noop
 
 See the [Shot Skill documentation](docs/TABLE_TENNIS_SHOT_SKILL.md) for the coordinate frame, L0–L5 criteria, report schema, fixed-bank integrity checks, and robot-adapter contract.
 
+### Embodied task `table-tennis-return-panda-v1`
+
+A versioned task that runs *alongside* `table-tennis-return-v0`, not after it: same judge, rules and reward terms, while an actuated 7-DoF Franka Panda hits the ball instead of a teleported mocap blade. The Panda task defaults to the statistically sufficient `table_tennis/return-v1` bank; the fixture can replay that bank for controlled comparisons while retaining v0 for frozen rule-engine regression. The action is seven joint-position setpoints in radians (the arm's own limits, not normalized), the observation is 33 numbers, safety breaches are checked every physics step and terminate the episode into the denominator, and actuator mechanical work is integrated as `energy_joule`.
+
+The arm asset is not vendored. It is resolved from `MULTISPORT_MENAGERIE_PATH`, then `MUJOCO_MENAGERIE_PATH`, then `~/mujoco_menagerie`:
+
+```bash
+git clone --filter=blob:none --sparse https://github.com/google-deepmind/mujoco_menagerie ~/mujoco_menagerie
+git -C ~/mujoco_menagerie sparse-checkout add franka_emika_panda
+```
+
+```bash
+# Reference baselines: hold / random / intercept.  None is a submission.
+multisport-benchmark --robot panda --controller intercept --level L2 --split dev
+
+# The full table: four baselines x two splits x L0-L5
+make baselines PYTHON=/path/to/python
+```
+
+To score **your own trained policy** -- any callable `obs(33) -> action(7)`, given as `module:policy` or as a zero-argument factory returning one:
+
+```bash
+python scripts/eval_policy.py --policy my_pkg.eval:load_policy --policy-id my-sac-v3 \
+  --split test --levels all --out reports/my-sac-v3
+```
+
+Each level produces a full JSON/Markdown report plus one cross-difficulty summary table. The observation layout is defined once, in `multisport_sim.benchmark.envs.panda_observation_vector`, so the Gymnasium environment `MultiSportRobot/TableTennisReturn-Panda-v1` and the offline scoring path read the same numbers in the same order.
+
+### Vision track
+
+A second observation track on the same task: **the policy sees only cameras**. The robot, the action, the judge, the shot bank, the reward and the thresholds are all unchanged; the one difference is that the observation object has **no `ball` field**. That rule is enforced by construction, not promised in a docstring.
+
+The declared suite is two 320x240 / 120 Hz cameras on a 4.2 m stereo baseline either side of the table, plus blade IMU, contact, joint torque and frame transform. Camera poses come from the `CameraSpec` and are written into the model, so the pose a report names is the pose that was rendered.
+
+```bash
+# The built-in vision baseline: the identical swing, driven by triangulation instead of truth
+multisport-benchmark --robot panda --track vision --level L1 --split dev
+
+# Score your own vision policy
+python scripts/eval_policy.py --policy my_pkg.eval:load_policy --policy-id my-vision \
+  --track vision --split test --levels all --out reports/my-vision
+```
+
+The policy receives a `VisionObservation`: `obs.sensors.camera("ball_camera_left").rgb` is a `(240, 320, 3)` uint8 image and `obs.robot.joint_positions` is proprioception. Train against `MultiSportRobot/TableTennisReturn-Panda-Vision-v1`, whose dictionary observation includes `frame_age_s` -- the cameras run at 120 Hz under a 200 Hz control loop, so every other step holds the previous frame. Training and scoring call the same packing function.
+
+The reference pipeline (colour segmentation, largest blob, two-ray triangulation, least-squares velocity) localizes the ball to a **median 0.81 cm (p90 1.02 cm) with 8.1% of frames undetected**, measured over all 540 stereo frames of the dev split. Running the identical swing from it scores 100% hit rate at L1 -- level with the state track -- and 50% at L2. **That gap is the cost of perception, measured rather than assumed.**
+
+See [`docs/VISION_TRACK.md`](docs/VISION_TRACK.md).
+
+### Full metrics and result packages
+
+Reports now carry all eight raw metrics from `BENCHMARK_SPEC` section 7. The three that were missing are `contact_error` (how far off the blade's centre the strike landed, plus blade speed at contact), `robustness_gap` (L1-L3 minus L4-L5), and `inference_latency_ms` (the policy's own `act` call, nothing else).
+
+```bash
+# A reproducible package: manifest / config / metrics / policy / videos / environment
+make submission POLICY=my_pkg:load_policy POLICY_ID=my-sac-v3
+```
+
+The manifest **admits when the working tree is dirty**, videos are the first N successes *and* the first N failures by shot id (cherry-picking is not available), weights are content-hashed with sha256, and a package shipped without weights says so instead of looking complete. See [`docs/SUBMISSION.md`](docs/SUBMISSION.md).
+
+### Tennis, and shot banks large enough to conclude something
+
+A second sport, `tennis-return-v0`, now runs on **the same judge, the same L0-L5 thresholds and the same report schema**. Only geometry and scale differ: a 23.77 x 8.23 m singles court where the ground itself is the landing surface, a three-second episode, and a ball arriving at 17-34 m/s.
+
+```bash
+multisport-benchmark --sport tennis --level L2 --split test --controller scripted
+make tennis-baselines PYTHON=/path/to/python
+```
+
+The fixed sets are large enough now. `scripts/generate_shot_bank.py` produces `table_tennis/return-v1` and `tennis/return-v0`, each **train 1200 / dev 300 / test 600 -- 100 episodes per level** -- with non-overlapping seeds *and* provably disjoint shots. Every shot was launched in the real scene and kept only when the judge called it a legal incoming ball; `short`, `deep` and `edge` come from the **measured** first bounce; and every bucket an L4/L5 pass criterion names is filled by stratified sampling rather than by luck.
+
+```bash
+# Score on the statistically sufficient bank
+multisport-benchmark --robot panda --level L2 --split test
+```
+
+L5 of `return-v1` also declares real perturbations -- observation noise, observation and action latency, domain randomization -- all stated in the manifest, all drawn from the episode seed so a failure replays exactly, and all applied **only to what the policy sees, never to what the judge sees**. **`return-v0` is unchanged to the byte**, so every score ever produced on it remains valid.
+
+See [`docs/TENNIS.md`](docs/TENNIS.md) and [`docs/SHOT_BANKS.md`](docs/SHOT_BANKS.md).
+
+Baseline scores are in [`reports/table-tennis-panda-baselines.md`](reports/table-tennis-panda-baselines.md); the calibration, reachability findings, and safety envelope are in [`docs/ROBOT_LAYER.md`](docs/ROBOT_LAYER.md). The Panda table uses `table_tennis/return-v1`: 50 dev and 100 test shots per level, with per-bucket Wilson intervals. The smallest L4/L5 bucket still has only 14 shots, so a worst-bucket point estimate must not be cited without its interval.
+
 ## Quantitative fidelity
 
 The `multisport-fidelity-v1` suite runs real drop simulations and records measured rebound, reference intervals, absolute/relative error, tolerance utilization, effective restitution, pass/fail, and a continuous score.

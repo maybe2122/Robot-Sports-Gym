@@ -15,7 +15,6 @@ from multisport_sim.benchmark.types import ShotSpec
 from multisport_sim.scene import build_model, build_xml
 from multisport_sim.specs import TABLE_TENNIS
 
-
 REFERENCE_SHOT = ShotSpec(
     shot_id="tt-reference-real-contact",
     sport="table_tennis",
@@ -47,7 +46,8 @@ def test_benchmark_blade_is_opt_in_and_default_scene_stays_uncontrolled() -> Non
     assert body_id >= 0 and benchmark_model.body_mocapid[body_id] == 0
     assert blade_id >= 0
 
-    with pytest.raises(ValueError, match="only available for the table_tennis"):
+    # The fixture now exists for tennis too, so the guard names what is available.
+    with pytest.raises(ValueError, match="not available for the 'campus' scene"):
         build_model("campus", benchmark_paddle=True)
 
 

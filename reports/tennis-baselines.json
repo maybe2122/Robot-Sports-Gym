@@ -1,0 +1,348 @@
+{
+  "generated_at": "2026-09-02T05:29:33.048278+00:00",
+  "robustness_gap": [
+    {
+      "controller": "noop",
+      "gap": 0.0,
+      "in_distribution": 0.0,
+      "in_distribution_episodes": 300,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L3": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L4": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L5": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.0,
+      "perturbed_episodes": 200,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ]
+    },
+    {
+      "controller": "scripted",
+      "gap": -0.08666666666666667,
+      "in_distribution": 0.42333333333333334,
+      "in_distribution_episodes": 300,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            0.4920143005341078,
+            0.6813268697886348
+          ],
+          "episodes": 100,
+          "value": 0.59
+        },
+        "L3": {
+          "confidence_interval_95": [
+            0.5833738138954762,
+            0.7633085267500092
+          ],
+          "episodes": 100,
+          "value": 0.68
+        },
+        "L4": {
+          "confidence_interval_95": [
+            0.4622810465167699,
+            0.6532797336983921
+          ],
+          "episodes": 100,
+          "value": 0.56
+        },
+        "L5": {
+          "confidence_interval_95": [
+            0.36560808309024106,
+            0.5573513967663177
+          ],
+          "episodes": 100,
+          "value": 0.46
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.51,
+      "perturbed_episodes": 200,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "controller": "noop",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_episode_time_s": 0.9982199999999933,
+      "pass_threshold": 1.0,
+      "passed": true,
+      "primary_confidence_interval_95": [
+        0.9630065017930143,
+        1.0
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 1.0,
+      "target_rate": 0.0,
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "scripted",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_episode_time_s": 0.9982199999999933,
+      "pass_threshold": 1.0,
+      "passed": true,
+      "primary_confidence_interval_95": [
+        0.9630065017930143,
+        1.0
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 1.0,
+      "target_rate": 0.0,
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "noop",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L1",
+      "mean_episode_time_s": 1.760349999999917,
+      "pass_threshold": 0.9,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 0.0,
+      "target_rate": 0.0,
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "scripted",
+      "episodes": 100,
+      "hit_rate": 0.99,
+      "level": "L1",
+      "mean_episode_time_s": 1.3134299999999661,
+      "pass_threshold": 0.9,
+      "passed": true,
+      "primary_confidence_interval_95": [
+        0.9455138038212946,
+        0.9982325679358593
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 0.99,
+      "target_rate": 0.0,
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "noop",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L2",
+      "mean_episode_time_s": 1.7605599999999169,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.0,
+      "target_rate": 0.0,
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "scripted",
+      "episodes": 100,
+      "hit_rate": 0.95,
+      "level": "L2",
+      "mean_episode_time_s": 2.530039999999832,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.4920143005341078,
+        0.6813268697886348
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.59,
+      "target_rate": 0.0,
+      "valid_return_rate": 0.59,
+      "worst_bucket": null
+    },
+    {
+      "controller": "noop",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L3",
+      "mean_episode_time_s": 1.7343699999999196,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.0,
+      "target_rate": 0.0,
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "scripted",
+      "episodes": 100,
+      "hit_rate": 1.0,
+      "level": "L3",
+      "mean_episode_time_s": 2.6401999999998202,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0017674320641406505,
+        0.054486196178705315
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.01,
+      "target_rate": 0.01,
+      "valid_return_rate": 0.68,
+      "worst_bucket": null
+    },
+    {
+      "controller": "noop",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L4",
+      "mean_episode_time_s": 1.6523399999999286,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.08566757018443186
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "target_rate": 0.0,
+      "valid_return_rate": 0.0,
+      "worst_bucket": "depth"
+    },
+    {
+      "controller": "scripted",
+      "episodes": 100,
+      "hit_rate": 0.9,
+      "level": "L4",
+      "mean_episode_time_s": 2.4391099999998422,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.12003174778217568,
+        0.3670500598822617
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.21951219512195122,
+      "target_rate": 0.0,
+      "valid_return_rate": 0.56,
+      "worst_bucket": "depth"
+    },
+    {
+      "controller": "noop",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L5",
+      "mean_episode_time_s": 1.6342499999999307,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.048113585065137326
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "target_rate": 0.0,
+      "valid_return_rate": 0.0,
+      "worst_bucket": "edge_or_depth"
+    },
+    {
+      "controller": "scripted",
+      "episodes": 100,
+      "hit_rate": 0.8,
+      "level": "L5",
+      "mean_episode_time_s": 2.1679099999998717,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.22230854157063415,
+        0.42699646345336384
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.3157894736842105,
+      "target_rate": 0.0,
+      "valid_return_rate": 0.46,
+      "worst_bucket": "edge_or_depth"
+    }
+  ],
+  "schema": "multisport-baseline-table-v0",
+  "seed": 0,
+  "shot_bank_digest": "b0614a72ee8ea9cab5d2e83d864dc30d02741321c94b70db29f9af2da4b7e9e3",
+  "split": "test",
+  "task": "tennis-return-v0"
+}

@@ -1,0 +1,152 @@
+{
+  "asset": {
+    "asset_id": "unitree_g1",
+    "license": "BSD-3-Clause",
+    "license_path": "unitree_g1/LICENSE",
+    "modifications": [
+      "loaded through mujoco.MjSpec and attached to the table-tennis scene with the joint/actuator prefix 'g1_'; upstream files are not edited",
+      "the pelvis free joint is deleted, fixing the base: this task scores a return, not balance, and a free-standing humanoid would be scored on staying upright",
+      "the 'stand' keyframe is dropped because its qpos still counts the deleted free joint; its pose is carried in robots/g1.py STAND_QPOS",
+      "a benchmark paddle body is added as a child of 'right_wrist_yaw_link'",
+      "the parent scene's impratio=1 is kept instead of the model's own value, because one compiled model holds one impratio",
+      "joint speed limits are NOT from this asset: it declares actuatorfrcrange but no velocity bound, so the benchmark supplies a uniform placeholder and marks it unverified in every report"
+    ],
+    "relative_path": "unitree_g1/g1.xml",
+    "upstream_url": "https://github.com/google-deepmind/mujoco_menagerie/tree/main/unitree_g1",
+    "version": "menagerie unitree_g1 CHANGELOG 2025-08-07"
+  },
+  "mount": {
+    "pedestal_radius_m": 0.16,
+    "position": [
+      -2.0,
+      -0.05,
+      0.1
+    ]
+  },
+  "reachability": {
+    "grid_points": 49,
+    "mount_coverage": 0.3877551020408163,
+    "per_shot": {
+      "in_time_by_level": {
+        "L0": {
+          "in_time": 163,
+          "shots": 200
+        },
+        "L1": {
+          "in_time": 164,
+          "shots": 200
+        },
+        "L2": {
+          "in_time": 189,
+          "shots": 200
+        },
+        "L3": {
+          "in_time": 198,
+          "shots": 200
+        },
+        "L4": {
+          "in_time": 139,
+          "shots": 197
+        },
+        "L5": {
+          "in_time": 142,
+          "shots": 200
+        }
+      },
+      "reachable": 995,
+      "reachable_in_time": 995,
+      "shots": 1197
+    },
+    "search": null,
+    "shortest_intercept_window_s": 0.5430000000000004,
+    "travel_fits_in_window": true,
+    "unreachable_points": 29,
+    "worst_case_travel_time_s": 0.3322130527485503
+  },
+  "ready_qpos": [
+    0.42068,
+    0.17477,
+    0.36833,
+    -2.18122,
+    -0.63251,
+    -0.79535,
+    1.97035,
+    1.52509,
+    -0.23185,
+    -1.07621
+  ],
+  "robot": "unitree-g1-tabletennis-v1",
+  "schema_version": 1,
+  "shot_bank": {
+    "splits": [
+      "train"
+    ],
+    "task": "table_tennis/return-v1"
+  },
+  "strike_plane": {
+    "arrival_time_s": [
+      0.5430000000000004,
+      1.5769999999999371
+    ],
+    "ball_speed_mps": [
+      1.1754051775483598,
+      5.497230828051558
+    ],
+    "plane_x_m": -1.55,
+    "shots": 1197,
+    "y_m": [
+      -0.7101865636711204,
+      0.702899153319057
+    ],
+    "z_m": [
+      0.7110882209365529,
+      1.4125257124036652
+    ]
+  },
+  "strike_speed": {
+    "max_forward_speed_mps": [
+      7.87986964880685,
+      19.925605207809593
+    ],
+    "median_contact_height_m": 1.0793282136454996,
+    "per_target": null,
+    "required_forward_speed_mps": {
+      "flat_return": [
+        6.074808028962019,
+        11.444154480367159
+      ],
+      "lofted_return": [
+        3.44164956174357,
+        6.483623690510467
+      ]
+    },
+    "velocity_limit_rad_s": [
+      10.0,
+      10.0,
+      10.0,
+      10.0,
+      10.0,
+      10.0,
+      10.0,
+      10.0,
+      10.0,
+      10.0
+    ],
+    "velocity_limit_source": "unverified_placeholder"
+  },
+  "task": "table-tennis-return-g1-v1",
+  "verdict": {
+    "can_reach_every_shot_in_time": true,
+    "max_blade_forward_speed_mps": 19.925605207809593,
+    "max_blade_forward_speed_source": "unverified_placeholder",
+    "notes": "Interception is a travel-time question and return is a speed question; they fail differently and are reported separately. A robot that reaches every ball but cannot return most of them is a valid benchmark result, not a broken task. Read 'shots_reached_in_time' rather than 'can_reach_every_shot_in_time': the latter scores the corners of a rectangle drawn around the measured crossings, which no ball ever visits. And read the blade speed against 'max_blade_forward_speed_source': where that is not a datasheet, the speed is what the declared envelope permits and not what the servo delivers.",
+    "required_ball_forward_speed_mps": [
+      3.44164956174357,
+      6.483623690510467
+    ],
+    "shortest_intercept_window_s": 0.5430000000000004,
+    "shots_measured": 1197,
+    "shots_reached_in_time": 995,
+    "worst_case_travel_time_s": 0.3322130527485503
+  }
+}

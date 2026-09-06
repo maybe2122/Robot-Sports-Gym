@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from math import isfinite
 from numbers import Real
-from typing import Any, Literal, Mapping, Sequence, TypeAlias, cast
+from typing import Any, Literal, TypeAlias, cast
 
 Vec2: TypeAlias = tuple[float, float]
 Vec3: TypeAlias = tuple[float, float, float]
@@ -362,6 +363,27 @@ class EpisodeResult:
             raise ValueError("target_error_m requires valid_return")
         if self.failure_reason is not None and self.valid_return:
             raise ValueError("a valid return cannot have a failure_reason")
+
+    @classmethod
+    def from_dict(cls, record: Mapping[str, Any]) -> EpisodeResult:
+        """Rebuild a result from a report entry, validating it on the way in.
+
+        Reports are read back by tooling -- the submission packager and any
+        cross-run aggregation -- and re-deriving metrics from loose dictionaries
+        would skip every invariant :meth:`validate` enforces.
+        """
+        if not isinstance(record, Mapping):
+            raise ValueError("record must be a mapping")
+        unknown = set(record) - set(cls.__dataclass_fields__)
+        if unknown:
+            raise ValueError(f"unknown result fields: {', '.join(sorted(unknown))}")
+        values = dict(record)
+        for name in ("tags", "landing_xy", "incoming_spin_radps"):
+            if values.get(name) is not None:
+                values[name] = tuple(values[name])
+        result = cls(**values)
+        result.validate()
+        return result
 
     def to_dict(self) -> dict[str, Any]:
         self.validate()

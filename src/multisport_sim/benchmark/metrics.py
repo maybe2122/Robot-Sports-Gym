@@ -78,11 +78,12 @@ def _validated_results(results: Sequence[EpisodeResult]) -> tuple[EpisodeResult,
         for field in _BINARY_FIELDS:
             if not isinstance(getattr(result, field), bool):
                 raise MetricsError(f"{result.shot_id} field {field} must be boolean")
-        if result.target_error_m is not None:
-            if not isfinite(result.target_error_m) or result.target_error_m < 0.0:
-                raise MetricsError(
-                    f"{result.shot_id} target_error_m must be finite and non-negative"
-                )
+        if result.target_error_m is not None and (
+            not isfinite(result.target_error_m) or result.target_error_m < 0.0
+        ):
+            raise MetricsError(
+                f"{result.shot_id} target_error_m must be finite and non-negative"
+            )
         if result.failure_reason is not None and result.failure_reason not in FAILURE_REASONS:
             raise MetricsError(f"{result.shot_id} has unknown failure_reason")
     return values
@@ -100,6 +101,9 @@ def _metric_block(results: Sequence[EpisodeResult]) -> dict[str, Any]:
     }
     safety_violations = sum(result.failure_reason == "safety" for result in results)
     errors = [result.target_error_m for result in results if result.target_error_m is not None]
+    durations = [
+        result.episode_time_s for result in results if result.episode_time_s is not None
+    ]
     rates = {
         "incoming_valid_rate": _rate(counts["incoming_valid"], episodes),
         "hit_rate": _rate(counts["hit"], episodes),
@@ -109,6 +113,7 @@ def _metric_block(results: Sequence[EpisodeResult]) -> dict[str, Any]:
         "net_touch_rate": _rate(counts["net_touch"], episodes),
         "safety_violation_rate": _rate(safety_violations, episodes),
         "mean_target_error_m": sum(errors) / len(errors) if errors else None,
+        "mean_episode_time_s": sum(durations) / len(durations) if durations else None,
     }
     confidence = {
         "incoming_valid_rate": wilson_interval(counts["incoming_valid"], episodes),
@@ -123,6 +128,7 @@ def _metric_block(results: Sequence[EpisodeResult]) -> dict[str, Any]:
             **counts,
             "safety_violation": safety_violations,
             "target_error_samples": len(errors),
+            "episode_time_samples": len(durations),
         },
         "metrics": rates,
         "confidence_intervals_95": confidence,
@@ -216,6 +222,10 @@ def assess_level(
 
     missing_buckets: list[str] = []
     bucket_values: dict[str, float] = {}
+    bucket_episodes: dict[str, int] = {}
+    bucket_intervals: dict[str, list[float] | None] = {}
+    worst_bucket: str | None = None
+    primary_interval: list[float] | None = None
     if primary_metric == "worst_bucket_valid_return_rate":
         for bucket in level_spec.get("pass_buckets", ()):
             bucket_summary = aggregate["bucket_groups"].get(bucket) or aggregate[
@@ -225,13 +235,27 @@ def assess_level(
                 missing_buckets.append(bucket)
             else:
                 bucket_values[bucket] = bucket_summary["metrics"]["valid_return_rate"]
+                bucket_episodes[bucket] = bucket_summary["episodes"]
+                bucket_intervals[bucket] = bucket_summary["confidence_intervals_95"][
+                    "valid_return_rate"
+                ]
         primary_value = (
             min(bucket_values.values()) if bucket_values and not missing_buckets else None
         )
+        if primary_value is not None:
+            # Stable tie-breaking makes the interval reproducible when several
+            # buckets have the same observed rate.
+            worst_bucket = min(
+                bucket
+                for bucket, value in bucket_values.items()
+                if value == primary_value
+            )
+            primary_interval = bucket_intervals[worst_bucket]
     else:
         primary_value = aggregate["metrics"].get(primary_metric)
         if primary_value is None:
             raise MetricsError(f"unsupported primary metric for {selected_level}: {primary_metric}")
+        primary_interval = aggregate["confidence_intervals_95"].get(primary_metric)
 
     criteria = [
         {
@@ -275,10 +299,69 @@ def assess_level(
         "primary_value": primary_value,
         "pass_threshold": float(threshold),
         "bucket_values": bucket_values,
+        "bucket_episodes": bucket_episodes,
+        "bucket_confidence_intervals_95": bucket_intervals,
+        "worst_bucket": worst_bucket,
+        "primary_confidence_interval_95": primary_interval,
         "missing_buckets": missing_buckets,
         "criteria": criteria,
         "passed": passed,
         "reasons": reasons,
+    }
+
+
+IN_DISTRIBUTION_LEVELS = ("L1", "L2", "L3")
+PERTURBED_LEVELS = ("L4", "L5")
+"""The two level groups ``robustness_gap`` compares.
+
+L1-L3 are the nominal distributions the task is defined on; L4 and L5 add the
+fast, spin, edge, short/deep, low and held-out combinations.  A policy that
+scores well on the first group and badly on the second has not learned the
+task, it has learned the distribution -- which is the whole point of reporting
+the difference rather than one blended number.
+"""
+
+
+def robustness_gap(
+    results: Sequence[EpisodeResult], *, metric: str = "valid_return_rate"
+) -> dict[str, Any] | None:
+    """Success-rate difference between nominal and perturbed levels.
+
+    Returns ``None`` unless the run covers both groups: a gap computed from one
+    of them would be a comparison with nothing.
+    """
+    nominal = [result for result in results if result.level in IN_DISTRIBUTION_LEVELS]
+    perturbed = [result for result in results if result.level in PERTURBED_LEVELS]
+    if not nominal or not perturbed:
+        return None
+    nominal_value = _metric_block(nominal)["metrics"][metric]
+    perturbed_value = _metric_block(perturbed)["metrics"][metric]
+    if nominal_value is None or perturbed_value is None:
+        return None
+    level_breakdown: dict[str, dict[str, Any]] = {}
+    for level in (*IN_DISTRIBUTION_LEVELS, *PERTURBED_LEVELS):
+        selected = [result for result in results if result.level == level]
+        if not selected:
+            continue
+        block = _metric_block(selected)
+        level_breakdown[level] = {
+            "episodes": len(selected),
+            "value": block["metrics"][metric],
+            "confidence_interval_95": block["confidence_intervals_95"].get(metric),
+        }
+    return {
+        "metric": metric,
+        "in_distribution_levels": list(IN_DISTRIBUTION_LEVELS),
+        "perturbed_levels": list(PERTURBED_LEVELS),
+        "in_distribution": nominal_value,
+        "in_distribution_episodes": len(nominal),
+        "perturbed": perturbed_value,
+        "perturbed_episodes": len(perturbed),
+        "gap": nominal_value - perturbed_value,
+        # L4 changes the shot distribution; L5 changes it again and applies
+        # declared perturbations.  Showing both prevents their weighted mean
+        # from being mistaken for evidence that difficulty is monotonic.
+        "level_breakdown": level_breakdown,
     }
 
 
@@ -345,6 +428,9 @@ def build_benchmark_report(
         "failures": aggregate["failures"],
         "outcomes": aggregate["outcomes"],
         "level_assessments": assessments,
+        # None for a single-level run: the gap needs both groups, and reporting
+        # zero would claim a robustness result that was never measured.
+        "robustness_gap": robustness_gap(values),
         "results": [result.to_dict() for result in values],
     }
     try:
@@ -356,9 +442,12 @@ def build_benchmark_report(
 
 __all__ = [
     "FAILURE_REASONS",
+    "IN_DISTRIBUTION_LEVELS",
+    "PERTURBED_LEVELS",
     "MetricsError",
     "aggregate_results",
     "assess_level",
     "build_benchmark_report",
+    "robustness_gap",
     "wilson_interval",
 ]

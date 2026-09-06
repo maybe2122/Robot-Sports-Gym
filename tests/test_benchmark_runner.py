@@ -4,10 +4,10 @@ import pytest
 
 from multisport_sim.benchmark.backends.mujoco import MujocoShotBackend
 from multisport_sim.benchmark.controllers import NoOpController, ScriptedPaddleController
+from multisport_sim.benchmark.robot import RobotObservation
 from multisport_sim.benchmark.runner import RunConfig, run_shots
 from multisport_sim.benchmark.shot_bank import ShotBank
-from multisport_sim.benchmark.types import ShotSpec
-
+from multisport_sim.benchmark.types import BallState, SemanticContact, ShotSpec
 
 REFERENCE_SHOT = ShotSpec(
     shot_id="runner-reference",
@@ -121,3 +121,114 @@ def test_runner_counts_non_finite_backend_state_as_an_episode_failure() -> None:
 
     assert output.results[0].failure_reason == "numerical"
     assert output.results[0].episode_time_s == pytest.approx(0.001)
+
+
+class _StubEmbodiedBackend:
+    """A scripted embodied backend: no simulator, exact numbers, no asset.
+
+    It exists so the runner's contact-error and latency bookkeeping can be
+    checked against values worked out by hand.  A real MuJoCo run cannot do
+    that: the contact position is whatever the solver produced.
+    """
+
+    timestep = 0.005
+
+    def __init__(self, *, contact_at_step: int | None = 2) -> None:
+        self.contact_at_step = contact_at_step
+        self._step = 0
+        self.time = 0.0
+
+    def reset(self) -> None:
+        self._step = 0
+        self.time = 0.0
+
+    def launch_ball(self, shot) -> None:
+        del shot
+
+    def observe(self) -> object:
+        return object()
+
+    def apply_action(self, action) -> None:
+        del action
+
+    def step(self) -> None:
+        self._step += 1
+        self.time = self._step * self.timestep
+
+    def get_ball_state(self) -> BallState:
+        return BallState(
+            position=(1.0 - self._step * 0.05, 0.0, 1.0),
+            linear_velocity=(-5.0, 0.0, 0.0),
+            angular_velocity=(0.0, 0.0, 0.0),
+        )
+
+    def semantic_contacts(self) -> tuple[SemanticContact, ...]:
+        if self.contact_at_step is None or self._step < self.contact_at_step:
+            return ()
+        # 3 cm across the face and 4 cm along it: a 5 cm off-centre strike.
+        return (
+            SemanticContact.between(
+                "ball", "robot_racket", position=(0.03, 0.04, 1.0), normal=(1.0, 0.0, 0.0)
+            ),
+        )
+
+    def safety_violations(self) -> tuple:
+        return ()
+
+    def robot_observation(self) -> RobotObservation:
+        return RobotObservation(
+            time_s=self.time,
+            joint_positions=(0.0,) * 7,
+            joint_velocities=(0.0,) * 7,
+            applied_torque=(0.0,) * 7,
+            effector_position=(0.0, 0.0, 1.0),
+            effector_quaternion=(1.0, 0.0, 0.0, 0.0),
+            effector_linear_velocity=(3.0, 4.0, 0.0),
+        )
+
+
+def test_the_runner_measures_how_far_off_centre_the_strike_landed() -> None:
+    backend = _StubEmbodiedBackend()
+    output = run_shots(backend, NoOpController(), [REFERENCE_SHOT])
+
+    # The face is the blade site's x-y plane, so the 1 m offset along the
+    # normal is excluded and the in-face 3-4-5 triangle is what is reported.
+    assert output.contact_offset_m[0] == pytest.approx(0.05)
+    assert output.contact_speed_mps[0] == pytest.approx(5.0)
+
+
+def test_an_episode_without_a_strike_reports_no_contact_error_rather_than_zero() -> None:
+    """Zero would mean a perfectly centred hit; there was no hit at all."""
+    output = run_shots(
+        _StubEmbodiedBackend(contact_at_step=None), NoOpController(), [REFERENCE_SHOT]
+    )
+
+    assert output.contact_offset_m == (None,)
+    assert output.contact_speed_mps == (None,)
+
+
+def test_only_the_first_blade_contact_counts() -> None:
+    """Later contacts are the ball leaving; scoring them would flatter the aim."""
+    backend = _StubEmbodiedBackend(contact_at_step=1)
+    output = run_shots(backend, NoOpController(), [REFERENCE_SHOT])
+
+    assert output.contact_offset_m[0] == pytest.approx(0.05)
+
+
+def test_the_runner_times_the_policy_and_not_the_physics() -> None:
+    backend = _StubEmbodiedBackend()
+    output = run_shots(backend, NoOpController(), [REFERENCE_SHOT])
+
+    # One sample per control step, and a no-op controller is fast.
+    assert len(output.inference_latency_ms) > 0
+    assert all(value >= 0.0 for value in output.inference_latency_ms)
+    assert max(output.inference_latency_ms) < 50.0
+
+
+def test_a_mocap_backend_reports_no_contact_error_at_all() -> None:
+    """It has no blade pose to measure against, so the lists stay empty."""
+    output = run_shots(MujocoShotBackend(), NoOpController(), [REFERENCE_SHOT])
+
+    assert output.contact_offset_m == ()
+    assert output.contact_speed_mps == ()
+    assert len(output.inference_latency_ms) > 0

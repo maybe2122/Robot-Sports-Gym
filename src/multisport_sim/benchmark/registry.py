@@ -30,6 +30,10 @@ class TaskEntry:
     judge_factory: JudgeFactory
     backend_factory: BackendFactory
     env_entry_point: str
+    # A second environment for the same task on the vision track.  It is not a
+    # second *task*: same judge, same bank, same thresholds, and its results
+    # belong in the same table -- only what the policy may see differs.
+    vision_env_entry_point: str | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.config, ShotTaskConfig):
@@ -39,6 +43,13 @@ class TaskEntry:
                 raise TypeError(f"{name} must be callable")
         if ":" not in self.env_entry_point:
             raise ValueError("env_entry_point must look like 'module:Class'")
+        if self.vision_env_entry_point is not None:
+            if ":" not in self.vision_env_entry_point:
+                raise ValueError("vision_env_entry_point must look like 'module:Class'")
+            if getattr(self.config, "vision_env_id", None) is None:
+                raise ValueError(
+                    "a task with a vision environment must declare vision_env_id"
+                )
 
     @property
     def task_id(self) -> str:
@@ -74,13 +85,33 @@ def get_task(task_id: str) -> TaskEntry:
         ) from None
 
 
-def task_for_sport(sport: str) -> TaskEntry:
-    """Return the single task registered for one sport."""
-    matches = [entry for entry in _TASKS.values() if entry.config.sport == sport]
+def tasks_for_sport(sport: str) -> tuple[TaskEntry, ...]:
+    """Return every task registered for one sport, ordered by task id.
+
+    A sport has more than one task as soon as it is played by more than one
+    embodiment -- table tennis ships both the mocap fixture and the Panda task.
+    """
+    matches = tuple(
+        sorted(
+            (entry for entry in _TASKS.values() if entry.config.sport == sport),
+            key=lambda entry: entry.task_id,
+        )
+    )
     if not matches:
         raise KeyError(f"no task is registered for sport {sport!r}")
+    return matches
+
+
+def task_for_sport(sport: str) -> TaskEntry:
+    """Return the one task registered for a sport, refusing to guess.
+
+    Naming a sport stops identifying a task once that sport has several, so
+    this raises rather than picking one; use :func:`tasks_for_sport` to list
+    them and :func:`get_task` to address one.
+    """
+    matches = tasks_for_sport(sport)
     if len(matches) > 1:
-        found = ", ".join(sorted(entry.task_id for entry in matches))
+        found = ", ".join(entry.task_id for entry in matches)
         raise KeyError(f"sport {sport!r} has several tasks; name one of: {found}")
     return matches[0]
 

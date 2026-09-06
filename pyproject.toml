@@ -39,6 +39,9 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest>=8", "ruff>=0.6"]
+# Only the submission packager's video export needs an image library, and a
+# result package is still valid without videos, so this stays optional.
+submission = ["pillow>=10"]
 
 [project.scripts]
 multisport-sim = "multisport_sim.cli:main"
@@ -57,3 +60,12 @@ addopts = "-q"
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+
+[tool.ruff.lint]
+ignore = [
+    # This package reports every malformed input as ValueError, wrong type
+    # included, and its tests pin that contract.  Splitting type errors out
+    # would change the public exception for a third of the validation layer
+    # without making any caller's handling more precise.
+    "TRY004",
+]

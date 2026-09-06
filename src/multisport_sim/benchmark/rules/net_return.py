@@ -9,8 +9,8 @@ sport-specific modules supply the surface and the defaults.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from math import isclose, sqrt
-from typing import Iterable
 
 from ..events import BALL, FLOOR, NET, ROBOT_RACKET, TABLE, ContactEdgeDetector
 from ..types import (
@@ -150,13 +150,11 @@ class NetReturnJudge:
 
     def _is_surface_contact(self, contact: SemanticContact) -> bool:
         surface = self.surface
-        if contact.normal is not None:
-            if abs(contact.normal[2]) < surface.minimum_normal_z:
-                return False
-        if contact.position is not None:
-            if abs(contact.position[2] - surface.top_height_m) > surface.height_tolerance_m:
-                return False
-        return True
+        if contact.normal is not None and abs(contact.normal[2]) < surface.minimum_normal_z:
+            return False
+        if contact.position is None:
+            return True
+        return abs(contact.position[2] - surface.top_height_m) <= surface.height_tolerance_m
 
     def _landing_point(
         self, contact: SemanticContact, ball: BallState

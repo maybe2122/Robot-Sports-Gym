@@ -26,7 +26,20 @@ def _report() -> dict[str, object]:
             "safety_violation_rate": 0.0,
             "confidence_intervals_95": {"hit_rate": [0.30, 0.95]},
         },
-        "buckets": {"fast": {"episodes": 2, "valid_return_rate": 0.5}},
+        "buckets": {
+            "fast": {
+                "episodes": 2,
+                "valid_return_rate": 0.5,
+                "confidence_intervals_95": {"valid_return_rate": [0.095, 0.905]},
+            }
+        },
+        "bucket_groups": {
+            "spin": {
+                "episodes": 2,
+                "metrics": {"valid_return_rate": 0.5},
+                "confidence_intervals_95": {"valid_return_rate": [0.095, 0.905]},
+            }
+        },
         "failures": {"miss": 1, "timeout": 1},
         "assessment": {"passed": False, "reasons": ["return rate is below 80%"]},
     }
@@ -39,6 +52,8 @@ def test_markdown_exposes_result_metrics_buckets_and_failures() -> None:
     assert "NOT PASSED" in markdown
     assert "75.0%" in markdown
     assert "`fast`" in markdown
+    assert "`spin`" in markdown
+    assert "9.5%–90.5%" in markdown
     assert "`miss`" in markdown
     assert "below 80%" in markdown
 

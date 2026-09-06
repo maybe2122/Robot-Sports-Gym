@@ -8,10 +8,11 @@ Isaac episode identically.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from math import isfinite
 from numbers import Real
-from typing import Iterable, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
 
 from ..types import BallState, EpisodeResult, FailureReason, SemanticContact, ShotSpec, TargetSpec
 

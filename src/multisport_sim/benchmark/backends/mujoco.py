@@ -66,7 +66,34 @@ TABLE_TENNIS_PROFILE = MujocoSportProfile(
     net_geoms=("table_tennis_net", "table_tennis_post_a", "table_tennis_post_b"),
 )
 
-PROFILES: dict[Sport, MujocoSportProfile] = {Sport.TABLE_TENNIS: TABLE_TENNIS_PROFILE}
+TENNIS_PROFILE = MujocoSportProfile(
+    sport=Sport.TENNIS,
+    effector_body="tennis_benchmark_paddle",
+    effector_geom="tennis_benchmark_paddle_blade",
+    # In tennis the court *is* the playing surface: a ball that reaches the
+    # ground has landed, in or out, and there is no floor underneath it to be a
+    # separate failure.  The line markings are part of that same surface.
+    surface_geoms=(
+        "tennis_surface",
+        "tennis_singles_line_n",
+        "tennis_singles_line_s",
+        "tennis_singles_line_e",
+        "tennis_singles_line_w",
+        "tennis_doubles_line_n",
+        "tennis_doubles_line_s",
+        "tennis_doubles_line_e",
+        "tennis_doubles_line_w",
+        "tennis_service_e",
+        "tennis_service_w",
+        "tennis_service_center",
+    ),
+    net_geoms=("tennis_net", "tennis_post_a", "tennis_post_b"),
+)
+
+PROFILES: dict[Sport, MujocoSportProfile] = {
+    Sport.TABLE_TENNIS: TABLE_TENNIS_PROFILE,
+    Sport.TENNIS: TENNIS_PROFILE,
+}
 
 
 class MujocoShotBackend:

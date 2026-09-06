@@ -27,6 +27,9 @@ while True:
 ```
 
 该环境仍使用 mocap 拍面测试夹具，不是可提交的真实机器人 adapter 或 Isaac Lab 环境。
+带真实机体的并列任务是 `table-tennis-return-panda-v1`（`MultiSportRobot/TableTennisReturn-Panda-v1`），
+动作是 Franka Panda 的 7 维关节位置设定值，见 [机器人与传感器层](ROBOT_LAYER.md)。两个任务共享同一个
+Judge、同一份固定 Shot Bank 和同一组 reward 权重，唯一差别是谁在击球。
 
 > **状态：experimental v0 / non-leaderboard。** 当前仓库提供 MuJoCo 参考后端、版本化开发/测试 Shot Bank 和一个 mocap 脚本球拍夹具，用于验证发球、接触事件、规则 Judge 与报告链路。脚本夹具不是机器人提交；v1 固定集、Isaac Sim adapter、Gymnasium 环境和可提交的机器人 adapter 仍需后续发布。
 
@@ -220,6 +223,8 @@ Runner 只依赖后端与 controller 协议，不依赖脚本球拍实现。一�
 
 - v0 只有 MuJoCo Shot Skill 参考后端经过验证；Isaac Lab 向量化环境已按同一份共享任务配置实现，但仓库
   CI 没有 Isaac 运行时，尚未实跑验证，详见 [Isaac Sim 后端](ISAAC_SIM.md)。
-- 当前脚本球拍是测试夹具，不包含机器人动力学、执行器限制、感知噪声或安全包络。
+- 当前脚本球拍是测试夹具，不包含机器人动力学、执行器限制、感知噪声或安全包络。机器人动力学、执行器限制和
+  安全包络由并列的 `table-tennis-return-panda-v1` 提供（[机器人与传感器层](ROBOT_LAYER.md)）；感知噪声
+  和视觉轨道两个任务都还没有。
 - 内置固定集规模只适合持续集成和接口开发，不提供统计充分的排行榜结论。
 - 当前球台是刚体 box，边缘/侧面判定会结合接触点和台面法向；尚未模拟球台柔性与球拍胶皮的精细材料模型。

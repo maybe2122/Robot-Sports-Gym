@@ -86,6 +86,58 @@ def _validate_target(target: Any, *, shot_id: str) -> None:
         raise ShotBankError(f"shot {shot_id!r} target.radius_m must be positive")
 
 
+def _validate_launch(record: Mapping[str, Any], manifest: Mapping[str, Any]) -> None:
+    """Validate which side a shot starts on and its initial x motion.
+
+    The original return banks predate these manifest fields and retain their
+    exact opponent-to-robot convention. Serve and shoot tasks start on the
+    robot side, so new banks declare both fields instead of bypassing launch
+    validation altogether.
+    """
+    coordinates = manifest.get("coordinate_system", {})
+    shot_id = record["shot_id"]
+    x = float(record["position"][0])
+    vx = float(record["linear_velocity"][0])
+    net_x = float(coordinates.get("net_plane_x_m", 0.0))
+    origin = coordinates.get("shot_origin")
+    motion = coordinates.get("initial_motion")
+
+    if origin is None and motion is None:
+        if coordinates.get("opponent_side") == "x > 0" and (x <= net_x or vx >= 0.0):
+            raise ShotBankError(
+                f"shot {shot_id!r} must launch from opponent x>{net_x:g} "
+                "toward robot with vx<0"
+            )
+        return
+    if origin not in {"robot_side", "opponent_side"}:
+        raise ShotBankError(
+            "coordinate_system.shot_origin must be 'robot_side' or 'opponent_side'"
+        )
+    allowed_motion = {
+        "toward_robot",
+        "toward_opponent",
+        "stationary_or_toward_robot",
+        "stationary_or_toward_opponent",
+    }
+    if motion not in allowed_motion:
+        raise ShotBankError(
+            "coordinate_system.initial_motion must name a supported x direction"
+        )
+
+    on_robot_side = x < net_x
+    if (origin == "robot_side") != on_robot_side or x == net_x:
+        side = "robot" if origin == "robot_side" else "opponent"
+        raise ShotBankError(f"shot {shot_id!r} must start on the {side} side")
+    motion_valid = {
+        "toward_robot": vx < 0.0,
+        "toward_opponent": vx > 0.0,
+        "stationary_or_toward_robot": vx <= 0.0,
+        "stationary_or_toward_opponent": vx >= 0.0,
+    }[motion]
+    if not motion_valid:
+        raise ShotBankError(f"shot {shot_id!r} violates initial_motion={motion!r}")
+
+
 def _validate_record(
     record: Any,
     *,
@@ -162,16 +214,14 @@ def _validate_record(
                     f"shot {shot_id!r} target center must be on opponent side x>0"
                 )
 
-    coordinates = manifest.get("coordinate_system", {})
-    if coordinates.get("opponent_side") == "x > 0":
-        if float(record["position"][0]) <= 0.0 or float(record["linear_velocity"][0]) >= 0.0:
-            raise ShotBankError(
-                f"shot {shot_id!r} must launch from opponent x>0 toward robot with vx<0"
-            )
+    _validate_launch(record, manifest)
 
     difficulty = manifest.get("difficulty_ranges", {}).get(level, {})
     for field, actual in (
         ("lateral_y_m", float(record["position"][1])),
+        # A bank may declare a launch-height range; v0 does not, and a range
+        # the manifest never states is not silently invented here.
+        ("height_z_m", float(record["position"][2])),
         ("speed_x_mps", float(record["linear_velocity"][0])),
         ("spin_y_radps", float(record["angular_velocity"][1])),
     ):
@@ -439,15 +489,9 @@ class ShotBank(Sequence[ShotSpec]):
             verify_digest=verify_digest,
         )
 
-    @classmethod
-    def from_resource(
-        cls,
-        *,
-        split: str = "dev",
-        task: str = "table_tennis/return-v0",
-        verify_digest: bool = True,
-    ) -> ShotBank:
-        """Load a packaged benchmark split without relying on a checkout-relative path."""
+    @staticmethod
+    def _packaged_manifest(task: str) -> tuple[Any, str, dict[str, Any]]:
+        """Resolve a packaged bank to its root, manifest text and parsed manifest."""
         parts = tuple(part for part in task.split("/") if part)
         if not parts or any(part in {".", ".."} for part in parts):
             raise ShotBankError(f"invalid packaged task path: {task!r}")
@@ -458,6 +502,29 @@ class ShotBank(Sequence[ShotSpec]):
         except (FileNotFoundError, OSError) as exc:
             raise ShotBankError(f"cannot read packaged manifest for {task!r}: {exc}") from exc
         manifest = _parse_manifest(manifest_text, source=str(manifest_resource))
+        return root, manifest_text, manifest
+
+    @classmethod
+    def available_splits(cls, task: str = "table_tennis/return-v0") -> tuple[str, ...]:
+        """Splits a packaged bank publishes, sorted.
+
+        Callers that fit anything -- calibration constants, controller gains --
+        use this to pick the training split rather than assuming one exists.
+        """
+        _, _, manifest = cls._packaged_manifest(task)
+        return tuple(sorted(manifest["splits"]))
+
+    @classmethod
+    def from_resource(
+        cls,
+        *,
+        split: str = "dev",
+        task: str = "table_tennis/return-v0",
+        verify_digest: bool = True,
+    ) -> ShotBank:
+        """Load a packaged benchmark split without relying on a checkout-relative path."""
+        root, manifest_text, manifest = cls._packaged_manifest(task)
+        manifest_resource = root.joinpath("manifest.json")
         split_spec = manifest["splits"].get(split)
         if not isinstance(split_spec, Mapping):
             expected = sorted(manifest["splits"])
@@ -557,4 +624,4 @@ class ShotBank(Sequence[ShotSpec]):
         return iter(self._shots)
 
 
-__all__ = ["ShotBank", "ShotBankError", "VALID_LEVELS"]
+__all__ = ["VALID_LEVELS", "ShotBank", "ShotBankError"]

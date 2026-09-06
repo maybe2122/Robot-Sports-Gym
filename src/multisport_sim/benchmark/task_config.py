@@ -17,8 +17,11 @@ from numbers import Real
 from typing import Any, Literal, TypeAlias
 
 from ..specs import CAMPUS_OFFSETS, Sport
+from .observation import ObservationLayout, joint_space_layout
 from .rules.table_tennis import TABLE_TENNIS as TABLE_TENNIS_RULES
 from .rules.table_tennis import TableTennisTableSpec
+from .rules.tennis import TENNIS as TENNIS_RULES
+from .rules.tennis import TennisCourtSpec
 from .types import BallState, EpisodeResult, SemanticContact, Vec3
 
 Axis: TypeAlias = Literal["x", "y", "z"]
@@ -476,3 +479,343 @@ class TableTennisReturnTaskConfig(ShotTaskConfig):
 
 TABLE_TENNIS_RETURN_V0 = TableTennisReturnTaskConfig()
 """Shared configuration of the experimental table-tennis return task."""
+
+
+@dataclass(frozen=True)
+class TennisReturnTaskConfig(ShotTaskConfig):
+    """Tennis return task: the shared core plus regulation singles-court geometry.
+
+    Only the numbers differ from table tennis, and every one of them differs for
+    the same reason: the court is roughly nine times longer, the ball arrives
+    three to five times faster, and the strike happens near the baseline instead
+    of a arm's length from the net.  The rules, the judge, the report schema and
+    the level thresholds are the ones table tennis already uses.
+    """
+
+    task_id: str = "tennis-return-v0"
+    env_id: str = "MultiSportRobot/TennisReturn-v0"
+    sport: str = Sport.TENNIS.value
+    bank_resource: str = "tennis/return-v0"
+    # A rally ball crosses 20 m of court; two seconds is not enough time for it
+    # to arrive, be struck and land again.
+    timeout_s: float = 3.0
+    court: TennisCourtSpec = TENNIS_RULES
+    workspace: EffectorWorkspace = field(
+        default_factory=lambda: EffectorWorkspace(
+            # Behind the robot's baseline, across the singles width, from just
+            # above the court to a high overhead.
+            position_low=(-13.0, -5.0, 0.1),
+            position_high=(-6.0, 5.0, 3.2),
+        )
+    )
+    ball_limits: BallObservationLimits = field(
+        default_factory=lambda: BallObservationLimits(
+            position_low=(-20.0, -10.0, -1.0),
+            position_high=(20.0, 10.0, 15.0),
+            linear_velocity_limit=80.0,
+            angular_velocity_limit=800.0,
+        )
+    )
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if not isinstance(self.court, TennisCourtSpec):
+            raise TypeError("court must be a TennisCourtSpec")
+
+    @property
+    def table(self) -> TennisCourtSpec:
+        """The playing surface, under the name the shared engine reads."""
+        return self.court
+
+    def rule_geometry(self) -> dict[str, Any]:
+        return {
+            "court": {
+                "length_m": self.court.length_m,
+                "width_m": self.court.width_m,
+                "top_height_m": self.court.top_height_m,
+                "net_plane_x_m": self.court.net_plane_x_m,
+                "net_height_m": self.court.net_height_m,
+                "center_y_m": self.court.center_y_m,
+            }
+        }
+
+
+TENNIS_RETURN_V0 = TennisReturnTaskConfig()
+"""Shared configuration of the experimental tennis return task."""
+
+
+@dataclass(frozen=True)
+class StrikeZone:
+    """The region of the task frame the frozen shot bank actually crosses.
+
+    This is a *measured* property of the shot bank, not a design choice: it is
+    produced by ``scripts/calibrate_reachability.py``, which launches every shot
+    and records where the ball passes the strike plane.  A robot mount is judged
+    against it, and a task that no embodiment can cover is a task that needs a
+    new bank -- not a robot that needs excusing.
+    """
+
+    plane_x_m: float = -1.55
+    y_low: float = -0.45
+    y_high: float = 0.40
+    z_low: float = 0.88
+    z_high: float = 1.36
+
+    def __post_init__(self) -> None:
+        for name in ("plane_x_m", "y_low", "y_high", "z_low", "z_high"):
+            object.__setattr__(self, name, _finite(getattr(self, name), field=name))
+        if self.y_low >= self.y_high or self.z_low >= self.z_high:
+            raise ValueError("strike zone bounds must be strictly increasing")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "plane_x_m": self.plane_x_m,
+            "y_m": [self.y_low, self.y_high],
+            "z_m": [self.z_low, self.z_high],
+        }
+
+
+@dataclass(frozen=True)
+class JointActionLimits:
+    """Declared per-joint action range of an embodied task, in SI units.
+
+    A joint-space task publishes the robot's own limits as its action space, so
+    a policy cannot request motion the hardware could not perform and then have
+    the adapter quietly clip it into something else.
+    """
+
+    joint_names: tuple[str, ...]
+    low: tuple[float, ...]
+    high: tuple[float, ...]
+    control_mode: str = "joint_position"
+
+    def __post_init__(self) -> None:
+        names = tuple(self.joint_names)
+        if not names or any(not isinstance(name, str) or not name.strip() for name in names):
+            raise ValueError("joint_names must be non-empty strings")
+        object.__setattr__(self, "joint_names", names)
+        for field_name in ("low", "high"):
+            values = tuple(
+                _finite(value, field=f"{field_name}[{index}]")
+                for index, value in enumerate(getattr(self, field_name))
+            )
+            if len(values) != len(names):
+                raise ValueError(f"{field_name} must hold one value per joint")
+            object.__setattr__(self, field_name, values)
+        if any(low >= high for low, high in zip(self.low, self.high)):
+            raise ValueError("low must be strictly below high")
+        if not isinstance(self.control_mode, str) or not self.control_mode.strip():
+            raise ValueError("control_mode must be a non-empty string")
+
+    @property
+    def dof(self) -> int:
+        return len(self.joint_names)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "joint_names": list(self.joint_names),
+            "low": list(self.low),
+            "high": list(self.high),
+            "control_mode": self.control_mode,
+        }
+
+
+PANDA_JOINT_ACTION = JointActionLimits(
+    joint_names=tuple(f"rb_joint{index}" for index in range(1, 8)),
+    low=(-2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973),
+    high=(2.8973, 1.7628, 2.8973, -0.0698, 2.8973, 3.7525, 2.8973),
+)
+"""Franka Panda position limits, mirrored from the Menagerie asset.
+
+They are restated here so that listing the task's action space never needs the
+asset on disk; the adapter asserts that the compiled model agrees.
+"""
+
+
+G1_JOINT_ACTION = JointActionLimits(
+    joint_names=(
+        "g1_waist_yaw_joint",
+        "g1_waist_roll_joint",
+        "g1_waist_pitch_joint",
+        "g1_right_shoulder_pitch_joint",
+        "g1_right_shoulder_roll_joint",
+        "g1_right_shoulder_yaw_joint",
+        "g1_right_elbow_joint",
+        "g1_right_wrist_roll_joint",
+        "g1_right_wrist_pitch_joint",
+        "g1_right_wrist_yaw_joint",
+    ),
+    low=(-2.6180, -0.5200, -0.5200, -3.0892, -2.2515, -2.6180, -1.0472, -1.9722, -1.6144, -1.6144),
+    high=(2.6180, 0.5200, 0.5200, 2.6704, 1.5882, 2.6180, 2.0944, 1.9722, 1.6144, 1.6144),
+)
+"""Unitree G1 position limits for the ten joints this task commands.
+
+The waist and the right arm.  The other nineteen joints are present in the
+model and held at the asset's stand pose; publishing them as actions would
+invite a policy to learn a nineteen-dimensional no-op.
+
+These are the robot's *own* ranges, deliberately including the shoulder
+adduction that folds the arm into the torso.  Narrowing the published action
+space to keep a policy out of that region would be the benchmark hiding a
+failure mode it is supposed to score: self-collision is a safety violation and
+is reported as one.  The reference solver keeps itself out of that region --
+see ``robots/g1.SHOULDER_ROLL_SOLVER_MAX_RAD`` -- because a baseline may be
+smart, but the contract may not be narrow.
+"""
+
+
+@dataclass(frozen=True)
+class EmbodiedTableTennisReturnTaskConfig(TableTennisReturnTaskConfig):
+    """A table-tennis return task performed by an actuated robot.
+
+    This is a separate versioned task from the mocap fixture, not a new revision
+    of it.  The two measure different things -- one asks whether the rule engine
+    and report chain are correct, the other whether a robot can play -- and
+    mixing their scores would be meaningless.  They deliberately share the same
+    judge, the same frozen shot bank and the same reward terms, so the only
+    difference between a v0 and an embodied result is the embodiment.
+
+    The action is a joint-position setpoint vector held for one control step.
+    The observation is the ball state followed by the robot's joint state and
+    its blade pose and velocity in the task frame -- no geometry names, no
+    simulator handles, nothing a different robot could not supply.
+
+    Nothing in this class names a robot.  Its two concrete subclasses differ
+    only in identifiers and in the joint set they publish, which is the whole
+    claim the second embodiment exists to test.
+    """
+
+    robot_id: str = "unspecified-robot"
+    joint_action: JointActionLimits = PANDA_JOINT_ACTION
+    strike_zone: StrikeZone = field(default_factory=StrikeZone)
+    workspace: EffectorWorkspace = field(
+        default_factory=lambda: EffectorWorkspace(
+            # A safety envelope, not a reachability estimate.  It describes the
+            # robot's operating cell: the blade may go anywhere the arm can
+            # physically reach behind the table, but not over the playing
+            # surface and not down among the legs.  Making it any tighter would
+            # score ordinary arm motion as a safety failure, which would tell a
+            # submission nothing about its own behaviour.  Floor and table
+            # strikes are caught separately, as collisions.
+            position_low=(-2.95, -1.00, 0.30),
+            position_high=(-1.05, 1.00, 2.00),
+        )
+    )
+
+    # The action width is the robot's joint count, and the observation width
+    # follows from the published layout rather than being asserted alongside it:
+    # a six-axis arm on this same task has a different number and nothing here
+    # needs editing for that to be true.  See ``observation_layout``.
+    # Joint speed is bounded by the robot's datasheet; the envelope below is
+    # deliberately loose so that a safety violation is reported as such rather
+    # than silently clipped out of the observation.
+    JOINT_VELOCITY_OBSERVATION_LIMIT = 10.0
+
+    @property
+    def ACTION_DIM(self) -> int:  # published name, kept stable
+        return self.joint_action.dof
+
+    @property
+    def OBSERVATION_DIM(self) -> int:  # published name, kept stable
+        return self.observation_layout().size
+
+    def observation_layout(self) -> ObservationLayout:
+        """The named, per-robot observation contract this task publishes.
+
+        Everything that reads an observation -- the Gymnasium environment, the
+        offline scoring path, a submission's own policy -- goes through this,
+        so "the observation" is one object with one order, and a second robot
+        changes its field *sizes* without changing what any field means.
+        """
+        limits = self.ball_limits
+        joint_low, joint_high = self.action_bounds()
+        return joint_space_layout(
+            ball_position_low=limits.position_low,
+            ball_position_high=limits.position_high,
+            linear_velocity_limit=limits.linear_velocity_limit,
+            angular_velocity_limit=limits.angular_velocity_limit,
+            joint_names=self.joint_action.joint_names,
+            joint_position_low=joint_low,
+            joint_position_high=joint_high,
+            joint_velocity_limit=self.JOINT_VELOCITY_OBSERVATION_LIMIT,
+            effector_position_low=self.workspace.position_low,
+            effector_position_high=self.workspace.position_high,
+        )
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if not isinstance(self.joint_action, JointActionLimits):
+            raise TypeError("joint_action must be a JointActionLimits")
+        if not isinstance(self.strike_zone, StrikeZone):
+            raise TypeError("strike_zone must be a StrikeZone")
+        if not isinstance(self.robot_id, str) or not self.robot_id.strip():
+            raise ValueError("robot_id must be a non-empty string")
+
+    def action_bounds(self) -> tuple[tuple[float, ...], tuple[float, ...]]:
+        """Low/high joint-position setpoints, ordered like ``joint_action``."""
+        return self.joint_action.low, self.joint_action.high
+
+    def observation_bounds(self) -> tuple[tuple[float, ...], tuple[float, ...]]:
+        """Flat bounds, in the order the published layout declares."""
+        return self.observation_layout().bounds()
+
+    def rule_geometry(self) -> dict[str, Any]:
+        payload = super().rule_geometry()
+        payload.update(
+            {
+                "robot_id": self.robot_id,
+                "joint_action": self.joint_action.to_dict(),
+                "strike_zone": self.strike_zone.to_dict(),
+                # A score is only auditable if the reader can tell what the
+                # policy was looking at, which is a per-robot fact.
+                "observation_layout": self.observation_layout().to_dict(),
+            }
+        )
+        return payload
+
+
+@dataclass(frozen=True)
+class TableTennisReturnPandaTaskConfig(EmbodiedTableTennisReturnTaskConfig):
+    """The table-tennis return task performed by an actuated Franka Panda."""
+
+    task_id: str = "table-tennis-return-panda-v1"
+    env_id: str = "MultiSportRobot/TableTennisReturn-Panda-v1"
+    # The embodied task is the publishable-scale benchmark, not the tiny v0
+    # rule-engine fixture.  Keeping this explicit also prevents a future
+    # TableTennisReturnTaskConfig default change from silently moving scores.
+    bank_resource: str = "table_tennis/return-v1"
+    # The same task on the vision track.  One task id, two environments: a
+    # result names the track it ran on, not a different benchmark.
+    vision_env_id: str = "MultiSportRobot/TableTennisReturn-Panda-Vision-v1"
+    robot_id: str = "franka-panda-tabletennis-v1"
+    joint_action: JointActionLimits = PANDA_JOINT_ACTION
+
+
+@dataclass(frozen=True)
+class TableTennisReturnG1TaskConfig(EmbodiedTableTennisReturnTaskConfig):
+    """The same task, played by a fixed-base Unitree G1.
+
+    Same judge, same frozen shot bank, same L0-L5 thresholds, same report
+    schema, same operating envelope.  What differs is the robot: ten commanded
+    joints instead of seven, so a 39-number observation instead of 33 -- and
+    neither number is written anywhere, because both are the width the published
+    observation layout comes out to.
+
+    There is no vision environment yet.  The stereo pair is declared relative to
+    the table rather than to the robot, so it would transfer, but a track that
+    has not been run is not a track this task claims to publish.
+    """
+
+    task_id: str = "table-tennis-return-g1-v1"
+    env_id: str = "MultiSportRobot/TableTennisReturn-G1-v1"
+    bank_resource: str = "table_tennis/return-v1"
+    vision_env_id: str | None = None
+    robot_id: str = "unitree-g1-tabletennis-v1"
+    joint_action: JointActionLimits = G1_JOINT_ACTION
+
+
+TABLE_TENNIS_RETURN_PANDA_V1 = TableTennisReturnPandaTaskConfig()
+"""Shared configuration of the embodied table-tennis return task."""
+
+TABLE_TENNIS_RETURN_G1_V1 = TableTennisReturnG1TaskConfig()
+"""The same task on a fixed-base Unitree G1; the benchmark's second embodiment."""

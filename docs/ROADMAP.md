@@ -23,17 +23,24 @@
 
 ## M2 — Robot and sensor layer（P0）
 
-- [ ] 选择许可证清晰的机械臂与双足机器人资产
-- [ ] 实现 robot adapter，任务代码不绑定具体关节名
-- [ ] 加入位置/速度/力矩和末端控制模式
-- [ ] 加入相机、IMU、接触、关节力矩和 frame transform
-- [ ] 定义速度、力矩、碰撞和工作空间安全限制
+机械臂侧已完成并在乒乓球上端到端跑通（`table-tennis-return-panda-v1`，见
+[`ROBOT_LAYER.md`](ROBOT_LAYER.md)）；MuJoCo 传感器参考实现已完成，Isaac 侧实现和双足资产仍缺，
+因此本里程碑尚未完成。
+
+- [x] 选择许可证清晰的机械臂资产（Franka Panda，Apache-2.0，不 vendoring）
+- [ ] 双足机器人资产（足球任务需要）
+- [x] 实现 robot adapter，任务代码不绑定具体关节名
+- [x] 加入位置/速度/力矩和末端控制模式（Panda 四种模式均实现）
+- [x] 加入相机、IMU、接触、关节力矩和 frame transform（MuJoCo 参考实现）
+- [x] 定义速度、力矩、碰撞和工作空间安全限制，接入 `failure_reason="safety"`
 
 ## M3 — Five canonical tasks（P0）
 
-`TableTennisReturn` 目前只有 experimental Shot Skill v0 和 mocap 测试夹具；在真实机器人 adapter、正式规模固定集和双后端环境完成前仍保持未勾选。
+`TableTennisReturn` 现有两个并列任务：mocap 夹具 `table-tennis-return-v0` 和带真实机体的
+`table-tennis-return-panda-v1`。后者已有 Panda adapter、安全包络、能耗指标、四条参考基线，并默认使用
+每级 100 条 test 的 `return-v1` 固定集；在双后端环境完成前仍保持未勾选。
 
-- [ ] TennisReturn
+- [x] TennisReturn
 - [ ] TableTennisReturn
 - [ ] FootballKickToTarget
 - [ ] BadmintonServe

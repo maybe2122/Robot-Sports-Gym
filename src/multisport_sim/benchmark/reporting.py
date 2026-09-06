@@ -79,12 +79,51 @@ def report_markdown(report: dict[str, Any]) -> str:
 
     buckets = report.get("buckets", {})
     if buckets:
-        lines += ["", "## Buckets", "", "| Tag | Episodes | Valid return rate |", "|---|---:|---:|"]
+        lines += [
+            "",
+            "## Buckets",
+            "",
+            "| Tag | Episodes | Valid return rate | 95% Wilson interval |",
+            "|---|---:|---:|---:|",
+        ]
         for tag, values in sorted(buckets.items()):
             bucket_metrics = values.get("metrics", values)
+            interval = values.get("confidence_intervals_95", {}).get(
+                "valid_return_rate"
+            )
+            formatted_interval = (
+                "n/a"
+                if interval is None
+                else f"{_rate(interval[0])}–{_rate(interval[1])}"
+            )
             lines.append(
                 f"| `{tag}` | {values.get('episodes', 0)} | "
-                f"{_rate(bucket_metrics.get('valid_return_rate'))} |"
+                f"{_rate(bucket_metrics.get('valid_return_rate'))} | "
+                f"{formatted_interval} |"
+            )
+
+    bucket_groups = report.get("bucket_groups", {})
+    if bucket_groups:
+        lines += [
+            "",
+            "## Required bucket groups",
+            "",
+            "| Group | Episodes | Valid return rate | 95% Wilson interval |",
+            "|---|---:|---:|---:|",
+        ]
+        for name, values in sorted(bucket_groups.items()):
+            interval = values.get("confidence_intervals_95", {}).get(
+                "valid_return_rate"
+            )
+            formatted_interval = (
+                "n/a"
+                if interval is None
+                else f"{_rate(interval[0])}–{_rate(interval[1])}"
+            )
+            lines.append(
+                f"| `{name}` | {values.get('episodes', 0)} | "
+                f"{_rate(values.get('metrics', {}).get('valid_return_rate'))} | "
+                f"{formatted_interval} |"
             )
 
     failures = report.get("failures", {})
@@ -103,6 +142,18 @@ def report_markdown(report: dict[str, Any]) -> str:
         ]
     if notes:
         lines += ["", "## Assessment", ""]
+        worst_bucket = assessment.get("worst_bucket")
+        interval = assessment.get("primary_confidence_interval_95")
+        if worst_bucket is not None:
+            interval_text = (
+                "n/a"
+                if interval is None
+                else f"{_rate(interval[0])}–{_rate(interval[1])}"
+            )
+            lines.append(
+                f"- Observed worst bucket: `{worst_bucket}` "
+                f"(95% Wilson interval {interval_text})"
+            )
         lines.extend(f"- {note}" for note in notes)
 
     return "\n".join(lines) + "\n"

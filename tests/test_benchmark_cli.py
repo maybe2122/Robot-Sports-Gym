@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from multisport_sim.benchmark_cli import main, parser, run_from_args
+from multisport_sim.benchmark_cli import _bank_for, main, parser, run_from_args
 
 
 def test_cli_writes_strict_json_and_markdown_reports(tmp_path) -> None:
@@ -73,3 +73,9 @@ def test_same_seed_preserves_selection_and_raw_results() -> None:
 
     assert second["shot_bank"]["selected_shot_ids"] == first["shot_bank"]["selected_shot_ids"]
     assert second["results"] == first["results"]
+
+
+def test_robot_defaults_to_the_statistically_sufficient_bank() -> None:
+    arguments = parser().parse_args(["--robot", "panda", "--controller", "hold"])
+
+    assert _bank_for(arguments) == "table_tennis/return-v1"

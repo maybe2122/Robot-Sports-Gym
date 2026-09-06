@@ -9,6 +9,7 @@ from multisport_sim.benchmark.envs import TableTennisReturnEnv
 from multisport_sim.benchmark.runner import RunConfig
 from multisport_sim.benchmark.task_config import (
     CANONICAL_CONVENTION,
+    TABLE_TENNIS_RETURN_PANDA_V1,
     TABLE_TENNIS_RETURN_V0,
     BallObservationLimits,
     CoordinateConvention,
@@ -35,6 +36,11 @@ def test_shared_config_matches_the_published_task_frame() -> None:
     assert config.table.net_plane_x_m == 0.0
     assert config.table.side_at(-1.0, 0.0) == "robot"
     assert config.table.side_at(1.0, 0.0) == "opponent"
+
+
+def test_embodied_task_uses_the_statistically_sufficient_bank() -> None:
+    assert TABLE_TENNIS_RETURN_PANDA_V1.bank_resource == "table_tennis/return-v1"
+    assert TABLE_TENNIS_RETURN_V0.bank_resource == "table_tennis/return-v0"
 
 
 def test_declared_space_bounds_have_task_dimensions() -> None:

@@ -23,11 +23,16 @@ jobs:
       - name: Install
         run: python -m pip install -e ".[test]"
       - name: Lint
-        run: python -m ruff check src tests
+        run: python -m ruff check src tests scripts
       - name: Unit and physics tests
         run: PYTHONPATH=src python -m pytest
+      - name: Baseline report provenance
+        run: PYTHONPATH=src python scripts/check_baseline_reports.py
+      - name: Benchmark smoke tests
+        run: |
+          PYTHONPATH=src python -m multisport_sim.benchmark_cli --level L1 --episodes 1 --controller scripted
+          PYTHONPATH=src python -m multisport_sim.benchmark_cli --sport tennis --level L1 --episodes 1 --controller scripted
       - name: Headless smoke test
         run: PYTHONPATH=src python -m multisport_sim --scene campus --headless --duration 0.1
       - name: Fidelity smoke test
         run: PYTHONPATH=src python -m multisport_sim.evaluation_cli --sports tennis basketball
-

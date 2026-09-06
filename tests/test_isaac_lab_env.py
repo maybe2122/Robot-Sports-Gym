@@ -12,8 +12,10 @@ def test_importing_benchmark_does_not_require_isaac_lab() -> None:
         [
             sys.executable,
             "-c",
-            "import sys, multisport_sim.benchmark; "
-            "print(any(name.startswith('isaaclab') for name in sys.modules))",
+            (
+                "import sys, multisport_sim.benchmark; "
+                "print(any(name.startswith('isaaclab') for name in sys.modules))"
+            ),
         ],
         capture_output=True,
         text=True,

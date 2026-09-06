@@ -1,0 +1,1558 @@
+{
+  "generated_at": "2026-09-02T08:22:59.501640+00:00",
+  "robustness_gap": [
+    {
+      "controller": "hold",
+      "gap": 0.006666666666666667,
+      "in_distribution": 0.006666666666666667,
+      "in_distribution_episodes": 150,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            0.003539259271646236,
+            0.10495443589637815
+          ],
+          "episodes": 50,
+          "value": 0.02
+        },
+        "L3": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L4": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L5": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.0,
+      "perturbed_episodes": 100,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ],
+      "split": "dev"
+    },
+    {
+      "controller": "random",
+      "gap": 0.0,
+      "in_distribution": 0.0,
+      "in_distribution_episodes": 150,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L3": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L4": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L5": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.0,
+      "perturbed_episodes": 100,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ],
+      "split": "dev"
+    },
+    {
+      "controller": "intercept",
+      "gap": -0.14,
+      "in_distribution": 0.12,
+      "in_distribution_episodes": 150,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            0.15871527493552393,
+            0.39553157264848837
+          ],
+          "episodes": 50,
+          "value": 0.26
+        },
+        "L3": {
+          "confidence_interval_95": [
+            0.04347576493189041,
+            0.21360231437479654
+          ],
+          "episodes": 50,
+          "value": 0.1
+        },
+        "L4": {
+          "confidence_interval_95": [
+            0.19103553500880954,
+            0.437503504644534
+          ],
+          "episodes": 50,
+          "value": 0.3
+        },
+        "L5": {
+          "confidence_interval_95": [
+            0.1275391597021442,
+            0.3524154958125367
+          ],
+          "episodes": 50,
+          "value": 0.22
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.26,
+      "perturbed_episodes": 100,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ],
+      "split": "dev"
+    },
+    {
+      "controller": "vision",
+      "gap": 0.02333333333333333,
+      "in_distribution": 0.07333333333333333,
+      "in_distribution_episodes": 150,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            0.05617600150932274,
+            0.23804817383202992
+          ],
+          "episodes": 50,
+          "value": 0.12
+        },
+        "L3": {
+          "confidence_interval_95": [
+            0.04347576493189041,
+            0.21360231437479654
+          ],
+          "episodes": 50,
+          "value": 0.1
+        },
+        "L4": {
+          "confidence_interval_95": [
+            0.011038884327619805,
+            0.1346009068750702
+          ],
+          "episodes": 50,
+          "value": 0.04
+        },
+        "L5": {
+          "confidence_interval_95": [
+            0.02061497034897397,
+            0.16217091688838173
+          ],
+          "episodes": 50,
+          "value": 0.06
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.05,
+      "perturbed_episodes": 100,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ],
+      "split": "dev"
+    },
+    {
+      "controller": "hold",
+      "gap": 0.0,
+      "in_distribution": 0.0,
+      "in_distribution_episodes": 300,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L3": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L4": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L5": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.0,
+      "perturbed_episodes": 200,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ],
+      "split": "test"
+    },
+    {
+      "controller": "random",
+      "gap": -0.005,
+      "in_distribution": 0.0,
+      "in_distribution_episodes": 300,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L3": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L4": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L5": {
+          "confidence_interval_95": [
+            0.0017674320641406505,
+            0.054486196178705315
+          ],
+          "episodes": 100,
+          "value": 0.01
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.005,
+      "perturbed_episodes": 200,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ],
+      "split": "test"
+    },
+    {
+      "controller": "intercept",
+      "gap": -0.09499999999999999,
+      "in_distribution": 0.11,
+      "in_distribution_episodes": 300,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            0.10095288488804782,
+            0.24420269389270244
+          ],
+          "episodes": 100,
+          "value": 0.16
+        },
+        "L3": {
+          "confidence_interval_95": [
+            0.10893566114059931,
+            0.25548004767601123
+          ],
+          "episodes": 100,
+          "value": 0.17
+        },
+        "L4": {
+          "confidence_interval_95": [
+            0.20139685211186212,
+            0.3748802870992116
+          ],
+          "episodes": 100,
+          "value": 0.28
+        },
+        "L5": {
+          "confidence_interval_95": [
+            0.07757167427240512,
+            0.20980351440076428
+          ],
+          "episodes": 100,
+          "value": 0.13
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.205,
+      "perturbed_episodes": 200,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ],
+      "split": "test"
+    },
+    {
+      "controller": "vision",
+      "gap": -0.08499999999999999,
+      "in_distribution": 0.06,
+      "in_distribution_episodes": 300,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            0.02154367915436796,
+            0.11175046923191913
+          ],
+          "episodes": 100,
+          "value": 0.05
+        },
+        "L3": {
+          "confidence_interval_95": [
+            0.07757167427240512,
+            0.20980351440076428
+          ],
+          "episodes": 100,
+          "value": 0.13
+        },
+        "L4": {
+          "confidence_interval_95": [
+            0.10893566114059931,
+            0.25548004767601123
+          ],
+          "episodes": 100,
+          "value": 0.17
+        },
+        "L5": {
+          "confidence_interval_95": [
+            0.06999406437019488,
+            0.19812099426711421
+          ],
+          "episodes": 100,
+          "value": 0.12
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.145,
+      "perturbed_episodes": 200,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ],
+      "split": "test"
+    }
+  ],
+  "rows": [
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 50,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_energy_joule": 0.1723244385590183,
+      "pass_threshold": 1.0,
+      "passed": true,
+      "primary_confidence_interval_95": [
+        0.9286524008666414,
+        1.0
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 1.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 50,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_energy_joule": 66.43832644318914,
+      "pass_threshold": 1.0,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.7863976856252035,
+        0.9565242350681096
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 0.9,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 5,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-panda-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_energy_joule": 31.110454111615066,
+      "pass_threshold": 1.0,
+      "passed": true,
+      "primary_confidence_interval_95": [
+        0.9286524008666414,
+        1.0
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 1.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "vision",
+      "controller_id": "vision-panda-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_energy_joule": 51.09883424800598,
+      "pass_threshold": 1.0,
+      "passed": true,
+      "primary_confidence_interval_95": [
+        0.9286524008666414,
+        1.0
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 1.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "vision",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 50,
+      "hit_rate": 0.0,
+      "level": "L1",
+      "mean_energy_joule": 0.17259550572216575,
+      "pass_threshold": 0.9,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        6.938893903907228e-18,
+        0.07134759913335872
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 50,
+      "hit_rate": 0.04,
+      "level": "L1",
+      "mean_energy_joule": 145.6317684142378,
+      "pass_threshold": 0.9,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.011038884327619805,
+        0.1346009068750702
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 0.04,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 12,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-panda-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 1.0,
+      "level": "L1",
+      "mean_energy_joule": 49.18383597763175,
+      "pass_threshold": 0.9,
+      "passed": true,
+      "primary_confidence_interval_95": [
+        0.9286524008666414,
+        1.0
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 1.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "vision",
+      "controller_id": "vision-panda-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.82,
+      "level": "L1",
+      "mean_energy_joule": 73.97016258364724,
+      "pass_threshold": 0.9,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.6920394632569922,
+        0.9022980732976582
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 0.82,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 4,
+      "track": "vision",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 50,
+      "hit_rate": 0.08,
+      "level": "L2",
+      "mean_energy_joule": 0.1725961240916292,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.003539259271646236,
+        0.10495443589637815
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.02,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.02,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 50,
+      "hit_rate": 0.02,
+      "level": "L2",
+      "mean_energy_joule": 127.49175902645067,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        6.938893903907228e-18,
+        0.07134759913335872
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 11,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-panda-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.94,
+      "level": "L2",
+      "mean_energy_joule": 62.948205810042076,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.15871527493552393,
+        0.39553157264848837
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.26,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.26,
+      "worst_bucket": null
+    },
+    {
+      "controller": "vision",
+      "controller_id": "vision-panda-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.68,
+      "level": "L2",
+      "mean_energy_joule": 90.86669818647682,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.05617600150932274,
+        0.23804817383202992
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.12,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 4,
+      "track": "vision",
+      "valid_return_rate": 0.12,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 50,
+      "hit_rate": 0.02,
+      "level": "L3",
+      "mean_energy_joule": 0.17265079500063008,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        6.938893903907228e-18,
+        0.07134759913335872
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 50,
+      "hit_rate": 0.04,
+      "level": "L3",
+      "mean_energy_joule": 132.134771205718,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        6.938893903907228e-18,
+        0.07134759913335872
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 10,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-panda-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 1.0,
+      "level": "L3",
+      "mean_energy_joule": 63.584665167479436,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        6.938893903907228e-18,
+        0.07134759913335872
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.1,
+      "worst_bucket": null
+    },
+    {
+      "controller": "vision",
+      "controller_id": "vision-panda-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.8,
+      "level": "L3",
+      "mean_energy_joule": 95.23226068638469,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.003539259271646236,
+        0.10495443589637815
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.02,
+      "split": "dev",
+      "target_rate": 0.02,
+      "total_safety_violations": 2,
+      "track": "vision",
+      "valid_return_rate": 0.1,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 50,
+      "hit_rate": 0.12,
+      "level": "L4",
+      "mean_energy_joule": 0.17257553612933524,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.07865159873288836
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": "depth"
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 50,
+      "hit_rate": 0.12,
+      "level": "L4",
+      "mean_energy_joule": 121.42388595992264,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.07865159873288836
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 10,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": "depth"
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-panda-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.6,
+      "level": "L4",
+      "mean_energy_joule": 79.06041334827925,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        1.3877787807814457e-17,
+        0.2153108027376358
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 5,
+      "track": "state",
+      "valid_return_rate": 0.3,
+      "worst_bucket": "edge"
+    },
+    {
+      "controller": "vision",
+      "controller_id": "vision-panda-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.42,
+      "level": "L4",
+      "mean_energy_joule": 106.23858005005927,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        1.3877787807814457e-17,
+        0.2153108027376358
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 8,
+      "track": "vision",
+      "valid_return_rate": 0.04,
+      "worst_bucket": "edge"
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 50,
+      "hit_rate": 0.1,
+      "level": "L5",
+      "mean_energy_joule": 0.1723363864702822,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.07555760416399632
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": "edge_or_depth"
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 50,
+      "hit_rate": 0.04,
+      "level": "L5",
+      "mean_energy_joule": 110.64624487324527,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.07555760416399632
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 9,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": "edge_or_depth"
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-panda-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.36,
+      "level": "L5",
+      "mean_energy_joule": 78.72429222388752,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.02567962434474355,
+        0.5131278292743189
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.14285714285714285,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 7,
+      "track": "state",
+      "valid_return_rate": 0.22,
+      "worst_bucket": "low"
+    },
+    {
+      "controller": "vision",
+      "controller_id": "vision-panda-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.2,
+      "level": "L5",
+      "mean_energy_joule": 81.71182057570793,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        5.551115123125783e-17,
+        0.35433043506668743
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 11,
+      "track": "vision",
+      "valid_return_rate": 0.06,
+      "worst_bucket": "low"
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_energy_joule": 0.17232541935418355,
+      "pass_threshold": 1.0,
+      "passed": true,
+      "primary_confidence_interval_95": [
+        0.9630065017930143,
+        1.0
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 1.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_energy_joule": 65.79920576112791,
+      "pass_threshold": 1.0,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.837737871472837,
+        0.9519274599974348
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 0.91,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 9,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-panda-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_energy_joule": 30.710324086622432,
+      "pass_threshold": 1.0,
+      "passed": true,
+      "primary_confidence_interval_95": [
+        0.9630065017930143,
+        1.0
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 1.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "vision",
+      "controller_id": "vision-panda-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_energy_joule": 51.173814807747895,
+      "pass_threshold": 1.0,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.9455138038212946,
+        0.9982325679358593
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 0.99,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 1,
+      "track": "vision",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L1",
+      "mean_energy_joule": 0.1725631282086818,
+      "pass_threshold": 0.9,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 100,
+      "hit_rate": 0.02,
+      "level": "L1",
+      "mean_energy_joule": 149.35155793020886,
+      "pass_threshold": 0.9,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.00550196755016235,
+        0.07001179072854388
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 0.02,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 18,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-panda-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 1.0,
+      "level": "L1",
+      "mean_energy_joule": 48.440252610434655,
+      "pass_threshold": 0.9,
+      "passed": true,
+      "primary_confidence_interval_95": [
+        0.9630065017930143,
+        1.0
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 1.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "vision",
+      "controller_id": "vision-panda-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.89,
+      "level": "L1",
+      "mean_energy_joule": 73.13681966733769,
+      "pass_threshold": 0.9,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.8136870349691969,
+        0.9374580364293543
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 0.89,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 2,
+      "track": "vision",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 100,
+      "hit_rate": 0.07,
+      "level": "L2",
+      "mean_energy_joule": 0.1726096620594142,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 100,
+      "hit_rate": 0.02,
+      "level": "L2",
+      "mean_energy_joule": 134.6563067197364,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 16,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-panda-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.94,
+      "level": "L2",
+      "mean_energy_joule": 64.94688451420323,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.10095288488804782,
+        0.24420269389270244
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.16,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 1,
+      "track": "state",
+      "valid_return_rate": 0.16,
+      "worst_bucket": null
+    },
+    {
+      "controller": "vision",
+      "controller_id": "vision-panda-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.7,
+      "level": "L2",
+      "mean_energy_joule": 88.62336365547236,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.02154367915436796,
+        0.11175046923191913
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.05,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 11,
+      "track": "vision",
+      "valid_return_rate": 0.05,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L3",
+      "mean_energy_joule": 0.17263672282330206,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 100,
+      "hit_rate": 0.06,
+      "level": "L3",
+      "mean_energy_joule": 133.0373616143931,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 15,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-panda-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.99,
+      "level": "L3",
+      "mean_energy_joule": 61.443001728946705,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.17,
+      "worst_bucket": null
+    },
+    {
+      "controller": "vision",
+      "controller_id": "vision-panda-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.78,
+      "level": "L3",
+      "mean_energy_joule": 85.72801930462205,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 4,
+      "track": "vision",
+      "valid_return_rate": 0.13,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 100,
+      "hit_rate": 0.19,
+      "level": "L4",
+      "mean_energy_joule": 0.17257938757543356,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.03926207629154474
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": "depth"
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 100,
+      "hit_rate": 0.04,
+      "level": "L4",
+      "mean_energy_joule": 125.81451367705876,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.03926207629154474
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 16,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": "depth"
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-panda-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.59,
+      "level": "L4",
+      "mean_energy_joule": 87.93148171728716,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        1.3877787807814457e-17,
+        0.12064330476584563
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 6,
+      "track": "state",
+      "valid_return_rate": 0.28,
+      "worst_bucket": "edge"
+    },
+    {
+      "controller": "vision",
+      "controller_id": "vision-panda-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.45,
+      "level": "L4",
+      "mean_energy_joule": 87.18411246782942,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        1.3877787807814457e-17,
+        0.12064330476584563
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 22,
+      "track": "vision",
+      "valid_return_rate": 0.17,
+      "worst_bucket": "edge"
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 100,
+      "hit_rate": 0.16,
+      "level": "L5",
+      "mean_energy_joule": 0.17249016532635938,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.04008138928562172
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": "edge_or_depth"
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 100,
+      "hit_rate": 0.04,
+      "level": "L5",
+      "mean_energy_joule": 110.76910331376256,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        1.3877787807814457e-17,
+        0.2153108027376358
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 10,
+      "track": "state",
+      "valid_return_rate": 0.01,
+      "worst_bucket": "low"
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-panda-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.31,
+      "level": "L5",
+      "mean_energy_joule": 83.6168699142616,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.06809134808816239,
+        0.20153579593350626
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.11956521739130435,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 11,
+      "track": "state",
+      "valid_return_rate": 0.13,
+      "worst_bucket": "edge_or_depth"
+    },
+    {
+      "controller": "vision",
+      "controller_id": "vision-panda-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.34,
+      "level": "L5",
+      "mean_energy_joule": 88.22732827712285,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.044721188963793644,
+        0.16230256740258947
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.08695652173913043,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 18,
+      "track": "vision",
+      "valid_return_rate": 0.12,
+      "worst_bucket": "edge_or_depth"
+    }
+  ],
+  "schema": "multisport-baseline-table-v0",
+  "seed": 0,
+  "shot_bank_digests": {
+    "dev": "f17c0241aec24d6740c065993c084ec4ef21c0d47db22eec4f2dd16cca272ba0",
+    "test": "146bf82e111b0f6ec1fa7cf29ad9963717a110fff421b021440c1936a6c288c7"
+  },
+  "task": "table-tennis-return-panda-v1"
+}

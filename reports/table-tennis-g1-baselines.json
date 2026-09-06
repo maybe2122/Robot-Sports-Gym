@@ -1,0 +1,1173 @@
+{
+  "generated_at": "2026-09-02T16:50:48.253655+00:00",
+  "robot": "unitree-g1-tabletennis-v1",
+  "robustness_gap": [
+    {
+      "controller": "hold",
+      "gap": 0.013333333333333334,
+      "in_distribution": 0.013333333333333334,
+      "in_distribution_episodes": 150,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L3": {
+          "confidence_interval_95": [
+            0.011038884327619805,
+            0.1346009068750702
+          ],
+          "episodes": 50,
+          "value": 0.04
+        },
+        "L4": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L5": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.0,
+      "perturbed_episodes": 100,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ],
+      "split": "dev"
+    },
+    {
+      "controller": "random",
+      "gap": 0.0,
+      "in_distribution": 0.0,
+      "in_distribution_episodes": 150,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L3": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L4": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L5": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.0,
+      "perturbed_episodes": 100,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ],
+      "split": "dev"
+    },
+    {
+      "controller": "intercept",
+      "gap": -0.05333333333333333,
+      "in_distribution": 0.006666666666666667,
+      "in_distribution_episodes": 150,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            0.003539259271646236,
+            0.10495443589637815
+          ],
+          "episodes": 50,
+          "value": 0.02
+        },
+        "L3": {
+          "confidence_interval_95": [
+            6.938893903907228e-18,
+            0.07134759913335872
+          ],
+          "episodes": 50,
+          "value": 0.0
+        },
+        "L4": {
+          "confidence_interval_95": [
+            0.011038884327619805,
+            0.1346009068750702
+          ],
+          "episodes": 50,
+          "value": 0.04
+        },
+        "L5": {
+          "confidence_interval_95": [
+            0.03154951408859298,
+            0.18838246918342838
+          ],
+          "episodes": 50,
+          "value": 0.08
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.06,
+      "perturbed_episodes": 100,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ],
+      "split": "dev"
+    },
+    {
+      "controller": "hold",
+      "gap": 0.0,
+      "in_distribution": 0.0,
+      "in_distribution_episodes": 300,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L3": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L4": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L5": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.0,
+      "perturbed_episodes": 200,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ],
+      "split": "test"
+    },
+    {
+      "controller": "random",
+      "gap": 0.0,
+      "in_distribution": 0.0,
+      "in_distribution_episodes": 300,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L3": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L4": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L5": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.0,
+      "perturbed_episodes": 200,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ],
+      "split": "test"
+    },
+    {
+      "controller": "intercept",
+      "gap": -0.02666666666666667,
+      "in_distribution": 0.023333333333333334,
+      "in_distribution_episodes": 300,
+      "in_distribution_levels": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "level_breakdown": {
+        "L1": {
+          "confidence_interval_95": [
+            3.469446951953614e-18,
+            0.03699349820698568
+          ],
+          "episodes": 100,
+          "value": 0.0
+        },
+        "L2": {
+          "confidence_interval_95": [
+            0.02154367915436796,
+            0.11175046923191913
+          ],
+          "episodes": 100,
+          "value": 0.05
+        },
+        "L3": {
+          "confidence_interval_95": [
+            0.00550196755016235,
+            0.07001179072854388
+          ],
+          "episodes": 100,
+          "value": 0.02
+        },
+        "L4": {
+          "confidence_interval_95": [
+            0.027786123963188192,
+            0.1247681544589592
+          ],
+          "episodes": 100,
+          "value": 0.06
+        },
+        "L5": {
+          "confidence_interval_95": [
+            0.01566330399154762,
+            0.0983707143588792
+          ],
+          "episodes": 100,
+          "value": 0.04
+        }
+      },
+      "metric": "valid_return_rate",
+      "perturbed": 0.05,
+      "perturbed_episodes": 200,
+      "perturbed_levels": [
+        "L4",
+        "L5"
+      ],
+      "split": "test"
+    }
+  ],
+  "rows": [
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 50,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_energy_joule": 0.6631128458646459,
+      "pass_threshold": 1.0,
+      "passed": true,
+      "primary_confidence_interval_95": [
+        0.9286524008666414,
+        1.0
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 1.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 50,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_energy_joule": 21.61471045807413,
+      "pass_threshold": 1.0,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        6.938893903907228e-18,
+        0.07134759913335872
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 50,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-g1-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_energy_joule": 9.672175891230362,
+      "pass_threshold": 1.0,
+      "passed": true,
+      "primary_confidence_interval_95": [
+        0.9286524008666414,
+        1.0
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 1.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 50,
+      "hit_rate": 0.28,
+      "level": "L1",
+      "mean_energy_joule": 0.6668543749706676,
+      "pass_threshold": 0.9,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.17474170665911232,
+        0.4166512369595657
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 0.28,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 50,
+      "hit_rate": 0.0,
+      "level": "L1",
+      "mean_energy_joule": 21.61471045807413,
+      "pass_threshold": 0.9,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        6.938893903907228e-18,
+        0.07134759913335872
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 50,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-g1-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.84,
+      "level": "L1",
+      "mean_energy_joule": 16.838299269381054,
+      "pass_threshold": 0.9,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.7148578393696501,
+        0.916625793219666
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 0.84,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 50,
+      "hit_rate": 0.16,
+      "level": "L2",
+      "mean_energy_joule": 0.6671350826399884,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        6.938893903907228e-18,
+        0.07134759913335872
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 50,
+      "hit_rate": 0.0,
+      "level": "L2",
+      "mean_energy_joule": 21.61471045807413,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        6.938893903907228e-18,
+        0.07134759913335872
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 50,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-g1-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.96,
+      "level": "L2",
+      "mean_energy_joule": 25.37531141548521,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.003539259271646236,
+        0.10495443589637815
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.02,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.02,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 50,
+      "hit_rate": 0.38,
+      "level": "L3",
+      "mean_energy_joule": 0.6674669567340825,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        6.938893903907228e-18,
+        0.07134759913335872
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.04,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 50,
+      "hit_rate": 0.0,
+      "level": "L3",
+      "mean_energy_joule": 21.61471045807413,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        6.938893903907228e-18,
+        0.07134759913335872
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 50,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-g1-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.98,
+      "level": "L3",
+      "mean_energy_joule": 25.117971899807493,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        6.938893903907228e-18,
+        0.07134759913335872
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 50,
+      "hit_rate": 0.1,
+      "level": "L4",
+      "mean_energy_joule": 0.6667683191112053,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.07865159873288836
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": "depth"
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 50,
+      "hit_rate": 0.0,
+      "level": "L4",
+      "mean_energy_joule": 21.61471045807413,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.07865159873288836
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 50,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": "depth"
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-g1-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.66,
+      "level": "L4",
+      "mean_energy_joule": 24.015325375626293,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        1.3877787807814457e-17,
+        0.2153108027376358
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.04,
+      "worst_bucket": "edge"
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 50,
+      "hit_rate": 0.1,
+      "level": "L5",
+      "mean_energy_joule": 0.6657082682003679,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.07555760416399632
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": "edge_or_depth"
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 50,
+      "hit_rate": 0.0,
+      "level": "L5",
+      "mean_energy_joule": 24.26998151713583,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.07555760416399632
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 50,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": "edge_or_depth"
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-g1-intercept-v1",
+      "episodes": 50,
+      "hit_rate": 0.22,
+      "level": "L5",
+      "mean_energy_joule": 21.91115596568755,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        5.551115123125783e-17,
+        0.35433043506668743
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "dev",
+      "target_rate": 0.0,
+      "total_safety_violations": 1,
+      "track": "state",
+      "valid_return_rate": 0.08,
+      "worst_bucket": "low"
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_energy_joule": 0.6631178999045392,
+      "pass_threshold": 1.0,
+      "passed": true,
+      "primary_confidence_interval_95": [
+        0.9630065017930143,
+        1.0
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 1.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_energy_joule": 25.200960014426734,
+      "pass_threshold": 1.0,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 100,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-g1-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L0",
+      "mean_energy_joule": 9.633240627009899,
+      "pass_threshold": 1.0,
+      "passed": true,
+      "primary_confidence_interval_95": [
+        0.9630065017930143,
+        1.0
+      ],
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": 1.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 100,
+      "hit_rate": 0.35,
+      "level": "L1",
+      "mean_energy_joule": 0.6666591607948561,
+      "pass_threshold": 0.9,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.26364248243097527,
+        0.44745556703112027
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 0.35,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L1",
+      "mean_energy_joule": 25.200960014426734,
+      "pass_threshold": 0.9,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 100,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-g1-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.85,
+      "level": "L1",
+      "mean_energy_joule": 16.633824266591972,
+      "pass_threshold": 0.9,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.7671644040916763,
+        0.9069401471634337
+      ],
+      "primary_metric": "hit_rate",
+      "primary_value": 0.85,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 100,
+      "hit_rate": 0.16,
+      "level": "L2",
+      "mean_energy_joule": 0.66716632223552,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L2",
+      "mean_energy_joule": 25.200960014426734,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 100,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-g1-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.91,
+      "level": "L2",
+      "mean_energy_joule": 25.24041715635069,
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.02154367915436796,
+        0.11175046923191913
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.05,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.05,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 100,
+      "hit_rate": 0.53,
+      "level": "L3",
+      "mean_energy_joule": 0.6675781043462089,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L3",
+      "mean_energy_joule": 25.200960014426734,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 100,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": null
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-g1-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.96,
+      "level": "L3",
+      "mean_energy_joule": 25.260149928517077,
+      "pass_threshold": 0.7,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "primary_metric": "target_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.02,
+      "worst_bucket": null
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 100,
+      "hit_rate": 0.15,
+      "level": "L4",
+      "mean_energy_joule": 0.6667728382517152,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.03926207629154474
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": "depth"
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L4",
+      "mean_energy_joule": 25.200960014426734,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.03926207629154474
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 100,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": "depth"
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-g1-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.61,
+      "level": "L4",
+      "mean_energy_joule": 23.710235184340117,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        1.3877787807814457e-17,
+        0.12064330476584563
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.06,
+      "worst_bucket": "edge"
+    },
+    {
+      "controller": "hold",
+      "controller_id": "hold-pose-v1",
+      "episodes": 100,
+      "hit_rate": 0.08,
+      "level": "L5",
+      "mean_energy_joule": 0.6658168348616827,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.04008138928562172
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": "edge_or_depth"
+    },
+    {
+      "controller": "random",
+      "controller_id": "random-joint-v1",
+      "episodes": 100,
+      "hit_rate": 0.0,
+      "level": "L5",
+      "mean_energy_joule": 26.52233388605186,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.0,
+        0.04008138928562172
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.0,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 100,
+      "track": "state",
+      "valid_return_rate": 0.0,
+      "worst_bucket": "edge_or_depth"
+    },
+    {
+      "controller": "intercept",
+      "controller_id": "scripted-g1-intercept-v1",
+      "episodes": 100,
+      "hit_rate": 0.22,
+      "level": "L5",
+      "mean_energy_joule": 22.643701530807427,
+      "pass_threshold": 0.5,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.01566330399154762,
+        0.0983707143588792
+      ],
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": 0.04,
+      "split": "test",
+      "target_rate": 0.0,
+      "total_safety_violations": 0,
+      "track": "state",
+      "valid_return_rate": 0.04,
+      "worst_bucket": "fast"
+    }
+  ],
+  "schema": "multisport-baseline-table-v0",
+  "seed": 0,
+  "shot_bank_digests": {
+    "dev": "f17c0241aec24d6740c065993c084ec4ef21c0d47db22eec4f2dd16cca272ba0",
+    "test": "146bf82e111b0f6ec1fa7cf29ad9963717a110fff421b021440c1936a6c288c7"
+  },
+  "task": "table-tennis-return-g1-v1"
+}

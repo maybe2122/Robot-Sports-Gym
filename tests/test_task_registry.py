@@ -23,13 +23,32 @@ def test_builtin_task_is_registered_and_addressable() -> None:
 
     entry = registry.get_task("table-tennis-return-v0")
     assert entry.config is TABLE_TENNIS_RETURN_V0
-    assert entry is registry.task_for_sport(Sport.TABLE_TENNIS.value)
     assert entry.env_entry_point.endswith(":TableTennisReturnEnv")
 
     with pytest.raises(KeyError, match="unknown task"):
         registry.get_task("no-such-task-v0")
     with pytest.raises(KeyError, match="no task is registered"):
         registry.task_for_sport("curling")
+
+
+def test_a_sport_with_several_embodiments_must_be_addressed_by_task_id() -> None:
+    """Table tennis is played by three tasks, so the sport names none of them.
+
+    A mocap fixture, a Franka Panda and a fixed-base Unitree G1.  They share a
+    judge, a shot bank and a set of thresholds; what they do not share is a
+    score, which is why resolving by sport has to fail.
+    """
+    entries = registry.tasks_for_sport(Sport.TABLE_TENNIS.value)
+
+    assert [entry.task_id for entry in entries] == [
+        "table-tennis-return-g1-v1",
+        "table-tennis-return-panda-v1",
+        "table-tennis-return-v0",
+    ]
+    with pytest.raises(KeyError, match="table-tennis-return-panda-v1"):
+        registry.task_for_sport(Sport.TABLE_TENNIS.value)
+    with pytest.raises(KeyError, match="no task is registered"):
+        registry.tasks_for_sport("curling")
 
 
 def test_registered_env_ids_come_from_the_registry() -> None:

@@ -181,6 +181,113 @@ multisport-benchmark --level L1 --split dev --controller noop
 
 坐标约定、L0–L5 门槛、报告字段、固定集完整性和机器人 adapter 要求见 [乒乓球 Shot Skill 文档](docs/TABLE_TENNIS_SHOT_SKILL.md)。
 
+### 机器人任务 `table-tennis-return-panda-v1`
+
+与 `table-tennis-return-v0` **并列**的版本化任务：共享同一个 Judge、同一份固定 Shot Bank、同一组
+reward 权重，唯一差别是击球的是一台有动力学的 7 DoF Franka Panda，而不是瞬移的 mocap 拍面。动作是
+7 维关节位置设定值（rad，机械臂真实限位，未归一化），观测是 33 维状态，安全违规逐物理步检查、终止
+episode 并计入分母，执行器机械功被积分为 `energy_joule`。
+
+机械臂资产不随仓库分发，按 `MULTISPORT_MENAGERIE_PATH` → `MUJOCO_MENAGERIE_PATH` → `~/mujoco_menagerie`
+顺序查找：
+
+```bash
+git clone --filter=blob:none --sparse https://github.com/google-deepmind/mujoco_menagerie ~/mujoco_menagerie
+git -C ~/mujoco_menagerie sparse-checkout add franka_emika_panda
+```
+
+```bash
+# 内置参考基线：hold / random / intercept，都不是可提交成绩
+multisport-benchmark --robot panda --controller intercept --level L2 --split dev
+
+# 三条基线 × 两个 split × L0–L5 的完整表
+make baselines PYTHON=/path/to/python
+```
+
+**评测你自己训练好的策略**——策略是任意 `obs(33) -> action(7)` 的可调用对象，可以是
+`module:policy`，也可以是返回策略的零参工厂：
+
+```bash
+python scripts/eval_policy.py --policy my_pkg.eval:load_policy --policy-id my-sac-v3 \
+  --split test --levels all --out reports/my-sac-v3
+```
+
+每级输出一份完整 JSON/Markdown 报告，外加一张跨难度汇总表。观测向量的打包顺序由
+`multisport_sim.benchmark.envs.panda_observation_vector` 唯一定义，Gymnasium 环境
+`MultiSportRobot/TableTennisReturn-Panda-v1` 与离线打分路径读的是同一组数字。
+
+### 视觉轨道（Vision track）
+
+同一个任务的第二条观测轨道：**策略只能看见相机**。机器人、动作、Judge、Shot Bank、reward 和阈值
+全部不变，唯一区别是观测对象上**没有 `ball` 字段**——这条规则由构造保证，不是靠文档约定。
+
+声明的传感器套件：两台 320×240 / 120 Hz 立体相机（基线 4.2 m，分居球台两侧）+ 拍面 IMU、接触传感器、
+关节力矩和 frame transform。相机位姿由 `CameraSpec` 决定并写进模型，所以报告里写的位姿就是渲染用的位姿。
+
+```bash
+# 内置视觉基线：和 intercept 完全相同的挥拍控制律，球的状态来自三角化而不是真值
+multisport-benchmark --robot panda --track vision --level L1 --split dev
+
+# 评测你自己的视觉策略
+python scripts/eval_policy.py --policy my_pkg.eval:load_policy --policy-id my-vision \
+  --track vision --split test --levels all --out reports/my-vision
+```
+
+策略拿到的 `obs` 是 `VisionObservation`：`obs.sensors.camera("ball_camera_left").rgb` 是
+`(240, 320, 3)` 的 uint8 图像，`obs.robot.joint_positions` 是本体感知。训练用 Gymnasium 环境
+`MultiSportRobot/TableTennisReturn-Panda-Vision-v1`（字典观测，含 `frame_age_s`——相机 120 Hz 而控制
+200 Hz，中间那步拿到的是上一帧）。训练和评测读的是同一个打包函数。
+
+参考感知管线（颜色分割 → 最大连通块 → 双射线三角化 → 最小二乘速度拟合）在 dev 全集 540 个立体帧上
+实测：**位置误差中位数 0.81 cm、p90 1.02 cm、丢帧 8.1%**。用它跑出来的分数是：L1 命中率 100%（和
+特权状态轨道打平），L2 命中率掉到 50%。**这个差值就是感知的代价，是测出来的而不是估计的。**
+
+详见 [`docs/VISION_TRACK.md`](docs/VISION_TRACK.md)。
+
+### 完整指标与结果包
+
+报告现在覆盖 `BENCHMARK_SPEC` §7 的全部八项原始指标，新补的三项是 `contact_error`（拍面偏心距离 +
+接触拍速）、`robustness_gap`（L1–L3 减 L4–L5）、`inference_latency_ms`（只对策略自己的 `act()` 计时）。
+
+```bash
+# 产出可复现的结果包：manifest / config / metrics / policy / videos / environment
+make submission POLICY=my_pkg:load_policy POLICY_ID=my-sac-v3
+```
+
+manifest 会**如实记录工作区是否是脏的**，录像按 shot_id 排序取前 N 个成功**和**失败（不允许只挑成功），
+权重按 sha256 内容哈希，没带权重的包会明说自己不完整。详见 [`docs/SUBMISSION.md`](docs/SUBMISSION.md)。
+
+### 网球任务与统计充分的固定集
+
+第二项运动 `tennis-return-v0` 已可运行：**同一个 Judge、同一套 L0–L5 门槛、同一份报告 schema**，
+只换几何与量纲（23.77 × 8.23 m 单打场地、地面即落点、3 s episode、17–34 m/s 来球）。
+
+```bash
+multisport-benchmark --sport tennis --level L2 --split test --controller scripted
+make tennis-baselines PYTHON=/path/to/python
+```
+
+固定集也够大了。`scripts/generate_shot_bank.py` 生成的 `table_tennis/return-v1` 与 `tennis/return-v0`
+每个都是 **train 1200 / dev 300 / test 600（每级 100 条）**，三个 split 的种子和球本身都不重叠。
+每条球都在真实场景里发射验证过，`short`/`deep`/`edge` 标签来自**实测落点**，L4/L5 的每个
+pass_bucket 都由分层采样保证非空。
+
+```bash
+# Panda 默认使用统计充分的 v1 固定集
+multisport-benchmark --robot panda --level L2 --split test
+```
+
+`return-v1` 的 L5 还声明了真实扰动——观测噪声、观测/动作延迟、域随机化——全部由 manifest 决定、
+由 episode 种子决定、可精确重放，且**只扰动策略看到的东西，不扰动 Judge 看到的东西**。
+**`return-v0` 一个字节都没改**，在它上面产生过的分数全部仍然有效。
+
+详见 [`docs/TENNIS.md`](docs/TENNIS.md) 与 [`docs/SHOT_BANKS.md`](docs/SHOT_BANKS.md)。
+
+参考基线成绩见 [`reports/table-tennis-panda-baselines.md`](reports/table-tennis-panda-baselines.md)，
+机体标定、可达性结论与安全包络见 [`docs/ROBOT_LAYER.md`](docs/ROBOT_LAYER.md)。Panda 基线表使用
+`table_tennis/return-v1`：dev 每级 50 条、test 每级 100 条；L4/L5 还逐 bucket 报样本量和 Wilson 区间。
+bucket 最少仍只有 14 条，因此最弱 bucket 的点估计不能脱离区间作为发表结论。
+
 ## 真实度量化评测
 
 仓库提供统一的 `multisport-fidelity-v1` 报告格式。它不是只检查参数，而是实际执行落球仿真，测量第一次回弹最高点，并输出绝对误差、相对误差、容差占用率、等效恢复系数、PASS/FAIL、单项分数和总分。ITF、ITTF、FIBA 指标与项目工程指标分别统计，避免混淆官方标准和经验校准范围。
@@ -202,7 +309,7 @@ multisport-isaac --headless --device cpu --scene basketball \
 
 ## 设计边界
 
-这是刚体动力学和接触/气动力仿真，不是有限元球体变形模型。普通展示场景中的球拍固定在场边；Shot Skill 模式会额外加载独立 mocap 拍面作为测试夹具，但它不具备真实机器人的关节、执行器、动力学或安全约束。项目仍没有人体运动员或完整比赛规则。
+这是刚体动力学和接触/气动力仿真，不是有限元球体变形模型。普通展示场景中的球拍固定在场边；`table-tennis-return-v0` 加载的独立 mocap 拍面只是测试夹具，不具备关节、执行器、动力学或安全约束——需要这些的评测请用 `table-tennis-return-panda-v1`。机器人层目前只有机械臂，还没有双足机体；传感器层与 Vision track 已可用。基础相机渲染无传感器噪声，但 `return-v1` 的 L5 会按 manifest 施加观测噪声、观测/动作延迟和有限域随机化。项目仍没有人体运动员或完整比赛规则。
 
 拟议的首批机器人任务、state/vision/robustness 轨道、指标、结果包和发布门槛见 [benchmark 协议](docs/BENCHMARK_SPEC.md)。实验性 Shot Skill 可用于开发和回归测试，但在这些门槛满足前不能作为完整机器人 benchmark 或排行榜发布。
 

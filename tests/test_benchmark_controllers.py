@@ -12,7 +12,6 @@ from multisport_sim.benchmark.controllers import (
 )
 from multisport_sim.benchmark.types import BallState, ShotSpec
 
-
 SHOT = ShotSpec(
     shot_id="controller-test",
     sport="table_tennis",
