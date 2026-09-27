@@ -271,6 +271,19 @@ make submission POLICY=my_pkg:load_policy POLICY_ID=my-sac-v3
 manifest 会**如实记录工作区是否是脏的**，录像按 shot_id 排序取前 N 个成功**和**失败（不允许只挑成功），
 权重按 sha256 内容哈希，没带权重的包会明说自己不完整。详见 [`docs/SUBMISSION.md`](docs/SUBMISSION.md)。
 
+### 羽毛球发球任务 `badminton-serve-v0`
+
+第三项运动，也是第一个**发射类**任务：羽毛球在机器人一侧放手，等待被击出；按 BWF 规则判
+1.15 m 击球高度、对角单打发球区和擦网好球。动作/观测/报告与回球任务完全相同。
+
+```bash
+multisport-benchmark --sport badminton --level L2 --split test --controller scripted
+python scripts/run_fixture_baselines.py --sport badminton
+```
+
+为让 5 g 的羽毛球在 20–30 m/s 的击球下物理可信，羽毛球 benchmark 场景使用 0.5 ms 物理步长、
+按物理步插值的 mocap 拍面，以及在压心处计算来流的气动力。详见 [`docs/BADMINTON.md`](docs/BADMINTON.md)。
+
 ### 网球任务与统计充分的固定集
 
 第二项运动 `tennis-return-v0` 已可运行：**同一个 Judge、同一套 L0–L5 门槛、同一份报告 schema**，

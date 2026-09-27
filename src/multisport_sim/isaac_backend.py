@@ -292,13 +292,18 @@ class IsaacSportsSimulation:
         if sport is Sport.BADMINTON:
             local_axis = torch.tensor([[0.0, 0.0, 1.0]], device=self.sim.device)
             axis = quat_apply(ball.data.root_link_quat_w, local_axis)[0]
-            axial = torch.abs(torch.dot(axis, velocity / speed))
+            cp_offset = axis * SHUTTLE_CENTER_OF_PRESSURE_OFFSET
+            # The skirt sees the flow at the centre of pressure; that difference
+            # from the centre-of-mass velocity is the shuttle's pitch damping
+            # (see physics.Aerodynamics._shuttle_loads).
+            flow = velocity + torch.linalg.cross(angular_velocity, cp_offset)
+            flow_speed = torch.linalg.vector_norm(flow)
+            if flow_speed.item() < 1e-7:
+                return zeros, zeros
+            axial = torch.abs(torch.dot(axis, flow / flow_speed))
             area = pi * SHUTTLE_SKIRT_RADIUS**2 * (0.35 + 0.65 * axial)
-            force = -0.5 * AIR_DENSITY * spec.drag_coefficient * area * speed * velocity
-            torque = torch.linalg.cross(
-                axis * SHUTTLE_CENTER_OF_PRESSURE_OFFSET,
-                force,
-            ) - 1.5e-5 * angular_velocity
+            force = -0.5 * AIR_DENSITY * spec.drag_coefficient * area * flow_speed * flow
+            torque = torch.linalg.cross(cp_offset, force) - 1.5e-5 * angular_velocity
             return force, torque
 
         force = -0.5 * AIR_DENSITY * spec.drag_coefficient * spec.cross_section * speed * velocity

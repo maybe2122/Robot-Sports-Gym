@@ -4,11 +4,10 @@
   "robustness_gap": [
     {
       "controller": "hold",
-      "gap": 0.013333333333333334,
-      "in_distribution": 0.013333333333333334,
-      "in_distribution_episodes": 150,
+      "gap": 0.02,
+      "in_distribution": 0.02,
+      "in_distribution_episodes": 100,
       "in_distribution_levels": [
-        "L1",
         "L2",
         "L3"
       ],
@@ -67,9 +66,8 @@
       "controller": "random",
       "gap": 0.0,
       "in_distribution": 0.0,
-      "in_distribution_episodes": 150,
+      "in_distribution_episodes": 100,
       "in_distribution_levels": [
-        "L1",
         "L2",
         "L3"
       ],
@@ -126,11 +124,10 @@
     },
     {
       "controller": "intercept",
-      "gap": -0.05333333333333333,
-      "in_distribution": 0.006666666666666667,
-      "in_distribution_episodes": 150,
+      "gap": -0.049999999999999996,
+      "in_distribution": 0.01,
+      "in_distribution_episodes": 100,
       "in_distribution_levels": [
-        "L1",
         "L2",
         "L3"
       ],
@@ -189,9 +186,8 @@
       "controller": "hold",
       "gap": 0.0,
       "in_distribution": 0.0,
-      "in_distribution_episodes": 300,
+      "in_distribution_episodes": 200,
       "in_distribution_levels": [
-        "L1",
         "L2",
         "L3"
       ],
@@ -250,9 +246,8 @@
       "controller": "random",
       "gap": 0.0,
       "in_distribution": 0.0,
-      "in_distribution_episodes": 300,
+      "in_distribution_episodes": 200,
       "in_distribution_levels": [
-        "L1",
         "L2",
         "L3"
       ],
@@ -309,11 +304,10 @@
     },
     {
       "controller": "intercept",
-      "gap": -0.02666666666666667,
-      "in_distribution": 0.023333333333333334,
-      "in_distribution_episodes": 300,
+      "gap": -0.015,
+      "in_distribution": 0.035,
+      "in_distribution_episodes": 200,
       "in_distribution_levels": [
-        "L1",
         "L2",
         "L3"
       ],

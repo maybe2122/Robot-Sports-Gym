@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-27T16:19:03.113189+00:00",
+  "generated_at": "2026-09-27T16:20:52.386559+00:00",
   "robustness_gap": [
     {
       "controller": "noop",
@@ -62,8 +62,8 @@
     },
     {
       "controller": "scripted",
-      "gap": 0.31,
-      "in_distribution": 0.635,
+      "gap": 0.06499999999999995,
+      "in_distribution": 1.0,
       "in_distribution_episodes": 200,
       "in_distribution_levels": [
         "L2",
@@ -80,39 +80,39 @@
         },
         "L2": {
           "confidence_interval_95": [
-            0.4920143005341078,
-            0.6813268697886348
+            0.9630065017930143,
+            1.0
           ],
           "episodes": 100,
-          "value": 0.59
+          "value": 1.0
         },
         "L3": {
           "confidence_interval_95": [
-            0.5833738138954762,
-            0.7633085267500092
+            0.9630065017930143,
+            1.0
           ],
           "episodes": 100,
-          "value": 0.68
+          "value": 1.0
         },
         "L4": {
           "confidence_interval_95": [
-            0.4622810465167699,
-            0.6532797336983921
+            0.9630065017930143,
+            1.0
           ],
           "episodes": 100,
-          "value": 0.56
+          "value": 1.0
         },
         "L5": {
           "confidence_interval_95": [
-            0.04807254000256516,
-            0.1622621285271631
+            0.7901964855992357,
+            0.9224283257275948
           ],
           "episodes": 100,
-          "value": 0.09
+          "value": 0.87
         }
       },
       "metric": "valid_return_rate",
-      "perturbed": 0.325,
+      "perturbed": 0.935,
       "perturbed_episodes": 200,
       "perturbed_levels": [
         "L4",
@@ -126,7 +126,7 @@
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L0",
-      "mean_episode_time_s": 0.9982199999999933,
+      "mean_episode_time_s": 0.4739250000000003,
       "pass_threshold": 1.0,
       "passed": true,
       "primary_confidence_interval_95": [
@@ -144,7 +144,7 @@
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L0",
-      "mean_episode_time_s": 0.9982199999999933,
+      "mean_episode_time_s": 0.4739250000000003,
       "pass_threshold": 1.0,
       "passed": true,
       "primary_confidence_interval_95": [
@@ -162,7 +162,7 @@
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L1",
-      "mean_episode_time_s": 1.760349999999917,
+      "mean_episode_time_s": 0.47458500000000037,
       "pass_threshold": 0.9,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -178,17 +178,17 @@
     {
       "controller": "scripted",
       "episodes": 100,
-      "hit_rate": 0.99,
+      "hit_rate": 1.0,
       "level": "L1",
-      "mean_episode_time_s": 1.3134299999999661,
+      "mean_episode_time_s": 0.19138500000000014,
       "pass_threshold": 0.9,
       "passed": true,
       "primary_confidence_interval_95": [
-        0.9455138038212946,
-        0.9982325679358593
+        0.9630065017930143,
+        1.0
       ],
       "primary_metric": "hit_rate",
-      "primary_value": 0.99,
+      "primary_value": 1.0,
       "target_rate": 0.0,
       "valid_return_rate": 0.0,
       "worst_bucket": null
@@ -198,7 +198,7 @@
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L2",
-      "mean_episode_time_s": 1.7605599999999169,
+      "mean_episode_time_s": 0.47530500000000037,
       "pass_threshold": 0.8,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -214,19 +214,19 @@
     {
       "controller": "scripted",
       "episodes": 100,
-      "hit_rate": 0.95,
+      "hit_rate": 1.0,
       "level": "L2",
-      "mean_episode_time_s": 2.530039999999832,
+      "mean_episode_time_s": 1.7062349999998676,
       "pass_threshold": 0.8,
-      "passed": false,
+      "passed": true,
       "primary_confidence_interval_95": [
-        0.4920143005341078,
-        0.6813268697886348
+        0.9630065017930143,
+        1.0
       ],
       "primary_metric": "valid_return_rate",
-      "primary_value": 0.59,
+      "primary_value": 1.0,
       "target_rate": 0.0,
-      "valid_return_rate": 0.59,
+      "valid_return_rate": 1.0,
       "worst_bucket": null
     },
     {
@@ -234,7 +234,7 @@
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L3",
-      "mean_episode_time_s": 1.7343699999999196,
+      "mean_episode_time_s": 0.4746900000000004,
       "pass_threshold": 0.7,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -252,17 +252,17 @@
       "episodes": 100,
       "hit_rate": 1.0,
       "level": "L3",
-      "mean_episode_time_s": 2.6401999999998202,
+      "mean_episode_time_s": 1.6830099999998702,
       "pass_threshold": 0.7,
-      "passed": false,
+      "passed": true,
       "primary_confidence_interval_95": [
-        0.0017674320641406505,
-        0.054486196178705315
+        0.6892964648501421,
+        0.8499871761539459
       ],
       "primary_metric": "target_rate",
-      "primary_value": 0.01,
-      "target_rate": 0.01,
-      "valid_return_rate": 0.68,
+      "primary_value": 0.78,
+      "target_rate": 0.78,
+      "valid_return_rate": 1.0,
       "worst_bucket": null
     },
     {
@@ -270,77 +270,77 @@
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L4",
-      "mean_episode_time_s": 1.6523399999999286,
+      "mean_episode_time_s": 0.44919500000000034,
       "pass_threshold": 0.6,
       "passed": false,
       "primary_confidence_interval_95": [
-        0.0,
-        0.08566757018443186
+        1.3877787807814457e-17,
+        0.13319225093904846
       ],
       "primary_metric": "worst_bucket_valid_return_rate",
       "primary_value": 0.0,
       "target_rate": 0.0,
       "valid_return_rate": 0.0,
-      "worst_bucket": "depth"
+      "worst_bucket": "far-release"
     },
     {
       "controller": "scripted",
       "episodes": 100,
-      "hit_rate": 0.9,
+      "hit_rate": 1.0,
       "level": "L4",
-      "mean_episode_time_s": 2.4391099999998422,
+      "mean_episode_time_s": 1.6450649999998743,
       "pass_threshold": 0.6,
-      "passed": false,
+      "passed": true,
       "primary_confidence_interval_95": [
-        0.12003174778217568,
-        0.3670500598822617
+        0.8668077490609515,
+        0.9999999999999999
       ],
       "primary_metric": "worst_bucket_valid_return_rate",
-      "primary_value": 0.21951219512195122,
+      "primary_value": 1.0,
       "target_rate": 0.0,
-      "valid_return_rate": 0.56,
-      "worst_bucket": "depth"
+      "valid_return_rate": 1.0,
+      "worst_bucket": "far-release"
     },
     {
       "controller": "noop",
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L5",
-      "mean_episode_time_s": 1.0823499999999675,
+      "mean_episode_time_s": 0.4441300000000003,
       "pass_threshold": 0.5,
       "passed": false,
       "primary_confidence_interval_95": [
         0.0,
-        0.048113585065137326
+        0.10151455415332376
       ],
       "primary_metric": "worst_bucket_valid_return_rate",
       "primary_value": 0.0,
       "target_rate": 0.0,
       "valid_return_rate": 0.0,
-      "worst_bucket": "edge_or_depth"
+      "worst_bucket": "far-release"
     },
     {
       "controller": "scripted",
       "episodes": 100,
-      "hit_rate": 0.44,
+      "hit_rate": 0.98,
       "level": "L5",
-      "mean_episode_time_s": 1.1811399999999566,
+      "mean_episode_time_s": 1.5500449999998844,
       "pass_threshold": 0.5,
-      "passed": false,
+      "passed": true,
       "primary_confidence_interval_95": [
-        1.3877787807814457e-17,
-        0.2153108027376358
+        0.632016119488364,
+        0.8965047310096808
       ],
       "primary_metric": "worst_bucket_valid_return_rate",
-      "primary_value": 0.0,
+      "primary_value": 0.7941176470588235,
       "target_rate": 0.0,
-      "valid_return_rate": 0.09,
-      "worst_bucket": "low"
+      "valid_return_rate": 0.87,
+      "worst_bucket": "far-release"
     }
   ],
   "schema": "multisport-baseline-table-v0",
   "seed": 0,
-  "shot_bank_digest": "b0614a72ee8ea9cab5d2e83d864dc30d02741321c94b70db29f9af2da4b7e9e3",
+  "shot_bank_digest": "2ca5c08e7074565310c03b5db4bdfb766aa6e38c0fbbb10f262478ef00663523",
   "split": "test",
-  "task": "tennis-return-v0"
+  "task": "badminton-serve-v0"
 }

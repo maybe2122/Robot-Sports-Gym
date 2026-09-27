@@ -9,11 +9,13 @@ from __future__ import annotations
 from .registry import TaskEntry, register_task
 from .rules.base import ShotJudge
 from .task_config import (
+    BADMINTON_SERVE_V0,
     TABLE_TENNIS_RETURN_G1_V1,
     TABLE_TENNIS_RETURN_PANDA_V1,
     TABLE_TENNIS_RETURN_STANDING_G1_V2,
     TABLE_TENNIS_RETURN_V0,
     TENNIS_RETURN_V0,
+    BadmintonServeTaskConfig,
     ShotTaskConfig,
     TableTennisReturnTaskConfig,
     TennisReturnTaskConfig,
@@ -105,6 +107,21 @@ TENNIS_RETURN = TaskEntry(
 )
 
 
+def _badminton_judge(config: ShotTaskConfig) -> ShotJudge:
+    from .rules.badminton import BADMINTON, BadmintonServeJudge
+
+    court = config.court if isinstance(config, BadmintonServeTaskConfig) else BADMINTON
+    return BadmintonServeJudge(timeout_s=config.timeout_s, court_spec=court)
+
+
+BADMINTON_SERVE = TaskEntry(
+    config=BADMINTON_SERVE_V0,
+    judge_factory=_badminton_judge,
+    backend_factory=_mocap_backend,
+    env_entry_point="multisport_sim.benchmark.envs:BadmintonServeEnv",
+)
+
+
 def _standing_g1_backend(config):
     from .backends.mujoco_standing import MujocoStandingG1TableTennisBackend
     from .robot import WorkspaceBox
@@ -129,6 +146,7 @@ def register_builtin_tasks() -> None:
     register_task(TABLE_TENNIS_RETURN_G1, replace=True)
     register_task(TABLE_TENNIS_RETURN_STANDING_G1, replace=True)
     register_task(TENNIS_RETURN, replace=True)
+    register_task(BADMINTON_SERVE, replace=True)
 
 
 register_builtin_tasks()

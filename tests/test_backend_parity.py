@@ -13,7 +13,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
-import backend_parity  # noqa: E402
+import backend_parity
 
 DT = 0.005
 

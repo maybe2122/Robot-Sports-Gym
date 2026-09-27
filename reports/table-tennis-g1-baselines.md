@@ -56,16 +56,16 @@ score bounds what this embodiment can do, it does not represent a policy.
 
 ## Robustness gap
 
-`valid_return_rate` on L1-L3 minus the same rate on L4-L5. L4 and L5
+`valid_return_rate` on L2-L3 minus the same rate on L4-L5. L4 and L5
 are also shown separately: they are independently stratified challenge
 distributions (and only L5 applies declared perturbations), so their
 empirical rates are not expected to be monotonic.
 
-| Split | Controller | L1-L3 | L4 | L5 | L4-L5 | Gap |
+| Split | Controller | L2-L3 | L4 | L5 | L4-L5 | Gap |
 |---|---|---:|---:|---:|---:|---:|
-| `dev` | `hold` | 1% (150) | 0% (50) | 0% (50) | 0% (100) | +1% |
-| `dev` | `random` | 0% (150) | 0% (50) | 0% (50) | 0% (100) | +0% |
-| `dev` | `intercept` | 1% (150) | 4% (50) | 8% (50) | 6% (100) | -5% |
-| `test` | `hold` | 0% (300) | 0% (100) | 0% (100) | 0% (200) | +0% |
-| `test` | `random` | 0% (300) | 0% (100) | 0% (100) | 0% (200) | +0% |
-| `test` | `intercept` | 2% (300) | 6% (100) | 4% (100) | 5% (200) | -3% |
+| `dev` | `hold` | 2% (100) | 0% (50) | 0% (50) | 0% (100) | +2% |
+| `dev` | `random` | 0% (100) | 0% (50) | 0% (50) | 0% (100) | +0% |
+| `dev` | `intercept` | 1% (100) | 4% (50) | 8% (50) | 6% (100) | -5% |
+| `test` | `hold` | 0% (200) | 0% (100) | 0% (100) | 0% (200) | +0% |
+| `test` | `random` | 0% (200) | 0% (100) | 0% (100) | 0% (200) | +0% |
+| `test` | `intercept` | 4% (200) | 6% (100) | 4% (100) | 5% (200) | -2% |

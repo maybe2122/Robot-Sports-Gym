@@ -41,9 +41,23 @@ REPORTS = (
         controllers=("hold", "random", "intercept", "vision"),
     ),
     ReportSpec(
+        path=Path("reports/table-tennis-g1-baselines.json"),
+        task="table-tennis-return-g1-v1",
+        bank="table_tennis/return-v1",
+        splits=("dev", "test"),
+        controllers=("hold", "random", "intercept"),
+    ),
+    ReportSpec(
         path=Path("reports/tennis-baselines.json"),
         task="tennis-return-v0",
         bank="tennis/return-v0",
+        splits=("test",),
+        controllers=("noop", "scripted"),
+    ),
+    ReportSpec(
+        path=Path("reports/badminton-baselines.json"),
+        task="badminton-serve-v0",
+        bank="badminton/serve-v0",
         splits=("test",),
         controllers=("noop", "scripted"),
     ),

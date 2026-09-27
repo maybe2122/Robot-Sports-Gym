@@ -19,7 +19,7 @@
 - [x] 实现 seed、episode recorder 和机器可读结果 schema（固定 Shot Bank 和 `EpisodeResult`）
 - [x] 通过 Gymnasium `check_env`（MuJoCo 乒乓球测试夹具）
 - [x] 建立 MuJoCo/Isaac 共享任务配置和坐标约定（`TableTennisReturnTaskConfig` 与 `TaskFrame`）
-- [ ] Isaac Lab `ManagerBasedRLEnv` 向量化实现（代码已就位，缺 GPU 运行时实跑验证）
+- [x] Isaac Lab `ManagerBasedRLEnv` 向量化实现（CPU PhysX 实跑 300 并行环境，与 MuJoCo 同批球逐条对比，见 [`ISAAC_SIM.md`](ISAAC_SIM.md)；GPU PhysX 未跑）
 
 ## M2 — Robot and sensor layer（P0）
 
@@ -43,7 +43,7 @@
 - [x] TennisReturn
 - [ ] TableTennisReturn
 - [ ] FootballKickToTarget
-- [ ] BadmintonServe
+- [x] BadmintonServe（mocap 夹具，见 [`BADMINTON.md`](BADMINTON.md)）
 - [ ] BasketballShoot
 - [ ] 每项任务提供 scripted/control baseline、random baseline 和至少一个学习基线
 

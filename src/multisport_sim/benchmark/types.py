@@ -19,10 +19,13 @@ FailureReason: TypeAlias = Literal[
     "timeout",
     "safety",
     "numerical",
+    "fault",
 ]
 
+# ``fault`` is a rule infringement at the moment of the strike itself -- a serve
+# struck above the legal height -- as opposed to where the ball went afterwards.
 _FAILURE_REASONS = frozenset(
-    {"miss", "net", "own_side", "out", "floor", "timeout", "safety", "numerical"}
+    {"miss", "net", "own_side", "out", "floor", "timeout", "safety", "numerical", "fault"}
 )
 
 

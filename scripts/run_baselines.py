@@ -87,7 +87,7 @@ def _interval(value: list[float] | None) -> str:
 def _gap_rows(gaps: dict[tuple[str, str], dict | None]) -> list[str]:
     """One gap row with L4/L5 exposed separately, per baseline and split."""
     lines = [
-        "| Split | Controller | L1-L3 | L4 | L5 | L4-L5 | Gap |",
+        "| Split | Controller | L2-L3 | L4 | L5 | L4-L5 | Gap |",
         "|---|---|---:|---:|---:|---:|---:|",
     ]
     for (split, controller), gap in gaps.items():
@@ -181,7 +181,7 @@ def markdown(
     lines += [
         "## Robustness gap",
         "",
-        "`valid_return_rate` on L1-L3 minus the same rate on L4-L5. L4 and L5",
+        "`valid_return_rate` on L2-L3 minus the same rate on L4-L5. L4 and L5",
         "are also shown separately: they are independently stratified challenge",
         "distributions (and only L5 applies declared perturbations), so their",
         "empirical rates are not expected to be monotonic.",

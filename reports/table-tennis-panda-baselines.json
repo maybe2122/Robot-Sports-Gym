@@ -4,11 +4,10 @@
   "robustness_gap": [
     {
       "controller": "hold",
-      "gap": 0.006666666666666667,
-      "in_distribution": 0.006666666666666667,
-      "in_distribution_episodes": 150,
+      "gap": 0.01,
+      "in_distribution": 0.01,
+      "in_distribution_episodes": 100,
       "in_distribution_levels": [
-        "L1",
         "L2",
         "L3"
       ],
@@ -67,9 +66,8 @@
       "controller": "random",
       "gap": 0.0,
       "in_distribution": 0.0,
-      "in_distribution_episodes": 150,
+      "in_distribution_episodes": 100,
       "in_distribution_levels": [
-        "L1",
         "L2",
         "L3"
       ],
@@ -126,11 +124,10 @@
     },
     {
       "controller": "intercept",
-      "gap": -0.14,
-      "in_distribution": 0.12,
-      "in_distribution_episodes": 150,
+      "gap": -0.08000000000000002,
+      "in_distribution": 0.18,
+      "in_distribution_episodes": 100,
       "in_distribution_levels": [
-        "L1",
         "L2",
         "L3"
       ],
@@ -187,11 +184,10 @@
     },
     {
       "controller": "vision",
-      "gap": 0.02333333333333333,
-      "in_distribution": 0.07333333333333333,
-      "in_distribution_episodes": 150,
+      "gap": 0.06,
+      "in_distribution": 0.11,
+      "in_distribution_episodes": 100,
       "in_distribution_levels": [
-        "L1",
         "L2",
         "L3"
       ],
@@ -250,9 +246,8 @@
       "controller": "hold",
       "gap": 0.0,
       "in_distribution": 0.0,
-      "in_distribution_episodes": 300,
+      "in_distribution_episodes": 200,
       "in_distribution_levels": [
-        "L1",
         "L2",
         "L3"
       ],
@@ -311,9 +306,8 @@
       "controller": "random",
       "gap": -0.005,
       "in_distribution": 0.0,
-      "in_distribution_episodes": 300,
+      "in_distribution_episodes": 200,
       "in_distribution_levels": [
-        "L1",
         "L2",
         "L3"
       ],
@@ -370,11 +364,10 @@
     },
     {
       "controller": "intercept",
-      "gap": -0.09499999999999999,
-      "in_distribution": 0.11,
-      "in_distribution_episodes": 300,
+      "gap": -0.03999999999999998,
+      "in_distribution": 0.165,
+      "in_distribution_episodes": 200,
       "in_distribution_levels": [
-        "L1",
         "L2",
         "L3"
       ],
@@ -431,11 +424,10 @@
     },
     {
       "controller": "vision",
-      "gap": -0.08499999999999999,
-      "in_distribution": 0.06,
-      "in_distribution_episodes": 300,
+      "gap": -0.05499999999999999,
+      "in_distribution": 0.09,
+      "in_distribution_episodes": 200,
       "in_distribution_levels": [
-        "L1",
         "L2",
         "L3"
       ],

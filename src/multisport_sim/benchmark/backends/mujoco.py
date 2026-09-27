@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from math import isfinite, sqrt
 
 import mujoco
+import numpy as np
 
 from ...physics import Aerodynamics, Atmosphere
 from ...scene import build_model
@@ -32,6 +33,12 @@ class MujocoSportProfile:
     net_geoms: tuple[str, ...] = ()
     floor_geoms: tuple[str, ...] = ()
     extra_geoms: Mapping[str, str] = field(default_factory=dict)
+    # Spread each commanded effector pose over this many seconds of physics
+    # steps instead of teleporting there at once.  Zero keeps the teleport the
+    # frozen table-tennis and tennis scores were measured with; a sport whose
+    # ball is smaller than the distance the face covers in one control period
+    # needs it, or the face jumps straight past the ball.
+    effector_interpolation_s: float = 0.0
 
     @property
     def ball_joint(self) -> str:
@@ -90,9 +97,23 @@ TENNIS_PROFILE = MujocoSportProfile(
     net_geoms=("tennis_net", "tennis_post_a", "tennis_post_b"),
 )
 
+BADMINTON_PROFILE = MujocoSportProfile(
+    sport=Sport.BADMINTON,
+    effector_body="badminton_benchmark_paddle",
+    effector_geom="badminton_benchmark_paddle_blade",
+    # The court is the ground, as in tennis; its painted lines have no
+    # collision geometry, so the surface geom alone is the landing surface.
+    surface_geoms=("badminton_surface",),
+    net_geoms=("badminton_net", "badminton_post_a", "badminton_post_b"),
+    # One 200 Hz control period.  A 30 m/s face covers 150 mm in it; the
+    # shuttle's cork is 27 mm across.
+    effector_interpolation_s=0.005,
+)
+
 PROFILES: dict[Sport, MujocoSportProfile] = {
     Sport.TABLE_TENNIS: TABLE_TENNIS_PROFILE,
     Sport.TENNIS: TENNIS_PROFILE,
+    Sport.BADMINTON: BADMINTON_PROFILE,
 }
 
 
@@ -139,6 +160,13 @@ class MujocoShotBackend:
             mujoco.mjtObj.mjOBJ_GEOM, self.profile.effector_geom
         )
 
+        self._interpolation_steps = max(
+            0, round(self.profile.effector_interpolation_s / self.timestep)
+        )
+        self._effector_from: tuple[np.ndarray, np.ndarray] | None = None
+        self._effector_to: tuple[np.ndarray, np.ndarray] | None = None
+        self._effector_step = 0
+
         self._semantic_geoms: dict[int, str] = {
             self._require_id(mujoco.mjtObj.mjOBJ_GEOM, name): category
             for name, category in self.profile.semantic_geom_names().items()
@@ -168,6 +196,8 @@ class MujocoShotBackend:
         """Restore the complete scene, including the blade's parked mocap pose."""
         mujoco.mj_resetData(self.model, self.data)
         self.data.xfrc_applied[:] = 0.0
+        self._effector_from = self._effector_to = None
+        self._effector_step = 0
         mujoco.mj_forward(self.model, self.data)
 
     def launch_ball(self, shot: ShotSpec) -> None:
@@ -278,15 +308,45 @@ class MujocoShotBackend:
         if quaternion_norm <= 1e-12:
             raise ValueError("paddle quaternion must have non-zero norm")
 
-        self.data.mocap_pos[self._paddle_mocap_id] = position
-        self.data.mocap_quat[self._paddle_mocap_id] = tuple(
-            value / quaternion_norm for value in quaternion
+        target = (
+            np.asarray(position, dtype=float),
+            np.asarray(quaternion, dtype=float) / quaternion_norm,
         )
+        if self._interpolation_steps == 0:
+            self.data.mocap_pos[self._paddle_mocap_id] = target[0]
+            self.data.mocap_quat[self._paddle_mocap_id] = target[1]
+            return
+        self._effector_from = (
+            self.data.mocap_pos[self._paddle_mocap_id].copy(),
+            self.data.mocap_quat[self._paddle_mocap_id].copy(),
+        )
+        self._effector_to = target
+        self._effector_step = 0
+
+    def _advance_effector(self) -> None:
+        """Move the face one physics step along its commanded segment."""
+        if self._effector_to is None or self._effector_from is None:
+            return
+        if self._effector_step >= self._interpolation_steps:
+            return
+        self._effector_step += 1
+        fraction = self._effector_step / self._interpolation_steps
+        start_position, start_quaternion = self._effector_from
+        end_position, end_quaternion = self._effector_to
+        # Normalized linear interpolation, taking the short way round.
+        if float(start_quaternion @ end_quaternion) < 0.0:
+            end_quaternion = -end_quaternion
+        quaternion = (1.0 - fraction) * start_quaternion + fraction * end_quaternion
+        self.data.mocap_pos[self._paddle_mocap_id] = (
+            (1.0 - fraction) * start_position + fraction * end_position
+        )
+        self.data.mocap_quat[self._paddle_mocap_id] = quaternion / np.linalg.norm(quaternion)
 
     def step(self, action: object | None = None) -> None:
         """Apply passive aerodynamics and advance exactly one physics tick."""
         if action is not None:
             self.apply_action(action)
+        self._advance_effector()
         self.data.xfrc_applied[:] = 0.0
         self.aerodynamics.apply(self.data)
         mujoco.mj_step(self.model, self.data)

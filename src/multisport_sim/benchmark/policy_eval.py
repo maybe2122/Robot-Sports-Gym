@@ -229,12 +229,12 @@ def robustness_line(gap: Mapping[str, Any] | None) -> str:
     """One human-readable sentence about the gap, or about why there is none."""
     if gap is None:
         return (
-            "Robustness gap: not measured -- it compares L1-L3 against L4-L5, "
+            "Robustness gap: not measured -- it compares L2-L3 against L4-L5, "
             "so the run has to cover both."
         )
     return (
         f"Robustness gap (`{gap['metric']}`): "
-        f"{gap['in_distribution']:.0%} on L1-L3 ({gap['in_distribution_episodes']} episodes) "
+        f"{gap['in_distribution']:.0%} on L2-L3 ({gap['in_distribution_episodes']} episodes) "
         f"minus {gap['perturbed']:.0%} on L4-L5 ({gap['perturbed_episodes']} episodes) "
         f"= **{gap['gap']:.0%}**."
     )

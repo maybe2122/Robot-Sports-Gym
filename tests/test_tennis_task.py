@@ -163,7 +163,7 @@ def test_the_scripted_fixture_intercepts_and_returns_real_tennis_shots() -> None
 
 def test_a_sport_without_a_tuned_fixture_is_refused() -> None:
     with pytest.raises(ValueError, match="no scripted fixture is tuned"):
-        scripted_controller_for("badminton")
+        scripted_controller_for("squash")
 
 
 def test_the_two_sports_do_not_share_a_shot_bank() -> None:

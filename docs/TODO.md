@@ -26,7 +26,7 @@
 | 测试 | 379 项收集，**378 通过 / 1 skip**（skip 是 `test_isaac_lab_env`，缺 Isaac Lab 运行时） |
 | Lint | `ruff check src tests scripts` 零问题 |
 
-按里程碑：**M1 差 Isaac 实跑；M2 差双足资产与 Isaac 侧实现；M3 五项运动做完两项。**
+按里程碑：**M1 Isaac 已在 CPU PhysX 实跑（GPU 未跑）；M2 差双足资产与 Isaac 侧实现；M3 五项运动做完三项。**
 
 ### M1 — Benchmark API
 
@@ -65,7 +65,7 @@
 | 11 | 多运动任务框架泛化 | done | — | `ShotTaskConfig`、`ShotJudge`、`RectangularSurface`、`NetReturnJudge`、`MujocoSportProfile`、`TaskEntry`；Shot Bank 支持声明 opponent→robot 来球或 robot-side 静止/向前发球，旧 manifest 兼容 |
 | 12 | TennisReturn | done | 11 | `tennis-return-v0`：复用 `NetReturnJudge` 与全部 L0–L5 门槛、网球 benchmark 线床夹具（e≈0.79 标定）、固定 Shot Bank、`TennisReturn-v0` 通过 `check_env`、noop+scripted 基线。见 [`TENNIS.md`](TENNIS.md) |
 | 13 | FootballKickToTarget | todo | 11, 10b | 新 Judge（触球、目标区/球门命中、出界）、踢球器夹具、Shot Bank、环境注册、baseline |
-| 14 | BadmintonServe | todo | 11 | 新 Judge（发球击球点合法性、过网、对角发球区）、球拍夹具、Shot Bank、环境注册、baseline |
+| 14 | BadmintonServe | done | 11 | `badminton-serve-v0`：发射类任务框架 `LaunchJudge` + BWF 发球规则 Judge（1.15 m 击球高度、对角单打发球区、擦网好球）、0.5 ms 步长与插值 mocap 夹具、压心来流的羽毛球气动力、`badminton/serve-v0` 固定集（每级 test 100）、`BadmintonServe-v0` 通过 `check_env`、noop+scripted 基线。见 [`BADMINTON.md`](BADMINTON.md) |
 | 15 | BasketballShoot | todo | 11 | 新 Judge（出手、篮圈/篮板接触序列、空心与打板进球）、投篮器夹具、Shot Bank、环境注册、baseline |
 | 16 | 五项任务 baseline 与统一报告 | todo | 12–15 | 每项提供 random 与 scripted baseline，统一进入 CLI 与 JSON/Markdown 报告；跨任务指标汇总 |
 
@@ -101,7 +101,7 @@
 |---:|---|---|---|---|
 | 1 | **整批工作未提交** | 工作区 60+ 个改动/新增文件，`feat/shared-task-config` 上最后一次提交还停在框架泛化之前 | 结果包 manifest 会打脏树标记；任何人拿到 commit 都复现不出这些报告 | 分批提交，见计划 1 |
 | 2 | ~~机体基线统计量不足~~（已修复） | Panda 默认固定集已改为 `table_tennis/return-v1`，完整报告已重跑 | dev 每格 n=50 / test 每格 n=100，v1 digest 与 Wilson 区间已记录 |
-| 3 | ~~难度分级不单调~~（已澄清） | 网球 scripted 的聚合 gap 为负，根因是 L4/L5 独立分层而非嵌套样本，只有 L5 应用扰动 | 报告新增逐级 breakdown 与区间；规范明确两级点估计不承诺单调 |
+| 3 | ~~难度分级不单调~~（已澄清） | 网球 scripted 的聚合 gap 曾为负：一半因为 L1 被计入分布内分子（已改，见 #15），一半因为 mocap 路径从未施加 L5 扰动（已修，L5 现在 0%，gap +31%） | 报告新增逐级 breakdown 与区间；规范明确两级点估计不承诺单调 |
 | 4 | **Isaac Lab 从未实跑** | `test_isaac_lab_env` 是全套 379 项里唯一的 skip（缺运行时） | 双后端是发布门槛。目前 Isaac 路径的正确性完全没有证据 | 需要一台装 Isaac Sim 的 GPU 机器，先做最小实例化 |
 | 5 | **Isaac 侧没有 robot / sensor 实现** | `robot.py`、`sensors.py` 是后端无关协议，但只有 MuJoCo 的实现（`backends/mujoco_robot.py`、`mujoco_sensors.py`） | "同一个 Panda 跑两个后端"目前是设计意图，不是已验证事实 | 与问题 4 一起做 |
 | 6 | ~~力矩控制模式未实现~~（已修复） | Panda adapter 将 affine 位置 actuator 显式切换为 unit-gain、zero-bias torque actuator，并可逆恢复 | 命令以 N·m 解释并按 87/12 N·m 限幅；reset 回到位置模式；模式往返有物理测试 |
@@ -115,7 +115,7 @@
 | 18 | **`incoming_valid_rate` 不是机体无关的** | L0 的主指标本应只描述固定集里的球合不合法，但一个在球完成第一落之前就因安全违规中止的 episode 记录不到它。G1 的 `random` 基线在 L0 拿 0%，Panda 的同一条拿 90%——差别只是违规发生的时刻 | L0 目前测的是控制器而不是固定集 | 要么让 L0 的分子不受中止影响，要么在 spec 里写明 L0 对中止敏感。改语义会移动已发布的 Panda 分数，所以先记不改 |
 | 19 | **G1 上 `random` 基线没有区分能力** | 600 个回合 100% 以安全违规告终：kp=500 的人形伺服被随机指令驱动会立刻冲出声明的速度包络 | 随机基线本该给出一个可读的地板，在这个机体上给不出 | 要么给它一个机体相关的采样率/幅度，要么在报告里明说它在这个机体上只是安全包络的触发器 |
 | 20 | **G1 的 `hold` 基线命中率不是 0** | ready pose 把球拍停在来球路径上，test L3 上 `hold` 命中 53% | 读 `intercept` 的命中率要减掉这个地板，否则会高估控制的贡献 | 报告已并列 `hold` 一行；spec 里应写明命中率的地板是机体相关的 |
-| 15 | **`valid_return_rate` 在这个机体上随难度递增，`robustness_gap` 因此读不出鲁棒性** | test `intercept`：L1 命中 100%/回球 **0%**，L4 命中 59%/回球 **28%**，gap −9%。实测来球速度随难度单调上升（击球平面处 |vx| 中位数 L1 2.64 → L5 4.17 m/s），而出球速度 ≈ 1.85·v_拍 + 0.85·v_来球，拍速又是硬上限——**来球越快越容易打回去**。去掉 L1 后 gap 仍是 −4%（test），所以不只是分子口径问题 | 一个负的 gap 看起来像"扰动让策略变好了"；实际是难度轴和回球难度对速度受限的机体是反的 | 短期：gap 分子只取主指标为回球率的级别，并在 spec 里写明这一非单调性的机制。长期：难度分级不该只沿来球速度加码 |
+| 15 | **`valid_return_rate` 在这个机体上随难度递增**（短期修法已做） | test `intercept`：L4 回球率高于 L2/L3。实测来球速度随难度单调上升，而出球速度 ≈ 1.85·v_拍 + 0.85·v_来球、拍速有硬上限——**来球越快越容易打回去** | 旧口径把 L1（击球即结束、回球率恒为 0）计入分布内分子，放大了负 gap | 2026-09-28：gap 分子改为只取 L2–L3，L1 仍在逐级明细中；已发布报告按 `level_breakdown` 离线重算（Panda test `intercept` −9.5%→−4.0%）。剩余的负值是真实现象；长期仍需让难度轴不只沿来球速度加码 |
 | 16 | ~~`StrikeZone` 声明值仍是 v0 量纲~~（已修复） | 默认值改为 v1 train 实测穿越范围向外取整：y∈[-0.72,0.71]、z∈[0.70,1.42] | 测试改为在 dev split 真实发球取穿越点，钉住"声明区域包含实测穿越"与"Panda IK 覆盖真实穿越点"；不再对外接矩形角点求 IK |
 | 17 | ~~拦截基线的最坏单步延迟仍偏高~~（已修复） | 根因不是预热：约 15% 的 IK 求解目标够不到（残差 6.5 cm），每次跑满 300 次迭代（~9 ms），而收敛的求解只要 1 次 | `IKSolver` 加停滞退出（单次关节步长 < 1e-7 rad 即返回，结果与跑满 300 次相差 < 1 µrad）；dev L2 实测均值 0.94→0.35 ms、p95 8.8→2.0 ms。Panda/G1 全表重跑：84 行主指标全部不变，4 行次要字段差 1 个回合 |
 | 14 | **本机跑测试要绕开 ROS**（开发环境，非代码缺陷） | 系统 `PYTHONPATH` 带进 `/opt/ros/humble` 的 py3.10 site-packages，`launch_testing` 插件在 3.13 venv 里 import 失败 | 直接 `pytest` 会崩在收集阶段 | 用 `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest`，或在 shell 里清掉 `PYTHONPATH` |

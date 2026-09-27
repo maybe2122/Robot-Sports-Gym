@@ -19,6 +19,7 @@ from .benchmark.backends.mujoco import MujocoShotBackend
 from .benchmark.controllers import (
     NoOpController,
     ScriptedPaddleController,
+    ScriptedServeController,
     scripted_controller_for,
 )
 from .benchmark.metrics import MetricsError, build_benchmark_report
@@ -27,6 +28,7 @@ from .benchmark.reporting import report_markdown, write_report
 from .benchmark.runner import RunConfig, run_shots
 from .benchmark.shot_bank import VALID_LEVELS, ShotBank, ShotBankError
 from .benchmark.task_config import (
+    BADMINTON_SERVE_V0,
     TABLE_TENNIS_RETURN_G1_V1,
     TABLE_TENNIS_RETURN_PANDA_V1,
     TABLE_TENNIS_RETURN_STANDING_G1_V2,
@@ -38,10 +40,12 @@ from .benchmark.vision import RGBDBallTracker, VisionTrackBackend, vision_sensor
 MOCAP_TASKS = {
     "table_tennis": TABLE_TENNIS_RETURN_V0,
     "tennis": TENNIS_RETURN_V0,
+    "badminton": BADMINTON_SERVE_V0,
 }
 DEFAULT_BANKS = {
     "table_tennis": "table_tennis/return-v0",
     "tennis": "tennis/return-v0",
+    "badminton": "badminton/serve-v0",
 }
 MOCAP_CONTROLLERS = ("scripted", "noop")
 ROBOT_CONTROLLERS = ("intercept", "random", "hold")
@@ -99,11 +103,16 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--perception", choices=("stereo", "rgbd", "depth"), default="stereo")
     result.add_argument(
         "--sport",
-        choices=("table-tennis", "table_tennis", "tennis"),
+        choices=("table-tennis", "table_tennis", "tennis", "badminton"),
         default="table-tennis",
         help="the sport to score; the robot task exists for table tennis only",
     )
-    result.add_argument("--task", choices=("return",), default="return")
+    result.add_argument(
+        "--task",
+        choices=("return", "serve"),
+        default=None,
+        help="informational; each sport has exactly one task (badminton: serve)",
+    )
     result.add_argument("--backend", choices=("mujoco",), default="mujoco")
     result.add_argument("--level", choices=VALID_LEVELS, default="L1")
     result.add_argument(
@@ -212,8 +221,14 @@ def _bank_for(args: argparse.Namespace) -> str:
     return DEFAULT_BANKS[_sport(args)]
 
 
-def _controller(name: str, sport: str) -> NoOpController | ScriptedPaddleController:
-    return NoOpController() if name == "noop" else scripted_controller_for(sport)
+def _controller(
+    name: str, sport: str
+) -> NoOpController | ScriptedPaddleController | ScriptedServeController:
+    if name == "noop":
+        return NoOpController()
+    if sport == "badminton":
+        return ScriptedServeController()
+    return scripted_controller_for(sport)
 
 
 def _default_controller(robot: str, track: str = "state") -> str:
@@ -487,8 +502,14 @@ def run_from_args(args: argparse.Namespace) -> dict[str, object]:
         control_hz=args.control_hz,
         timeout_s=timeout_s,
     )
+    # L5 perturbs the fixture's view exactly as it perturbs a robot's: the
+    # level means the same thing on every track.
+    perturbations = for_level(source_bank.manifest, args.level)
+    runner_backend = (
+        backend if perturbations.is_identity else PerturbedBackend(backend, perturbations)
+    )
     output = run_shots(
-        backend,
+        runner_backend,
         controller,
         shots,
         config=RunConfig.from_task_config(task, seed=args.seed),

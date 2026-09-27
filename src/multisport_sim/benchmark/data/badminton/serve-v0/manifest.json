@@ -1,0 +1,321 @@
+{
+  "schema_version": 1,
+  "benchmark": "multisport-shot-skill-v0",
+  "task": "badminton-serve-v0",
+  "sport": "badminton",
+  "status": "experimental",
+  "leaderboard_eligible": false,
+  "warning": "Statistically sufficient per level (100 test episodes) but still an experimental bank: per-bucket counts remain below 100, and no leaderboard has been opened.",
+  "notes": "Serve task: the shuttle is released on the server's side and waits to be struck.  Level metric names are the return tasks'; incoming_valid means the release is legal and valid_return means a legal serve.",
+  "units": "SI",
+  "coordinate_system": {
+    "origin": "court_center_at_floor",
+    "x_axis": "robot_side_to_opponent_side",
+    "y_axis": "court_lateral",
+    "z_axis": "up",
+    "net_plane_x_m": 0.0,
+    "robot_side": "x < 0",
+    "opponent_side": "x > 0",
+    "shot_origin": "robot_side",
+    "initial_motion": "stationary_or_toward_opponent",
+    "table_top_z_m": 0.0,
+    "table_bounds_m": {
+      "x": [
+        -6.7,
+        6.7
+      ],
+      "y": [
+        -2.59,
+        2.59
+      ]
+    }
+  },
+  "episode": {
+    "timeout_s": 4.0,
+    "success_sequence": [
+      "robot_racket_contact_below_1.15_m",
+      "cross_net_toward_opponent",
+      "first_landing_in_diagonal_singles_service_court"
+    ],
+    "timeout_is_truncation": true
+  },
+  "levels": {
+    "L0": {
+      "name": "Physics",
+      "distribution": "nominal releases without robot action; the shuttle must fall on the server's half",
+      "primary_metric": "incoming_valid_rate",
+      "pass_threshold": 1.0
+    },
+    "L1": {
+      "name": "Contact",
+      "distribution": "nominal releases from both service courts",
+      "primary_metric": "hit_rate",
+      "pass_threshold": 0.9
+    },
+    "L2": {
+      "name": "Serve",
+      "distribution": "releases anywhere a server stands in either service court",
+      "primary_metric": "valid_return_rate",
+      "pass_threshold": 0.8
+    },
+    "L3": {
+      "name": "Placement",
+      "distribution": "L2 releases with short, mid, deep and wide landing targets in the receiving court",
+      "primary_metric": "target_rate",
+      "pass_threshold": 0.7
+    },
+    "L4": {
+      "name": "Robustness",
+      "distribution": "fixed combinations of far, wide, low and tossed releases",
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "pass_threshold": 0.6,
+      "pass_buckets": [
+        "far-release",
+        "wide-release",
+        "low-release",
+        "tossed"
+      ]
+    },
+    "L5": {
+      "name": "Generalization",
+      "distribution": "held-out release combinations under observation noise, latency and domain randomization",
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "pass_threshold": 0.5,
+      "aggregate_metric": "valid_return_rate",
+      "aggregate_threshold": 0.6,
+      "pass_buckets": [
+        "far-release",
+        "tossed",
+        "wide-release",
+        "held-out"
+      ]
+    }
+  },
+  "difficulty_ranges": {
+    "L0": {
+      "lateral_y_m": [
+        -1.2,
+        1.2
+      ],
+      "height_z_m": [
+        1.0,
+        1.08
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.0
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    },
+    "L1": {
+      "lateral_y_m": [
+        -1.2,
+        1.2
+      ],
+      "height_z_m": [
+        1.0,
+        1.08
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.0
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    },
+    "L2": {
+      "lateral_y_m": [
+        -2.2,
+        2.2
+      ],
+      "height_z_m": [
+        0.97,
+        1.12
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.0
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    },
+    "L3": {
+      "lateral_y_m": [
+        -2.2,
+        2.2
+      ],
+      "height_z_m": [
+        0.97,
+        1.12
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.0
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    },
+    "L4": {
+      "lateral_y_m": [
+        -2.45,
+        2.45
+      ],
+      "height_z_m": [
+        0.92,
+        1.1
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.6
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    },
+    "L5": {
+      "lateral_y_m": [
+        -2.5,
+        2.5
+      ],
+      "height_z_m": [
+        0.95,
+        1.12
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.8
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "targets": {
+    "representation": "circle",
+    "center_field": "target.center_xy",
+    "radius_field": "target.radius_m",
+    "landing_error": "euclidean distance from target center in court x-y coordinates"
+  },
+  "bucket_groups": {
+    "court": [
+      "right-court",
+      "left-court"
+    ]
+  },
+  "l5_conditions": {
+    "domain_randomization": "shuttle mass 4.75-5.50 g (BWF tolerance), air density +/-10%, camera mount sigma 10 mm",
+    "observation_noise": "shuttle position sigma 10 mm, velocity sigma 0.3 m/s",
+    "latency": "2 control steps on observations, 1 on actions (10 ms and 5 ms at 200 Hz)"
+  },
+  "failure_reasons": [
+    "miss",
+    "net",
+    "own_side",
+    "out",
+    "floor",
+    "timeout",
+    "safety",
+    "numerical",
+    "fault"
+  ],
+  "ordering": "shot_id_lexicographic",
+  "digest": {
+    "algorithm": "sha256",
+    "scope": "exact UTF-8 JSONL file bytes including the final newline"
+  },
+  "splits": {
+    "train": {
+      "file": "train.jsonl",
+      "count": 1200,
+      "level_counts": {
+        "L0": 200,
+        "L1": 200,
+        "L2": 200,
+        "L3": 200,
+        "L4": 200,
+        "L5": 200
+      },
+      "sha256": "304757072c6d8c74d4578ac3ab7445aaf7da11a87392edda33c02175008e1ca4"
+    },
+    "dev": {
+      "file": "dev.jsonl",
+      "count": 300,
+      "level_counts": {
+        "L0": 50,
+        "L1": 50,
+        "L2": 50,
+        "L3": 50,
+        "L4": 50,
+        "L5": 50
+      },
+      "sha256": "63fa117c4052e47a604a24b4d5d0c6c55c7d770fcf12ea2c354ffb63d4e7857e"
+    },
+    "test": {
+      "file": "test.jsonl",
+      "count": 600,
+      "level_counts": {
+        "L0": 100,
+        "L1": 100,
+        "L2": 100,
+        "L3": 100,
+        "L4": 100,
+        "L5": 100
+      },
+      "sha256": "2ca5c08e7074565310c03b5db4bdfb766aa6e38c0fbbb10f262478ef00663523"
+    }
+  },
+  "generation": {
+    "script": "scripts/generate_launch_banks.py",
+    "seed_namespace": "multisport-launch-bank-v1",
+    "split_seeds": {
+      "train": 6624245325796815613,
+      "dev": 3124573316097354426,
+      "test": 2056714091484839346
+    },
+    "acceptance": "simulated in MuJoCo without robot action; kept only when the judge's L0 verdict is incoming_valid",
+    "tag_source": "court side and release condition from the sampled shot"
+  },
+  "perturbations": {
+    "L0": {},
+    "L1": {},
+    "L2": {},
+    "L3": {},
+    "L4": {},
+    "L5": {
+      "observation_noise": {
+        "ball_position_m": 0.01,
+        "ball_velocity_mps": 0.3,
+        "ball_spin_radps": 0.0,
+        "joint_position_rad": 0.002,
+        "joint_velocity_radps": 0.02,
+        "camera_pixel": 4.0
+      },
+      "latency": {
+        "observation_steps": 2,
+        "action_steps": 1
+      },
+      "domain_randomization": {
+        "ball_mass_scale": [
+          0.95,
+          1.1
+        ],
+        "drag_scale": [
+          0.9,
+          1.1
+        ],
+        "camera_position_m": 0.01
+      }
+    }
+  }
+}

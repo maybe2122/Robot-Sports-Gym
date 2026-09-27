@@ -279,6 +279,9 @@ class BenchmarkEffector:
     contact_solref: tuple[float, float] | None = None
     contact_solimp: tuple[float, float, float] | None = None
     contact_friction: str = "0.72 0.01 0.001"
+    # A flat box keeps the strike normal fixed across the face.  The original
+    # ellipsoid fixtures keep their shape so their frozen scores stay valid.
+    shape: str = "ellipsoid"
 
     @property
     def body(self) -> str:
@@ -314,6 +317,31 @@ BENCHMARK_EFFECTORS: dict[Sport, BenchmarkEffector] = {
         rgba="0.06 0.12 0.19 1",
         friction="0.72 0.01 0.001",
     ),
+    # BWF limits the strung area to 280 x 220 mm, which the face spans.  The
+    # collision box is 50 mm thick, far thicker than a string bed, because a
+    # 5 g shuttle struck at 20-30 m/s must stay in contact for several physics
+    # steps or the soft contact cannot accelerate it before the face has moved
+    # past it (measured: a 16 mm face tunnels at 20 m/s).  Only the face's
+    # front surface ever touches the shuttle, so the thickness changes nothing
+    # else.  Outgoing/racket speed is about 1.2 over 16-30 m/s.
+    Sport.BADMINTON: BenchmarkEffector(
+        sport=Sport.BADMINTON,
+        # Behind the back boundary line and outside the singles width.
+        parked_at=(-6.2, 2.9, 1.0),
+        half_extents=(0.110, 0.025, 0.140),
+        rgba="0.10 0.10 0.12 1",
+        friction="0.60 0.01 0.001",
+        contact_solref=(0.002, 0.5),
+        contact_solimp=(0.95, 0.99, 0.001),
+        shape="box",
+    ),
+}
+
+BENCHMARK_TIMESTEPS: dict[Sport, float] = {
+    # Half the default step: at 1 ms a 30 m/s face moves 30 mm per step, more
+    # than the shuttle's cork is wide.  Only the benchmark scene uses it, so the
+    # regulation drop tests keep their calibrated 1 ms step.
+    Sport.BADMINTON: 0.0005,
 }
 
 
@@ -331,7 +359,7 @@ def _benchmark_paddle(sport: Sport) -> str:
             f'<body name="{effector.body}" mocap="true" pos="{position}">',
             _geom(
                 effector.geom,
-                "ellipsoid",
+                effector.shape,
                 size=size,
                 rgba=effector.rgba,
                 friction=effector.friction,
@@ -1020,9 +1048,12 @@ def build_xml(scene: str = "campus", *, benchmark_paddle: bool = False) -> str:
             '<camera name="campus_camera" pos="-92 -100 112" xyaxes="0.735 -0.678 0 0.43 0.466 0.773"/>'
         )
 
+    timestep = 0.001
+    if benchmark_paddle:
+        timestep = BENCHMARK_TIMESTEPS.get(Sport(scene), timestep)
     return f"""<mujoco model="multisport_{scene}">
   <compiler angle="degree" autolimits="true"/>
-  <option timestep="0.001" gravity="0 0 -9.81" integrator="implicitfast" cone="elliptic" iterations="80"/>
+  <option timestep="{timestep}" gravity="0 0 -9.81" integrator="implicitfast" cone="elliptic" iterations="80"/>
   <visual>
     <headlight ambient="0.22 0.22 0.25" diffuse="0.70 0.70 0.68" specular="0.25 0.25 0.25"/>
     <rgba haze="0.12 0.15 0.19 1"/>

@@ -18,6 +18,8 @@ from typing import Any, Literal, TypeAlias
 
 from ..specs import CAMPUS_OFFSETS, Sport
 from .observation import ObservationLayout, joint_space_layout
+from .rules.badminton import BADMINTON as BADMINTON_RULES
+from .rules.badminton import BadmintonCourtSpec
 from .rules.table_tennis import TABLE_TENNIS as TABLE_TENNIS_RULES
 from .rules.table_tennis import TableTennisTableSpec
 from .rules.tennis import TENNIS as TENNIS_RULES
@@ -542,6 +544,71 @@ class TennisReturnTaskConfig(ShotTaskConfig):
 
 TENNIS_RETURN_V0 = TennisReturnTaskConfig()
 """Shared configuration of the experimental tennis return task."""
+
+
+@dataclass(frozen=True)
+class BadmintonServeTaskConfig(ShotTaskConfig):
+    """Badminton serve task: the shared core plus BWF singles service geometry.
+
+    The first launch task.  The action and observation are the return tasks':
+    a 7-value effector pose and the 16-value ball-plus-effector state, so a
+    policy interface written for table tennis runs here unchanged.  What
+    differs is who moves first -- the shuttle is released on the robot's side
+    and waits to be struck -- and what counts as success.
+    """
+
+    task_id: str = "badminton-serve-v0"
+    env_id: str = "MultiSportRobot/BadmintonServe-v0"
+    sport: str = Sport.BADMINTON.value
+    bank_resource: str = "badminton/serve-v0"
+    # A high serve is in the air for about two seconds; four leaves room for a
+    # slow release, the swing and the flight.
+    timeout_s: float = 4.0
+    court: BadmintonCourtSpec = BADMINTON_RULES
+    workspace: EffectorWorkspace = field(
+        default_factory=lambda: EffectorWorkspace(
+            # The server's half, from the back boundary line to just short of
+            # the net, across the doubles width, from the floor to overhead.
+            position_low=(-6.8, -3.1, 0.05),
+            position_high=(-0.3, 3.1, 2.6),
+        )
+    )
+    ball_limits: BallObservationLimits = field(
+        default_factory=lambda: BallObservationLimits(
+            position_low=(-10.0, -6.0, -1.0),
+            position_high=(10.0, 6.0, 12.0),
+            linear_velocity_limit=80.0,
+            angular_velocity_limit=400.0,
+        )
+    )
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if not isinstance(self.court, BadmintonCourtSpec):
+            raise TypeError("court must be a BadmintonCourtSpec")
+
+    @property
+    def table(self) -> BadmintonCourtSpec:
+        """The playing surface, under the name the shared engine reads."""
+        return self.court
+
+    def rule_geometry(self) -> dict[str, Any]:
+        return {
+            "court": {
+                "length_m": self.court.length_m,
+                "width_m": self.court.width_m,
+                "top_height_m": self.court.top_height_m,
+                "net_plane_x_m": self.court.net_plane_x_m,
+                "net_height_m": self.court.net_height_m,
+                "center_y_m": self.court.center_y_m,
+                "short_service_line_m": self.court.short_service_line_m,
+                "service_height_limit_m": self.court.service_height_limit_m,
+            }
+        }
+
+
+BADMINTON_SERVE_V0 = BadmintonServeTaskConfig()
+"""Shared configuration of the experimental badminton serve task."""
 
 
 @dataclass(frozen=True)

@@ -19,16 +19,19 @@ from .backends.mujoco_robot import (
 from .backends.mujoco_standing import MujocoStandingG1TableTennisBackend
 from .controllers import PaddleCommand
 from .robot import ControlMode, JointCommand, SafetyViolation, WorkspaceBox
+from .rules.badminton import BadmintonServeJudge
 from .rules.net_return import NetReturnJudge
 from .rules.table_tennis import TableTennisReturnJudge
 from .rules.tennis import TennisReturnJudge
 from .shot_bank import ShotBank
 from .task_config import (
+    BADMINTON_SERVE_V0,
     TABLE_TENNIS_RETURN_G1_V1,
     TABLE_TENNIS_RETURN_PANDA_V1,
     TABLE_TENNIS_RETURN_STANDING_G1_V2,
     TABLE_TENNIS_RETURN_V0,
     TENNIS_RETURN_V0,
+    BadmintonServeTaskConfig,
     EmbodiedTableTennisReturnTaskConfig,
     TableTennisReturnG1TaskConfig,
     TableTennisReturnStandingG1TaskConfig,
@@ -258,6 +261,24 @@ class TennisReturnEnv(TableTennisReturnEnv):
     config_type: ClassVar[type] = TennisReturnTaskConfig
     default_config: ClassVar[Any] = TENNIS_RETURN_V0
     judge_type: ClassVar[type] = TennisReturnJudge
+
+    def judge_surface_kwarg(self) -> dict[str, Any]:
+        return {"court_spec": self.config.court}
+
+
+class BadmintonServeEnv(TableTennisReturnEnv):
+    """Single-shot MuJoCo badminton serve, into the BWF singles service court.
+
+    The action and observation layouts are the return tasks'.  The shuttle is
+    released on the robot's side at reset and falls until it is struck; the
+    episode ends when it first lands, is faulted, or times out.  The physics
+    step is 0.5 ms (see ``scene.BENCHMARK_TIMESTEPS``), so one 200 Hz control
+    step holds ten physics steps, over which the face pose is interpolated.
+    """
+
+    config_type: ClassVar[type] = BadmintonServeTaskConfig
+    default_config: ClassVar[Any] = BADMINTON_SERVE_V0
+    judge_type: ClassVar[type] = BadmintonServeJudge
 
     def judge_surface_kwarg(self) -> dict[str, Any]:
         return {"court_spec": self.config.court}

@@ -46,10 +46,17 @@ class Aerodynamics:
         self.model = model
         self.atmosphere = atmosphere or Atmosphere()
         self._body_ids: dict[Sport, int] = {}
+        self._free_joints: dict[int, tuple[int, int]] = {}
         for sport in Sport:
             body_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, f"{sport.value}_ball")
             if body_id >= 0:
                 self._body_ids[sport] = body_id
+                joint = int(model.body_jntadr[body_id])
+                if joint >= 0 and model.jnt_type[joint] == mujoco.mjtJoint.mjJNT_FREE:
+                    self._free_joints[body_id] = (
+                        int(model.jnt_qposadr[joint]),
+                        int(model.jnt_dofadr[joint]),
+                    )
 
     def apply(self, data: mujoco.MjData) -> None:
         wind = np.asarray(self.atmosphere.wind)
@@ -91,26 +98,58 @@ class Aerodynamics:
     def _shuttle_loads(
         self, data: mujoco.MjData, body_id: int, velocity: np.ndarray
     ) -> tuple[np.ndarray, np.ndarray]:
-        speed = float(np.linalg.norm(velocity))
-        if speed < 1e-9:
+        """Drag of the skirt, evaluated where it acts: at the centre of pressure.
+
+        The flow a shuttle's skirt sees is the velocity of the centre of
+        pressure, ``v_com + omega x r_cp``, not of its centre of mass.  The
+        difference is the shuttle's pitch damping: a tumbling shuttle's skirt
+        sweeps through the air and is resisted.  Evaluating drag at the centre
+        of mass drops that damping, and the stabilising torque is then a stiff
+        undamped spring -- struck at 25 m/s it tumbled into a numerical blow-up
+        within 5 ms.
+
+        State is read from ``qpos``/``qvel`` rather than ``xmat``/``cvel``,
+        which still hold the previous step's pre-integration values when this
+        runs; a one-step-stale restoring torque on a spring this stiff is
+        negative damping.
+        """
+        del velocity
+        joint = self._free_joints.get(body_id)
+        if joint is None:  # pragma: no cover - every shuttle has a free joint
             return np.zeros(3), np.zeros(3)
+        qpos_address, dof_address = joint
+        quaternion = data.qpos[qpos_address + 3 : qpos_address + 7]
+        rotation = np.empty(9)
+        mujoco.mju_quat2Mat(rotation, quaternion / np.linalg.norm(quaternion))
+        rotation = rotation.reshape(3, 3)
+        # Free-joint angular velocity is in the body frame; the linear part is
+        # the velocity of the body origin, which is not the centre of mass.
+        angular_velocity = rotation @ data.qvel[dof_address + 3 : dof_address + 6]
+        com_offset = rotation @ self.model.body_ipos[body_id]
+        com_velocity = data.qvel[dof_address : dof_address + 3] + np.cross(
+            angular_velocity, com_offset
+        )
 
         # Local +Z points from cork to skirt. Broadside area is higher than nose-on area.
-        axis = data.xmat[body_id].reshape(3, 3)[:, 2]
-        flow_direction = velocity / speed
-        axial = abs(float(np.dot(axis, flow_direction)))
+        axis = rotation[:, 2]
+        cp_offset = axis * SHUTTLE_CENTER_OF_PRESSURE_OFFSET
+        flow = com_velocity + np.cross(angular_velocity, cp_offset) - np.asarray(
+            self.atmosphere.wind
+        )
+        speed = float(np.linalg.norm(flow))
+        if speed < 1e-9:
+            return np.zeros(3), np.zeros(3)
+        axial = abs(float(np.dot(axis, flow / speed)))
         full_area = pi * SHUTTLE_SKIRT_RADIUS**2
         projected_area = full_area * (0.35 + 0.65 * axial)
         force = quadratic_drag(
-            velocity,
+            flow,
             projected_area,
             BALLS[Sport.BADMINTON].drag_coefficient,
             self.atmosphere.density,
         )
-
-        # Drag acts behind the centre of mass, naturally pointing the cork into flight.
-        cp_offset = axis * SHUTTLE_CENTER_OF_PRESSURE_OFFSET
+        # Force applied at the centre of pressure = force at the centre of
+        # mass plus this moment.
         stabilising_torque = np.cross(cp_offset, force)
-        angular_damping = -1.5e-5 * data.cvel[body_id, 0:3]
+        angular_damping = -1.5e-5 * angular_velocity
         return force, stabilising_torque + angular_damping
-

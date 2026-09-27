@@ -6,6 +6,28 @@
 
 ### Added
 
+- **羽毛球发球 `badminton-serve-v0`**（M3 第三项运动，第一个发射类任务）：`rules/launch.py` 的
+  `LaunchJudge` 是发射类任务（发球/射门/投篮）的共用生命周期；`BadmintonServeJudge` 按 BWF 第 9 条判
+  1.15 m 击球高度（新失败原因 `fault`）、对角单打发球区与擦网好球。固定集 `badminton/serve-v0`
+  由新的 `scripts/generate_launch_banks.py` 生成（每级 train 200 / dev 50 / test 100）；
+  `MultiSportRobot/BadmintonServe-v0` 通过 `check_env`；CLI `--sport badminton`；
+  `scripts/run_fixture_baselines.py --sport badminton` 产出 noop+scripted 基线。见 `docs/BADMINTON.md`。
+- **Isaac Lab 环境首次实跑**与 `scripts/backend_parity.py`（`make parity`）：同一批球在 MuJoCo 与
+  Isaac Lab 上逐步对比，报告 `reports/table-tennis-backend-parity.md`。
+
+### Fixed
+
+- Isaac Lab 环境的气动力每个物理步被施加两次（阻力翻倍，0.3 s 轨迹差 32 cm）；环境加载固定集时忽略
+  `task.bank_resource`。
+- 羽毛球气动力改在压心处按当前状态计算：原实现没有俯仰阻尼、且读的是滞后一步的状态，翻滚的羽毛球会数值发散。
+- mocap 夹具路径从未施加 manifest 声明的 L5 扰动；现在与机体路径一致。网球 `scripted` 的 L5 因此从
+  32% 变为 0%（L1–L4 不变）。
+- `robustness_gap` 的分布内分子不再包含 L1（L1 击球即结束，回球率恒为 0）；已发布报告按逐级明细重算。
+- IK 求解在够不到的目标上跑满迭代预算：加停滞退出，拦截基线控制延迟均值 0.94→0.35 ms。
+- `StrikeZone` 声明值更新为 `return-v1` 实测穿越范围。
+
+### Added
+
 - **自由站立人形任务 `table-tennis-return-g1-standing-v2`**：保留 G1 骨盆自由关节，站在 0.1 m 平台上，
   四个踝关节由理想骨盆 IMU 反馈局部维持平衡，腰部 + 右臂 10 个关节由策略控制；无机身外力、无 mocap 约束，
   跌倒显式判负。环境 `TableTennisReturn-G1-Standing-v2` 与 `-Vision-v2`，CLI `--robot g1-standing`。

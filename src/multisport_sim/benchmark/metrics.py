@@ -20,6 +20,7 @@ FAILURE_REASONS = (
     "timeout",
     "safety",
     "numerical",
+    "fault",
 )
 _BINARY_FIELDS = (
     "incoming_valid",
@@ -310,11 +311,17 @@ def assess_level(
     }
 
 
-IN_DISTRIBUTION_LEVELS = ("L1", "L2", "L3")
+IN_DISTRIBUTION_LEVELS = ("L2", "L3")
 PERTURBED_LEVELS = ("L4", "L5")
+BREAKDOWN_LEVELS = ("L1", "L2", "L3", "L4", "L5")
 """The two level groups ``robustness_gap`` compares.
 
-L1-L3 are the nominal distributions the task is defined on; L4 and L5 add the
+L2 and L3 are the nominal distributions on which a success can happen at all.
+L1 is nominal too, but an L1 episode ends at the strike by construction, so its
+success rate is zero for every controller; counting it pulled the nominal rate
+down by a third and made the gap read negative for any controller that could
+succeed (tennis `scripted`: -9%; badminton `scripted`: -27%).  L1 stays in the
+per-level breakdown.  L4 and L5 add the
 fast, spin, edge, short/deep, low and held-out combinations.  A policy that
 scores well on the first group and badly on the second has not learned the
 task, it has learned the distribution -- which is the whole point of reporting
@@ -339,7 +346,7 @@ def robustness_gap(
     if nominal_value is None or perturbed_value is None:
         return None
     level_breakdown: dict[str, dict[str, Any]] = {}
-    for level in (*IN_DISTRIBUTION_LEVELS, *PERTURBED_LEVELS):
+    for level in BREAKDOWN_LEVELS:
         selected = [result for result in results if result.level == level]
         if not selected:
             continue
@@ -441,6 +448,7 @@ def build_benchmark_report(
 
 
 __all__ = [
+    "BREAKDOWN_LEVELS",
     "FAILURE_REASONS",
     "IN_DISTRIBUTION_LEVELS",
     "PERTURBED_LEVELS",
