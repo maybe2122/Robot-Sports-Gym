@@ -157,8 +157,31 @@ Menagerie 的 Panda（任务用的 `panda_nohand.xml`，法兰坐标系 `attachm
   约定不同，Isaac 侧装拍面时要把偏移量先转这 180°。
 - Isaac Lab 默认初始位形不在 joint4 的限位内（0 ∉ [−3.07, −0.07]），必须显式给 ready pose 作为初始状态。
 
-仍未完成：Isaac 侧的 Panda 回球环境本身（装拍、关节位置动作、同一 Judge、与 MuJoCo 的轨迹对比）；G1 与其他运动
-的 Isaac 环境。
+### 机体：Panda 在两个后端上打同一批球（2026-09-28）
+
+`scripts/isaac_panda_rollout.py` 在 Isaac 上用 Franka USD 复现任务：拍面作为碰撞体挂在 `panda_hand` 下（关掉手爪与
+手指的碰撞，因为任务资产 `panda_nohand.xml` 没有手爪），执行器用 Menagerie 的增益（4500/3500/2000、力矩 87/12 N·m），
+逐物理步施加同一气动力、更新同一个 Judge，并运行 **MuJoCo 基线的同一个 `ScriptedInterceptController`**。
+dev L1+L2 各 50 条，报告 [`reports/panda-backend-parity.md`](../reports/panda-backend-parity.md)：
+
+| 级别 | 击中 MuJoCo / Isaac | 逐条一致 | 合法回球 MuJoCo / Isaac |
+|---|---|---|---|
+| L1 | 100% / 90% | 90% | — |
+| L2 | 94% / 92% | 90% | **26% / 0%** |
+
+**拦截能跨后端迁移，回球不能。** 排查过程与修正：
+
+1. 两边击球瞬间拍面速度一致（0.6–0.9 m/s），差在来球：PhysX 台面反弹只保留 77% 的水平速度，MuJoCo 保留 98%。
+   原因是 PhysX 按平均组合球与台面的摩擦（约 0.37）。而且保留率对 PhysX 摩擦**非单调**（0.25→63%、0.8→79%、
+   0.05→90%、0→98%）。台面摩擦标定为 0.05（`min` 组合），夹具一致性报告里反弹后偏差中位从 78 mm 降到 32 mm，
+   判定一致率保持 98.7%；0 时速度最贴合，但二次触台的判定一致率降到 94.7%。
+2. 球材质的恢复系数组合由 `max` 改为 `average`，否则球的 0.937 压过一切材质；拍面按 MuJoCo 标定的胶皮接触对
+   设为恢复系数 0.84、摩擦 0.85。
+3. 修正后 Isaac 的出球前向速度仍约 2 m/s，而 MuJoCo 成功回球时是 3.5–4.7 m/s。MuJoCo 的拍面接触是时间常数
+   23 ms 的软约束，PhysX 用同样的名义系数做刚性冲量——两者要一致，需要按实测数据标定接触（M4），
+   不应为让数字对上而逐项调参。
+
+仍未完成：G1 与其他运动的 Isaac 环境。
 
 如果 Isaac 环境里 Isaac Lab 的可编辑安装指向的源码目录已被移动，可以把源码目录临时放到 `PYTHONPATH` 上：
 

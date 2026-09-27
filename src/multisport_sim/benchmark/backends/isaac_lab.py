@@ -90,6 +90,7 @@ def _static_body(
     *,
     friction: tuple[float, float] = (0.7, 0.6),
     restitution: float = 0.0,
+    friction_combine_mode: str = "average",
 ) -> RigidObjectCfg:
     """Spawn a fixed collider as a kinematic body so contacts can be filtered.
 
@@ -107,6 +108,7 @@ def _static_body(
         restitution=restitution,
     )
     spawn = primitive_spawn_cfg(primitive)
+    spawn.physics_material.friction_combine_mode = friction_combine_mode
     spawn.rigid_props = sim_utils.RigidBodyPropertiesCfg(kinematic_enabled=True)
     spawn.mass_props = sim_utils.MassPropertiesCfg(mass=1.0)
     spawn.activate_contact_sensors = True
@@ -169,7 +171,11 @@ def _ball_body() -> RigidObjectCfg:
                 dynamic_friction=0.48,
                 restitution=BALL_SPEC.restitution,
                 friction_combine_mode="average",
-                restitution_combine_mode="max",
+                # "average", not "max": with "max" the ball's 0.937 won against
+                # every other material, so no implement could have the
+                # restitution MuJoCo's calibrated rubber pair has.  The table
+                # states the same 0.937, so the bounce is unchanged.
+                restitution_combine_mode="average",
             ),
             activate_contact_sensors=True,
         ),
@@ -203,8 +209,19 @@ class TableTennisReturnSceneCfg(InteractiveSceneCfg):
         (0.0, 0.0, TABLE.table_height - 0.02),
         (TABLE.table_length, TABLE.table_width, 0.04),
         (0.025, 0.27, 0.52),
-        friction=(0.35, 0.25),
+        # Calibrated to the MuJoCo reference, not copied from it.  PhysX used to
+        # average the ball's and table's friction (~0.37), and a bounce kept 77%
+        # of the ball's horizontal speed against MuJoCo's 98%: the Panda on
+        # Isaac met every ball about 1 m/s slow and returned none.  Retention is
+        # not monotonic in PhysX friction (0.25 -> 63%, 0.8 -> 79%, 0.05 -> 90%,
+        # 0 -> 98%), because PhysX drives a spinning ball toward rolling while
+        # MuJoCo's soft 25 ms table contact barely does.  0.05 cut post-bounce
+        # divergence from 78 to 32 mm (median, dev split) and kept the judges
+        # agreeing on 98.7% of shots; 0 matched the speed but broke verdicts on
+        # second bounces.  "min" outranks the ball's "average".
+        friction=(0.05, 0.05),
         restitution=BALL_SPEC.restitution,
+        friction_combine_mode="min",
     )
     net = _static_body(
         "net",

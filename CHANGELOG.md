@@ -4,6 +4,19 @@
 
 ## [Unreleased]
 
+### Added
+
+- **Panda 双后端**：`scripts/robot_kinematic_parity.py` 证明 Isaac 版 Franka 与 MuJoCo 版 Panda 运动学一致
+  （法兰位置差 ≤0.5 µm）；`scripts/isaac_panda_rollout.py` 在 Isaac 上用 MuJoCo 基线的同一控制器打同一批球——
+  拦截迁移（逐条一致 90%），回球不迁移（26% vs 0%），见 `reports/panda-backend-parity.md`。
+- G1 的逐关节硬件速度上限（Unitree 官方 URDF）进入 `describe()`。
+
+### Changed
+
+- Isaac 乒乓球台面摩擦标定为 0.05（`min` 组合）、球的恢复系数组合改为 `average`：反弹后与 MuJoCo 的偏差中位
+  78 → 32 mm，夹具一致性报告（CPU/GPU）已重新生成。
+- CI 用 OSMesa 无头渲染（此前每次都在 GLFW 初始化时崩溃）。
+
 ## [0.3.0] - 2026-09-28
 
 五项标准单回合任务全部可运行（其中四项为 mocap 夹具），首批学习基线、Isaac Lab 实跑与跨后端一致性报告、
