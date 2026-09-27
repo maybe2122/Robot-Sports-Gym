@@ -6,6 +6,20 @@ Robot Sports Gym（RSG）是面向多种机器人形态的球类运动训练与�
 
 > **项目状态：Alpha。** 场景、球体物理和回弹量化已可运行，并提供实验性的乒乓球 Shot Skill 测试系统及 MuJoCo Gymnasium 测试夹具；真实机器人适配、Isaac Lab RL 环境、其他标准任务和参考策略仍在路线图中。当前版本不应宣传为已完成的机器人球类 benchmark。
 
+## 人形机器人视觉打球：直接运行
+
+现已提供自由站立的 **Unitree G1 + 纯深度 / RGB-D / 双目 RGB** 乒乓球回球方案。
+骨盆保留自由关节，踝关节反馈维持站立，视觉估计驱动腰部与右臂挥拍。
+这是仿真站立回球基线；尚不包含步法、连续对打或实机部署。
+
+```bash
+MUJOCO_GL=glfw .venv/bin/python -m multisport_sim.benchmark_cli \
+  --config configs/humanoid-rgbd.json --viewer
+```
+
+[安装、相机配置与策略接口](docs/HUMANOID_PLAY.md) ·
+[纯深度配置](configs/humanoid-depth.json) · [RGB-D 配置](configs/humanoid-rgbd.json) · [双目配置](configs/humanoid-stereo.json)
+
 ## 文档导航
 
 - [机器人 benchmark 协议草案](docs/BENCHMARK_SPEC.md)
@@ -309,7 +323,7 @@ multisport-isaac --headless --device cpu --scene basketball \
 
 ## 设计边界
 
-这是刚体动力学和接触/气动力仿真，不是有限元球体变形模型。普通展示场景中的球拍固定在场边；`table-tennis-return-v0` 加载的独立 mocap 拍面只是测试夹具，不具备关节、执行器、动力学或安全约束——需要这些的评测请用 `table-tennis-return-panda-v1`。机器人层目前只有机械臂，还没有双足机体；传感器层与 Vision track 已可用。基础相机渲染无传感器噪声，但 `return-v1` 的 L5 会按 manifest 施加观测噪声、观测/动作延迟和有限域随机化。项目仍没有人体运动员或完整比赛规则。
+这是刚体动力学和接触/气动力仿真，不是有限元球体变形模型。普通展示场景中的球拍固定在场边；`table-tennis-return-v0` 加载的独立 mocap 拍面只是测试夹具，不具备关节、执行器、动力学或安全约束——需要这些的评测请用 `table-tennis-return-panda-v1`。机器人层已包含 Panda、固定骨盆 G1 和自由站立 G1；自由站立版本使用踝关节反馈维持平衡，尚无步法。传感器层支持 RGB 与 RGB-D 视觉输入。基础相机渲染无传感器噪声，但 `return-v1` 的 L5 会按 manifest 施加观测噪声、观测/动作延迟和有限域随机化。项目仍没有人体运动员或完整比赛规则。
 
 拟议的首批机器人任务、state/vision/robustness 轨道、指标、结果包和发布门槛见 [benchmark 协议](docs/BENCHMARK_SPEC.md)。实验性 Shot Skill 可用于开发和回归测试，但在这些门槛满足前不能作为完整机器人 benchmark 或排行榜发布。
 

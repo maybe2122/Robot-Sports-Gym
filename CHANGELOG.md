@@ -6,6 +6,14 @@
 
 ### Added
 
+- **自由站立人形任务 `table-tennis-return-g1-standing-v2`**：保留 G1 骨盆自由关节，站在 0.1 m 平台上，
+  四个踝关节由理想骨盆 IMU 反馈局部维持平衡，腰部 + 右臂 10 个关节由策略控制；无机身外力、无 mocap 约束，
+  跌倒显式判负。环境 `TableTennisReturn-G1-Standing-v2` 与 `-Vision-v2`，CLI `--robot g1-standing`。
+- **G1 视觉轨道**：`TableTennisReturn-G1-Vision-v1`，支持双目 RGB 与单相机对齐 RGB-D；新增纯深度感知
+  （`depth_vision.py`，背景深度 + 小球几何前景，RGB 对策略屏蔽）。
+- **严格 JSON 运行配置** `configs/*.json`（`--config`），字段对应 CLI 参数、命令行覆盖配置、未知字段报错；
+  `--viewer` 实时窗口与 `--video` 录像（`visualization.py`）。见 [`docs/HUMANOID_PLAY.md`](docs/HUMANOID_PLAY.md)。
+
 - **第二个机体 `table-tennis-return-g1-v1`**：固定基座 Unitree G1（BSD-3-Clause，同样不 vendoring），
   腰部 3 + 右臂 7 共 10 个受控关节，其余 19 个关节带真实质量与碰撞几何、保持在资产的 stand 位姿。
   同一个 Judge、同一份固定集、同一批 L0–L5 门槛、同一个报告 schema。环境

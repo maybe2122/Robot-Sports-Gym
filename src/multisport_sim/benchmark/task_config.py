@@ -801,15 +801,13 @@ class TableTennisReturnG1TaskConfig(EmbodiedTableTennisReturnTaskConfig):
     neither number is written anywhere, because both are the width the published
     observation layout comes out to.
 
-    There is no vision environment yet.  The stereo pair is declared relative to
-    the table rather than to the robot, so it would transfer, but a track that
-    has not been run is not a track this task claims to publish.
+    The vision environment supports stereo RGB and aligned RGB-D input.
     """
 
     task_id: str = "table-tennis-return-g1-v1"
     env_id: str = "MultiSportRobot/TableTennisReturn-G1-v1"
     bank_resource: str = "table_tennis/return-v1"
-    vision_env_id: str | None = None
+    vision_env_id: str = "MultiSportRobot/TableTennisReturn-G1-Vision-v1"
     robot_id: str = "unitree-g1-tabletennis-v1"
     joint_action: JointActionLimits = G1_JOINT_ACTION
 
@@ -819,3 +817,16 @@ TABLE_TENNIS_RETURN_PANDA_V1 = TableTennisReturnPandaTaskConfig()
 
 TABLE_TENNIS_RETURN_G1_V1 = TableTennisReturnG1TaskConfig()
 """The same task on a fixed-base Unitree G1; the benchmark's second embodiment."""
+
+
+@dataclass(frozen=True)
+class TableTennisReturnStandingG1TaskConfig(TableTennisReturnG1TaskConfig):
+    """Free-pelvis G1 standing with four locally controlled ankle joints."""
+
+    task_id: str = "table-tennis-return-g1-standing-v2"
+    env_id: str = "MultiSportRobot/TableTennisReturn-G1-Standing-v2"
+    vision_env_id: str = "MultiSportRobot/TableTennisReturn-G1-Standing-Vision-v2"
+    robot_id: str = "unitree-g1-standing-tabletennis-v2"
+
+
+TABLE_TENNIS_RETURN_STANDING_G1_V2 = TableTennisReturnStandingG1TaskConfig()

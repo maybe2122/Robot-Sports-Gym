@@ -16,6 +16,7 @@ from .backends.mujoco_robot import (
     MujocoG1TableTennisBackend,
     MujocoPandaTableTennisBackend,
 )
+from .backends.mujoco_standing import MujocoStandingG1TableTennisBackend
 from .controllers import PaddleCommand
 from .robot import ControlMode, JointCommand, SafetyViolation, WorkspaceBox
 from .rules.net_return import NetReturnJudge
@@ -25,19 +26,21 @@ from .shot_bank import ShotBank
 from .task_config import (
     TABLE_TENNIS_RETURN_G1_V1,
     TABLE_TENNIS_RETURN_PANDA_V1,
+    TABLE_TENNIS_RETURN_STANDING_G1_V2,
     TABLE_TENNIS_RETURN_V0,
     TENNIS_RETURN_V0,
     EmbodiedTableTennisReturnTaskConfig,
     TableTennisReturnG1TaskConfig,
+    TableTennisReturnStandingG1TaskConfig,
     TableTennisReturnTaskConfig,
     TennisReturnTaskConfig,
 )
 from .types import EpisodeResult, ShotSpec
 from .vision import (
-    TABLE_TENNIS_VISION_SENSORS,
     VisionTrackBackend,
     vision_observation_dict,
     vision_observation_space_shapes,
+    vision_sensors_for,
 )
 
 
@@ -455,9 +458,14 @@ class TableTennisReturnPandaVisionEnv(TableTennisReturnPandaEnv):
     frame is, because the cameras run at 120 Hz under a 200 Hz control loop.
     """
 
-    def __init__(self, **kwargs: Any) -> None:
+    sensor_robot: ClassVar[str] = "panda"
+
+    def __init__(self, *, perception: str = "stereo", **kwargs: Any) -> None:
+        if perception not in {"stereo", "rgbd", "depth"}:
+            raise ValueError("perception must be stereo, rgbd, or depth")
         super().__init__(**kwargs)
-        self.sensor_specs = TABLE_TENNIS_VISION_SENSORS
+        self.perception = perception
+        self.sensor_specs = vision_sensors_for(self.sensor_robot, depth=perception != "stereo")
         # Rebuild the backend with the declared suite: the cameras have to
         # exist in the compiled model, so they cannot be added afterwards.
         self.backend = self.backend_type(
@@ -466,11 +474,23 @@ class TableTennisReturnPandaVisionEnv(TableTennisReturnPandaEnv):
             ),
             sensors=self.sensor_specs,
         )
-        self._vision = VisionTrackBackend(self.backend)
+        self._vision = VisionTrackBackend(self.backend, depth_only=perception == "depth")
         image_spaces = {
             name: spaces.Box(low=0, high=255, shape=shape, dtype=np.uint8)
-            for name, shape in vision_observation_space_shapes().items()
+            for name, shape in vision_observation_space_shapes(self.sensor_specs).items()
         }
+        if perception == "depth":
+            image_spaces.clear()
+        from .sensors import CameraSpec
+        for spec in self.sensor_specs:
+            if isinstance(spec, CameraSpec) and spec.depth:
+                image_spaces[f"{spec.name}_depth"] = spaces.Box(
+                    low=0., high=np.inf, shape=(spec.height, spec.width), dtype=np.float32
+                )
+        if any(s.name == "balance_imu" for s in self.sensor_specs):
+            image_spaces["base_imu"] = spaces.Box(
+                low=-np.inf, high=np.inf, shape=(10,), dtype=np.float32
+            )
         joint_low, joint_high = self.config.action_bounds()
         self.observation_space = spaces.Dict(
             {
@@ -491,10 +511,16 @@ class TableTennisReturnPandaVisionEnv(TableTennisReturnPandaEnv):
         )
 
     def _observation(self) -> dict[str, np.ndarray]:  # type: ignore[override]
-        return vision_observation_dict(self._vision.observe())
+        return vision_observation_dict(self._vision.observe(), sensors=self.sensor_specs,
+                                       include_rgb=self.perception != "depth")
 
     def _info(self) -> dict[str, Any]:
         return {**super()._info(), "track": "vision", "privileged_ball_state": False}
+
+    def close(self) -> None:
+        if self.backend.sensors is not None:
+            self.backend.sensors.close()
+        super().close()
 
 
 class TableTennisReturnG1Env(TableTennisReturnPandaEnv):
@@ -512,6 +538,28 @@ class TableTennisReturnG1Env(TableTennisReturnPandaEnv):
     config_type: ClassVar[type] = TableTennisReturnG1TaskConfig
     default_config: ClassVar[Any] = TABLE_TENNIS_RETURN_G1_V1
     backend_type: ClassVar[Any] = MujocoG1TableTennisBackend
+
+
+class TableTennisReturnG1VisionEnv(TableTennisReturnPandaVisionEnv):
+    """G1 joint control from stereo RGB or aligned RGB-D and proprioception."""
+
+    config_type: ClassVar[type] = TableTennisReturnG1TaskConfig
+    default_config: ClassVar[Any] = TABLE_TENNIS_RETURN_G1_V1
+    backend_type: ClassVar[Any] = MujocoG1TableTennisBackend
+    sensor_robot: ClassVar[str] = "g1"
+
+
+class TableTennisReturnStandingG1Env(TableTennisReturnG1Env):
+    config_type: ClassVar[type] = TableTennisReturnStandingG1TaskConfig
+    default_config: ClassVar[Any] = TABLE_TENNIS_RETURN_STANDING_G1_V2
+    backend_type: ClassVar[Any] = MujocoStandingG1TableTennisBackend
+
+
+class TableTennisReturnStandingG1VisionEnv(TableTennisReturnG1VisionEnv):
+    config_type: ClassVar[type] = TableTennisReturnStandingG1TaskConfig
+    default_config: ClassVar[Any] = TABLE_TENNIS_RETURN_STANDING_G1_V2
+    backend_type: ClassVar[Any] = MujocoStandingG1TableTennisBackend
+    sensor_robot: ClassVar[str] = "g1-standing"
 
 
 def register_envs() -> None:

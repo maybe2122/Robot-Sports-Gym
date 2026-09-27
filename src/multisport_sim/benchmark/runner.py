@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, replace
 from hashlib import sha256
 from math import isfinite, sqrt
@@ -11,7 +11,7 @@ from time import perf_counter
 
 from .backends.base import ShotBackend
 from .controllers import Controller
-from .robot import RobotObservation
+from .robot import RobotObservation, SafetyViolation
 from .rules.base import ShotJudge
 from .task_config import TABLE_TENNIS_RETURN_V0, ShotTaskConfig
 from .types import EpisodeResult, ShotSpec
@@ -94,6 +94,7 @@ class RunOutput:
     # Wall-clock cost of the policy's own ``act`` call, in milliseconds.  It is
     # a property of this machine, not of the task, and the report says so.
     inference_latency_ms: tuple[float, ...] = ()
+    safety_details: tuple[tuple[SafetyViolation, ...], ...] = ()
 
 
 def _blade_frame_offset(
@@ -150,6 +151,7 @@ def run_shots(
     shots: Sequence[ShotSpec],
     *,
     config: RunConfig | None = None,
+    on_step: Callable[[ShotBackend, ShotSpec, ShotJudge], None] | None = None,
 ) -> RunOutput:
     """Execute every supplied fixed shot once and preserve its input ordering."""
     settings = config or RunConfig()
@@ -169,6 +171,7 @@ def run_shots(
         backend, "robot_observation"
     )
     safety_counts: list[int] = []
+    safety_details: list[tuple[SafetyViolation, ...]] = []
     energies: list[float] = []
     contact_offsets: list[float | None] = []
     contact_speeds: list[float | None] = []
@@ -185,6 +188,7 @@ def run_shots(
         controller.reset(shot, seed=episode_seed)
         backend.launch_ball(shot)
         episode_safety = 0
+        episode_violations: tuple[SafetyViolation, ...] = ()
         episode_energy = 0.0
         episode_offset: float | None = None
         episode_speed: float | None = None
@@ -216,10 +220,15 @@ def run_shots(
                 # step: a limit broken mid-decimation is still broken.
                 violations = backend.safety_violations()
                 observation: RobotObservation = backend.robot_observation()
-                episode_energy += observation.mechanical_power_w() * backend.timestep
+                power = (backend.mechanical_power_w() if hasattr(backend, "mechanical_power_w")
+                         else observation.mechanical_power_w())
+                episode_energy += power * backend.timestep
                 if violations:
                     episode_safety += len(violations)
+                    episode_violations = tuple(violations)
                     judge.abort(failure_reason="safety", time_s=backend.time)
+                    if on_step is not None:
+                        on_step(backend, shot, judge)
                     break
             try:
                 current_time = backend.time
@@ -258,6 +267,8 @@ def run_shots(
                     time_s=(episode_step + 1) * backend.timestep,
                 )
                 break
+            if on_step is not None:
+                on_step(backend, shot, judge)
             if judge.done:
                 break
         else:  # pragma: no cover - defensive guard around third-party adapters
@@ -268,6 +279,7 @@ def run_shots(
 
         results.append(judge.result)
         safety_counts.append(episode_safety)
+        safety_details.append(episode_violations)
         energies.append(episode_energy)
         contact_offsets.append(episode_offset)
         contact_speeds.append(episode_speed)
@@ -279,6 +291,7 @@ def run_shots(
         decimation,
         episode_seeds,
         safety_violations=tuple(safety_counts) if embodied else (),
+        safety_details=tuple(safety_details) if embodied else (),
         energy_joule=tuple(energies) if embodied else (),
         contact_offset_m=tuple(contact_offsets) if embodied else (),
         contact_speed_mps=tuple(contact_speeds) if embodied else (),

@@ -1,0 +1,1437 @@
+{
+  "assessment": {
+    "bucket_confidence_intervals_95": {},
+    "bucket_episodes": {},
+    "bucket_values": {},
+    "criteria": [
+      {
+        "metric": "valid_return_rate",
+        "passed": false,
+        "threshold": 0.8,
+        "value": 0.4
+      }
+    ],
+    "episodes": 5,
+    "level": "L2",
+    "missing_buckets": [],
+    "pass_threshold": 0.8,
+    "passed": false,
+    "primary_confidence_interval_95": [
+      0.11762077423264783,
+      0.769275718723987
+    ],
+    "primary_metric": "valid_return_rate",
+    "primary_value": 0.4,
+    "reasons": [
+      "valid_return_rate=0.4 is below threshold 0.8"
+    ],
+    "worst_bucket": null
+  },
+  "backend": {
+    "name": "mujoco-g1-standing",
+    "physics_timestep_s": 0.001,
+    "version": "3.11.0",
+    "wind_mps": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "benchmark": "multisport-shot-skill-v0",
+  "bucket_groups": {
+    "depth": {
+      "confidence_intervals_95": {
+        "hit_rate": [
+          0.06149194472039621,
+          0.7923403991979522
+        ],
+        "incoming_valid_rate": [
+          0.4385029682449546,
+          1.0
+        ],
+        "safety_violation_rate": [
+          5.551115123125783e-17,
+          0.5614970317550454
+        ],
+        "target_rate": [
+          5.551115123125783e-17,
+          0.5614970317550454
+        ],
+        "valid_return_rate": [
+          0.06149194472039621,
+          0.7923403991979522
+        ]
+      },
+      "counts": {
+        "crossed_net": 1,
+        "episode_time_samples": 3,
+        "hit": 1,
+        "incoming_valid": 3,
+        "net_touch": 0,
+        "safety_violation": 0,
+        "target_error_samples": 0,
+        "target_hit": 0,
+        "valid_return": 1
+      },
+      "episodes": 3,
+      "metrics": {
+        "crossed_net_rate": 0.3333333333333333,
+        "hit_rate": 0.3333333333333333,
+        "incoming_valid_rate": 1.0,
+        "mean_episode_time_s": 1.4573333333332836,
+        "mean_target_error_m": null,
+        "net_touch_rate": 0.0,
+        "safety_violation_rate": 0.0,
+        "target_rate": 0.0,
+        "valid_return_rate": 0.3333333333333333
+      },
+      "tags": [
+        "short",
+        "deep"
+      ]
+    },
+    "edge_or_depth": {
+      "confidence_intervals_95": {
+        "hit_rate": [
+          0.06149194472039621,
+          0.7923403991979522
+        ],
+        "incoming_valid_rate": [
+          0.4385029682449546,
+          1.0
+        ],
+        "safety_violation_rate": [
+          5.551115123125783e-17,
+          0.5614970317550454
+        ],
+        "target_rate": [
+          5.551115123125783e-17,
+          0.5614970317550454
+        ],
+        "valid_return_rate": [
+          0.06149194472039621,
+          0.7923403991979522
+        ]
+      },
+      "counts": {
+        "crossed_net": 1,
+        "episode_time_samples": 3,
+        "hit": 1,
+        "incoming_valid": 3,
+        "net_touch": 0,
+        "safety_violation": 0,
+        "target_error_samples": 0,
+        "target_hit": 0,
+        "valid_return": 1
+      },
+      "episodes": 3,
+      "metrics": {
+        "crossed_net_rate": 0.3333333333333333,
+        "hit_rate": 0.3333333333333333,
+        "incoming_valid_rate": 1.0,
+        "mean_episode_time_s": 1.4573333333332836,
+        "mean_target_error_m": null,
+        "net_touch_rate": 0.0,
+        "safety_violation_rate": 0.0,
+        "target_rate": 0.0,
+        "valid_return_rate": 0.3333333333333333
+      },
+      "tags": [
+        "edge",
+        "short",
+        "deep"
+      ]
+    },
+    "spin": {
+      "confidence_intervals_95": {
+        "hit_rate": [
+          0.2307242812760128,
+          0.882379225767352
+        ],
+        "incoming_valid_rate": [
+          0.5655175352168251,
+          1.0
+        ],
+        "safety_violation_rate": [
+          0.0,
+          0.43448246478317476
+        ],
+        "target_rate": [
+          0.0,
+          0.43448246478317476
+        ],
+        "valid_return_rate": [
+          0.11762077423264783,
+          0.769275718723987
+        ]
+      },
+      "counts": {
+        "crossed_net": 2,
+        "episode_time_samples": 5,
+        "hit": 3,
+        "incoming_valid": 5,
+        "net_touch": 0,
+        "safety_violation": 0,
+        "target_error_samples": 0,
+        "target_hit": 0,
+        "valid_return": 2
+      },
+      "episodes": 5,
+      "metrics": {
+        "crossed_net_rate": 0.4,
+        "hit_rate": 0.6,
+        "incoming_valid_rate": 1.0,
+        "mean_episode_time_s": 1.4629999999999497,
+        "mean_target_error_m": null,
+        "net_touch_rate": 0.0,
+        "safety_violation_rate": 0.0,
+        "target_rate": 0.0,
+        "valid_return_rate": 0.4
+      },
+      "tags": [
+        "topspin",
+        "underspin",
+        "sidespin",
+        "mixed-spin"
+      ]
+    }
+  },
+  "buckets": {
+    "backhand": {
+      "confidence_intervals_95": {
+        "hit_rate": [
+          0.09453120573423074,
+          0.9054687942657693
+        ],
+        "incoming_valid_rate": [
+          0.34238022750665303,
+          1.0
+        ],
+        "safety_violation_rate": [
+          0.0,
+          0.6576197724933469
+        ],
+        "target_rate": [
+          0.0,
+          0.6576197724933469
+        ],
+        "valid_return_rate": [
+          0.0,
+          0.6576197724933469
+        ]
+      },
+      "counts": {
+        "crossed_net": 0,
+        "episode_time_samples": 2,
+        "hit": 1,
+        "incoming_valid": 2,
+        "net_touch": 0,
+        "safety_violation": 0,
+        "target_error_samples": 0,
+        "target_hit": 0,
+        "valid_return": 0
+      },
+      "episodes": 2,
+      "metrics": {
+        "crossed_net_rate": 0.0,
+        "hit_rate": 0.5,
+        "incoming_valid_rate": 1.0,
+        "mean_episode_time_s": 1.3584999999999612,
+        "mean_target_error_m": null,
+        "net_touch_rate": 0.0,
+        "safety_violation_rate": 0.0,
+        "target_rate": 0.0,
+        "valid_return_rate": 0.0
+      }
+    },
+    "deep": {
+      "confidence_intervals_95": {
+        "hit_rate": [
+          0.06149194472039621,
+          0.7923403991979522
+        ],
+        "incoming_valid_rate": [
+          0.4385029682449546,
+          1.0
+        ],
+        "safety_violation_rate": [
+          5.551115123125783e-17,
+          0.5614970317550454
+        ],
+        "target_rate": [
+          5.551115123125783e-17,
+          0.5614970317550454
+        ],
+        "valid_return_rate": [
+          0.06149194472039621,
+          0.7923403991979522
+        ]
+      },
+      "counts": {
+        "crossed_net": 1,
+        "episode_time_samples": 3,
+        "hit": 1,
+        "incoming_valid": 3,
+        "net_touch": 0,
+        "safety_violation": 0,
+        "target_error_samples": 0,
+        "target_hit": 0,
+        "valid_return": 1
+      },
+      "episodes": 3,
+      "metrics": {
+        "crossed_net_rate": 0.3333333333333333,
+        "hit_rate": 0.3333333333333333,
+        "incoming_valid_rate": 1.0,
+        "mean_episode_time_s": 1.4573333333332836,
+        "mean_target_error_m": null,
+        "net_touch_rate": 0.0,
+        "safety_violation_rate": 0.0,
+        "target_rate": 0.0,
+        "valid_return_rate": 0.3333333333333333
+      }
+    },
+    "forehand": {
+      "confidence_intervals_95": {
+        "hit_rate": [
+          0.2076596008020477,
+          0.9385080552796037
+        ],
+        "incoming_valid_rate": [
+          0.4385029682449546,
+          1.0
+        ],
+        "safety_violation_rate": [
+          5.551115123125783e-17,
+          0.5614970317550454
+        ],
+        "target_rate": [
+          5.551115123125783e-17,
+          0.5614970317550454
+        ],
+        "valid_return_rate": [
+          0.2076596008020477,
+          0.9385080552796037
+        ]
+      },
+      "counts": {
+        "crossed_net": 2,
+        "episode_time_samples": 3,
+        "hit": 2,
+        "incoming_valid": 3,
+        "net_touch": 0,
+        "safety_violation": 0,
+        "target_error_samples": 0,
+        "target_hit": 0,
+        "valid_return": 2
+      },
+      "episodes": 3,
+      "metrics": {
+        "crossed_net_rate": 0.6666666666666666,
+        "hit_rate": 0.6666666666666666,
+        "incoming_valid_rate": 1.0,
+        "mean_episode_time_s": 1.5326666666666087,
+        "mean_target_error_m": null,
+        "net_touch_rate": 0.0,
+        "safety_violation_rate": 0.0,
+        "target_rate": 0.0,
+        "valid_return_rate": 0.6666666666666666
+      }
+    },
+    "normal-speed": {
+      "confidence_intervals_95": {
+        "hit_rate": [
+          0.2307242812760128,
+          0.882379225767352
+        ],
+        "incoming_valid_rate": [
+          0.5655175352168251,
+          1.0
+        ],
+        "safety_violation_rate": [
+          0.0,
+          0.43448246478317476
+        ],
+        "target_rate": [
+          0.0,
+          0.43448246478317476
+        ],
+        "valid_return_rate": [
+          0.11762077423264783,
+          0.769275718723987
+        ]
+      },
+      "counts": {
+        "crossed_net": 2,
+        "episode_time_samples": 5,
+        "hit": 3,
+        "incoming_valid": 5,
+        "net_touch": 0,
+        "safety_violation": 0,
+        "target_error_samples": 0,
+        "target_hit": 0,
+        "valid_return": 2
+      },
+      "episodes": 5,
+      "metrics": {
+        "crossed_net_rate": 0.4,
+        "hit_rate": 0.6,
+        "incoming_valid_rate": 1.0,
+        "mean_episode_time_s": 1.4629999999999497,
+        "mean_target_error_m": null,
+        "net_touch_rate": 0.0,
+        "safety_violation_rate": 0.0,
+        "target_rate": 0.0,
+        "valid_return_rate": 0.4
+      }
+    },
+    "topspin": {
+      "confidence_intervals_95": {
+        "hit_rate": [
+          0.2307242812760128,
+          0.882379225767352
+        ],
+        "incoming_valid_rate": [
+          0.5655175352168251,
+          1.0
+        ],
+        "safety_violation_rate": [
+          0.0,
+          0.43448246478317476
+        ],
+        "target_rate": [
+          0.0,
+          0.43448246478317476
+        ],
+        "valid_return_rate": [
+          0.11762077423264783,
+          0.769275718723987
+        ]
+      },
+      "counts": {
+        "crossed_net": 2,
+        "episode_time_samples": 5,
+        "hit": 3,
+        "incoming_valid": 5,
+        "net_touch": 0,
+        "safety_violation": 0,
+        "target_error_samples": 0,
+        "target_hit": 0,
+        "valid_return": 2
+      },
+      "episodes": 5,
+      "metrics": {
+        "crossed_net_rate": 0.4,
+        "hit_rate": 0.6,
+        "incoming_valid_rate": 1.0,
+        "mean_episode_time_s": 1.4629999999999497,
+        "mean_target_error_m": null,
+        "net_touch_rate": 0.0,
+        "safety_violation_rate": 0.0,
+        "target_rate": 0.0,
+        "valid_return_rate": 0.4
+      }
+    }
+  },
+  "confidence_intervals_95": {
+    "hit_rate": [
+      0.2307242812760128,
+      0.882379225767352
+    ],
+    "incoming_valid_rate": [
+      0.5655175352168251,
+      1.0
+    ],
+    "safety_violation_rate": [
+      0.0,
+      0.43448246478317476
+    ],
+    "target_rate": [
+      0.0,
+      0.43448246478317476
+    ],
+    "valid_return_rate": [
+      0.11762077423264783,
+      0.769275718723987
+    ]
+  },
+  "contact_error": {
+    "blade_speed_mps": [
+      null,
+      null,
+      1.300882,
+      0.627135,
+      1.268607
+    ],
+    "contacts": 3,
+    "definition": "distance from the blade centre to the first ball-blade contact, measured across the strike face",
+    "max_offset_m": 0.08300970665865624,
+    "mean_blade_speed_mps": 1.0655411724947539,
+    "mean_offset_m": 0.06796574252960287,
+    "offset_m": [
+      null,
+      null,
+      0.049425,
+      0.08301,
+      0.071462
+    ]
+  },
+  "counts": {
+    "crossed_net": 2,
+    "episode_time_samples": 5,
+    "hit": 3,
+    "incoming_valid": 5,
+    "net_touch": 0,
+    "safety_violation": 0,
+    "target_error_samples": 0,
+    "target_hit": 0,
+    "valid_return": 2
+  },
+  "denominators": {
+    "binary_rates": "all episodes",
+    "mean_target_error_m": "episodes with a recorded target_error_m"
+  },
+  "episodes": 5,
+  "execution": {
+    "control_decimation": 5,
+    "control_hz": 200.0,
+    "effective_control_hz": 200.0,
+    "episode_seed_derivation": "sha256(multisport-shot-seed-v0:seed:index)-63bit",
+    "episode_seeds": [
+      9205554629336871518,
+      8314777236488237236,
+      1966919983083503159,
+      2251864159057090573,
+      7430866390684449172
+    ],
+    "physics_steps": 7315,
+    "shot_order": "fixed-file-order-without-replacement",
+    "timeout_s": 2.0
+  },
+  "failures": {
+    "floor": 0,
+    "miss": 2,
+    "net": 0,
+    "numerical": 0,
+    "out": 0,
+    "own_side": 1,
+    "safety": 0,
+    "timeout": 0
+  },
+  "generated_at": "2026-09-08T02:02:39.215525+00:00",
+  "inference_latency_ms": {
+    "max": 9.784830966964364,
+    "mean": 0.37087272513736586,
+    "measured_on": "the machine named in the report's software block",
+    "p50": 0.2506989985704422,
+    "p95": 0.7286659674718976,
+    "samples": 1466
+  },
+  "leaderboard_eligible": false,
+  "level": "L2",
+  "level_assessments": [
+    {
+      "bucket_confidence_intervals_95": {},
+      "bucket_episodes": {},
+      "bucket_values": {},
+      "criteria": [
+        {
+          "metric": "valid_return_rate",
+          "passed": false,
+          "threshold": 0.8,
+          "value": 0.4
+        }
+      ],
+      "episodes": 5,
+      "level": "L2",
+      "missing_buckets": [],
+      "pass_threshold": 0.8,
+      "passed": false,
+      "primary_confidence_interval_95": [
+        0.11762077423264783,
+        0.769275718723987
+      ],
+      "primary_metric": "valid_return_rate",
+      "primary_value": 0.4,
+      "reasons": [
+        "valid_return_rate=0.4 is below threshold 0.8"
+      ],
+      "worst_bucket": null
+    }
+  ],
+  "manifest_status": "experimental",
+  "metrics": {
+    "crossed_net_rate": 0.4,
+    "hit_rate": 0.6,
+    "incoming_valid_rate": 1.0,
+    "mean_episode_time_s": 1.4629999999999497,
+    "mean_target_error_m": null,
+    "net_touch_rate": 0.0,
+    "safety_violation_rate": 0.0,
+    "target_rate": 0.0,
+    "valid_return_rate": 0.4
+  },
+  "outcomes": {
+    "explicit_failures": 3,
+    "without_explicit_failure_reason": 2
+  },
+  "perturbations": {
+    "domain_randomization": {
+      "ball_mass_scale": [
+        1.0,
+        1.0
+      ],
+      "camera_position_m": 0.0,
+      "drag_scale": [
+        1.0,
+        1.0
+      ]
+    },
+    "latency": {
+      "action_steps": 0,
+      "observation_steps": 0
+    },
+    "observation_noise": {
+      "ball_position_m": 0.0,
+      "ball_spin_radps": 0.0,
+      "ball_velocity_mps": 0.0,
+      "camera_pixel": 0.0,
+      "joint_position_rad": 0.0,
+      "joint_velocity_radps": 0.0
+    }
+  },
+  "policy": {
+    "benchmark_eligible": false,
+    "id": "configured-rgbd-g1-standing-intercept-v1",
+    "observation": "rgbd+proprioception",
+    "parameters": {
+      "blade_tilt_deg": 15.0,
+      "rate_margin": 0.2,
+      "swing_lead_s": 0.08
+    },
+    "track": "vision"
+  },
+  "results": [
+    {
+      "contact_time_s": null,
+      "crossed_net": false,
+      "episode_time_s": 1.4529999999999508,
+      "failure_reason": "miss",
+      "hit": false,
+      "incoming_speed_mps": null,
+      "incoming_spin_radps": null,
+      "incoming_valid": true,
+      "landing_xy": null,
+      "level": "L2",
+      "net_touch": false,
+      "outgoing_speed_mps": null,
+      "shot_id": "tt-return-v1-dev-l2-0001",
+      "tags": [
+        "deep",
+        "forehand",
+        "normal-speed",
+        "topspin"
+      ],
+      "target_error_m": null,
+      "target_hit": false,
+      "valid_return": false
+    },
+    {
+      "contact_time_s": null,
+      "crossed_net": false,
+      "episode_time_s": 1.3209999999999653,
+      "failure_reason": "miss",
+      "hit": false,
+      "incoming_speed_mps": null,
+      "incoming_spin_radps": null,
+      "incoming_valid": true,
+      "landing_xy": null,
+      "level": "L2",
+      "net_touch": false,
+      "outgoing_speed_mps": null,
+      "shot_id": "tt-return-v1-dev-l2-0002",
+      "tags": [
+        "backhand",
+        "deep",
+        "normal-speed",
+        "topspin"
+      ],
+      "target_error_m": null,
+      "target_hit": false,
+      "valid_return": false
+    },
+    {
+      "contact_time_s": 0.8020000000000006,
+      "crossed_net": true,
+      "episode_time_s": 1.5979999999999348,
+      "failure_reason": null,
+      "hit": true,
+      "incoming_speed_mps": 3.462789922947865,
+      "incoming_spin_radps": [
+        -0.42774288758424484,
+        12.620199631800748,
+        0.16308142308160256
+      ],
+      "incoming_valid": true,
+      "landing_xy": [
+        0.594342224901576,
+        0.5569994547321568
+      ],
+      "level": "L2",
+      "net_touch": false,
+      "outgoing_speed_mps": 4.964270546807234,
+      "shot_id": "tt-return-v1-dev-l2-0003",
+      "tags": [
+        "deep",
+        "forehand",
+        "normal-speed",
+        "topspin"
+      ],
+      "target_error_m": null,
+      "target_hit": false,
+      "valid_return": true
+    },
+    {
+      "contact_time_s": 0.8220000000000006,
+      "crossed_net": false,
+      "episode_time_s": 1.395999999999957,
+      "failure_reason": "own_side",
+      "hit": true,
+      "incoming_speed_mps": 3.28800884792693,
+      "incoming_spin_radps": [
+        0.12678687269675057,
+        27.106480880997232,
+        0.497902025849984
+      ],
+      "incoming_valid": true,
+      "landing_xy": [
+        -0.7992712898665068,
+        0.17147694749871908
+      ],
+      "level": "L2",
+      "net_touch": false,
+      "outgoing_speed_mps": 2.6444457139060953,
+      "shot_id": "tt-return-v1-dev-l2-0004",
+      "tags": [
+        "backhand",
+        "normal-speed",
+        "topspin"
+      ],
+      "target_error_m": null,
+      "target_hit": false,
+      "valid_return": false
+    },
+    {
+      "contact_time_s": 0.7950000000000006,
+      "crossed_net": true,
+      "episode_time_s": 1.5469999999999404,
+      "failure_reason": null,
+      "hit": true,
+      "incoming_speed_mps": 3.4516012755812664,
+      "incoming_spin_radps": [
+        0.16365034049913343,
+        20.181235574514098,
+        0.30504279036575394
+      ],
+      "incoming_valid": true,
+      "landing_xy": [
+        0.3988100206256552,
+        0.7497484832904108
+      ],
+      "level": "L2",
+      "net_touch": false,
+      "outgoing_speed_mps": 4.682709082492034,
+      "shot_id": "tt-return-v1-dev-l2-0005",
+      "tags": [
+        "forehand",
+        "normal-speed",
+        "topspin"
+      ],
+      "target_error_m": null,
+      "target_hit": false,
+      "valid_return": true
+    }
+  ],
+  "robot": {
+    "adapter": "mujoco-g1-standing-joint-position",
+    "asset": {
+      "asset_id": "unitree_g1",
+      "license": "BSD-3-Clause",
+      "license_path": "unitree_g1/LICENSE",
+      "modifications": [
+        "G1 free pelvis retained; stand keyframe removed before scene attachment",
+        "benchmark paddle attached to right wrist; upstream files unchanged",
+        "robot stands on a 0.1 m high, 1.0 m diameter support platform",
+        "four ankle position servos controlled by ideal pelvis IMU feedback",
+        "other non-policy joints held at stand pose; no locomotion policy",
+        "scene impratio retained; joint velocity limits remain unverified placeholders"
+      ],
+      "relative_path": "unitree_g1/g1.xml",
+      "upstream_url": "https://github.com/google-deepmind/mujoco_menagerie/tree/main/unitree_g1",
+      "version": "menagerie unitree_g1 CHANGELOG 2025-08-07"
+    },
+    "balance_controller": {
+      "energy_scope": "all 29 robot actuators",
+      "id": "g1-ankle-imu-pd-v1",
+      "joint_limits": {
+        "forbidden_contacts": [
+          "floor",
+          "net",
+          "table"
+        ],
+        "joints": {
+          "joint_names": [
+            "g1_left_hip_pitch_joint",
+            "g1_left_hip_roll_joint",
+            "g1_left_hip_yaw_joint",
+            "g1_left_knee_joint",
+            "g1_left_ankle_pitch_joint",
+            "g1_left_ankle_roll_joint",
+            "g1_right_hip_pitch_joint",
+            "g1_right_hip_roll_joint",
+            "g1_right_hip_yaw_joint",
+            "g1_right_knee_joint",
+            "g1_right_ankle_pitch_joint",
+            "g1_right_ankle_roll_joint",
+            "g1_left_shoulder_pitch_joint",
+            "g1_left_shoulder_roll_joint",
+            "g1_left_shoulder_yaw_joint",
+            "g1_left_elbow_joint",
+            "g1_left_wrist_roll_joint",
+            "g1_left_wrist_pitch_joint",
+            "g1_left_wrist_yaw_joint"
+          ],
+          "position_high": [
+            2.8798,
+            2.9671,
+            2.7576,
+            2.8798,
+            0.5236,
+            0.2618,
+            2.8798,
+            0.5236,
+            2.7576,
+            2.8798,
+            0.5236,
+            0.2618,
+            2.6704,
+            2.2515,
+            2.618,
+            2.0944,
+            1.97222,
+            1.61443,
+            1.61443
+          ],
+          "position_low": [
+            -2.5307,
+            -0.5236,
+            -2.7576,
+            -0.087267,
+            -0.87267,
+            -0.2618,
+            -2.5307,
+            -2.9671,
+            -2.7576,
+            -0.087267,
+            -0.87267,
+            -0.2618,
+            -3.0892,
+            -1.5882,
+            -2.618,
+            -1.0472,
+            -1.97222,
+            -1.61443,
+            -1.61443
+          ],
+          "torque_limit": [
+            88.0,
+            139.0,
+            88.0,
+            139.0,
+            50.0,
+            50.0,
+            88.0,
+            139.0,
+            88.0,
+            139.0,
+            50.0,
+            50.0,
+            25.0,
+            25.0,
+            25.0,
+            25.0,
+            25.0,
+            5.0,
+            5.0
+          ],
+          "velocity_limit": [
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0
+          ]
+        },
+        "tolerances": {
+          "position_rad": 0.02,
+          "torque_nm": 1.0,
+          "velocity_radps": 0.05,
+          "workspace_m": 0.02
+        },
+        "workspace": null
+      },
+      "kd": 0.1,
+      "kp": 0.5,
+      "max_tilt_rad": 0.6,
+      "measured": {
+        "max_tilt_rad": 0.1747209490045523,
+        "min_pelvis_height_m": 0.8904597693540025,
+        "physics_steps": 7315
+      },
+      "min_pelvis_height_m": 0.65,
+      "sensor": {
+        "kind": "imu",
+        "mount": "g1_pelvis",
+        "name": "balance_imu",
+        "rate_hz": 1000.0
+      }
+    },
+    "base": "free pelvis; ankle-feedback standing; no stepping",
+    "benchmark_eligible": false,
+    "control_mode": "joint_position",
+    "id": "unitree-g1-standing-tabletennis-v2",
+    "mount": {
+      "pedestal_radius_m": 0.5,
+      "position": [
+        -2.0,
+        -0.05,
+        0.1
+      ]
+    },
+    "safety_limits": {
+      "forbidden_contacts": [
+        "floor",
+        "net",
+        "table"
+      ],
+      "joints": {
+        "joint_names": [
+          "g1_waist_yaw_joint",
+          "g1_waist_roll_joint",
+          "g1_waist_pitch_joint",
+          "g1_right_shoulder_pitch_joint",
+          "g1_right_shoulder_roll_joint",
+          "g1_right_shoulder_yaw_joint",
+          "g1_right_elbow_joint",
+          "g1_right_wrist_roll_joint",
+          "g1_right_wrist_pitch_joint",
+          "g1_right_wrist_yaw_joint"
+        ],
+        "position_high": [
+          2.618,
+          0.52,
+          0.52,
+          2.6704,
+          1.5882,
+          2.618,
+          2.0944,
+          1.97222,
+          1.61443,
+          1.61443
+        ],
+        "position_low": [
+          -2.618,
+          -0.52,
+          -0.52,
+          -3.0892,
+          -2.2515,
+          -2.618,
+          -1.0472,
+          -1.97222,
+          -1.61443,
+          -1.61443
+        ],
+        "torque_limit": [
+          88.0,
+          50.0,
+          50.0,
+          25.0,
+          25.0,
+          25.0,
+          25.0,
+          25.0,
+          5.0,
+          5.0
+        ],
+        "velocity_limit": [
+          10.0,
+          10.0,
+          10.0,
+          10.0,
+          10.0,
+          10.0,
+          10.0,
+          10.0,
+          10.0,
+          10.0
+        ]
+      },
+      "tolerances": {
+        "position_rad": 0.02,
+        "torque_nm": 1.0,
+        "velocity_radps": 0.05,
+        "workspace_m": 0.02
+      },
+      "workspace": {
+        "high": [
+          -1.05,
+          1.0,
+          2.0
+        ],
+        "low": [
+          -2.95,
+          -1.0,
+          0.3
+        ]
+      }
+    }
+  },
+  "robot_metrics": {
+    "energy_joule": [
+      51.630321,
+      53.388319,
+      46.613063,
+      53.903388,
+      76.249469
+    ],
+    "mean_energy_joule": 56.35691198022663,
+    "safety_violations": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "total_safety_violations": 0
+  },
+  "robustness_gap": null,
+  "schema": "multisport-shot-skill-report-v0",
+  "schema_version": 1,
+  "seed": 0,
+  "shot_bank": {
+    "digest": "f17c0241aec24d6740c065993c084ec4ef21c0d47db22eec4f2dd16cca272ba0",
+    "leaderboard_eligible": false,
+    "level_digest": "5fc4fcd5440ff4ab761ba23399890e5cd4aade22f29e7c5266601a66da28a412",
+    "manifest_digest": "a7908f5003257b0b32e80a767b510e708de1d90e832a315a5a2807863f863210",
+    "selected_count": 5,
+    "selected_shot_ids": [
+      "tt-return-v1-dev-l2-0001",
+      "tt-return-v1-dev-l2-0002",
+      "tt-return-v1-dev-l2-0003",
+      "tt-return-v1-dev-l2-0004",
+      "tt-return-v1-dev-l2-0005"
+    ],
+    "source": "/home/maybe/code/rl/projects/multisport-physics-sim/src/multisport_sim/benchmark/data/table_tennis/return-v1/dev.jsonl",
+    "source_digest": "f17c0241aec24d6740c065993c084ec4ef21c0d47db22eec4f2dd16cca272ba0",
+    "split": "dev",
+    "status": "experimental"
+  },
+  "shot_bank_digest": "f17c0241aec24d6740c065993c084ec4ef21c0d47db22eec4f2dd16cca272ba0",
+  "shot_bank_manifest_digest": "a7908f5003257b0b32e80a767b510e708de1d90e832a315a5a2807863f863210",
+  "shot_bank_source": "/home/maybe/code/rl/projects/multisport-physics-sim/src/multisport_sim/benchmark/data/table_tennis/return-v1/dev.jsonl (filtered)",
+  "shot_bank_task": "tt-return-v1",
+  "software": {
+    "machine": "x86_64",
+    "multisport_sim": "0.2.0",
+    "python": "3.13.9",
+    "system": "Linux"
+  },
+  "split": "dev",
+  "task": "table-tennis-return-g1-standing-v2",
+  "task_config": {
+    "action_dim": 10,
+    "ball_limits": {
+      "angular_velocity_limit": 2000.0,
+      "linear_velocity_limit": 50.0,
+      "position_high": [
+        5.0,
+        5.0,
+        5.0
+      ],
+      "position_low": [
+        -5.0,
+        -5.0,
+        -1.0
+      ]
+    },
+    "bank_resource": "table_tennis/return-v1",
+    "control_hz": 200.0,
+    "env_id": "MultiSportRobot/TableTennisReturn-G1-Standing-v2",
+    "frame": {
+      "convention": {
+        "angle_unit": "rad",
+        "length_axis": "x",
+        "length_unit": "m",
+        "quaternion_order": "wxyz",
+        "robot_side_sign": -1,
+        "up_axis": "z",
+        "width_axis": "y"
+      },
+      "origin_xyz": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "joint_action": {
+      "control_mode": "joint_position",
+      "high": [
+        2.618,
+        0.52,
+        0.52,
+        2.6704,
+        1.5882,
+        2.618,
+        2.0944,
+        1.9722,
+        1.6144,
+        1.6144
+      ],
+      "joint_names": [
+        "g1_waist_yaw_joint",
+        "g1_waist_roll_joint",
+        "g1_waist_pitch_joint",
+        "g1_right_shoulder_pitch_joint",
+        "g1_right_shoulder_roll_joint",
+        "g1_right_shoulder_yaw_joint",
+        "g1_right_elbow_joint",
+        "g1_right_wrist_roll_joint",
+        "g1_right_wrist_pitch_joint",
+        "g1_right_wrist_yaw_joint"
+      ],
+      "low": [
+        -2.618,
+        -0.52,
+        -0.52,
+        -3.0892,
+        -2.2515,
+        -2.618,
+        -1.0472,
+        -1.9722,
+        -1.6144,
+        -1.6144
+      ]
+    },
+    "observation_dim": 39,
+    "observation_layout": {
+      "fields": [
+        {
+          "high": [
+            5.0,
+            5.0,
+            5.0
+          ],
+          "low": [
+            -5.0,
+            -5.0,
+            -1.0
+          ],
+          "name": "ball.position",
+          "size": 3,
+          "source": "task"
+        },
+        {
+          "high": [
+            50.0,
+            50.0,
+            50.0
+          ],
+          "low": [
+            -50.0,
+            -50.0,
+            -50.0
+          ],
+          "name": "ball.linear_velocity",
+          "size": 3,
+          "source": "task"
+        },
+        {
+          "high": [
+            2000.0,
+            2000.0,
+            2000.0
+          ],
+          "low": [
+            -2000.0,
+            -2000.0,
+            -2000.0
+          ],
+          "name": "ball.angular_velocity",
+          "size": 3,
+          "source": "task"
+        },
+        {
+          "element_names": [
+            "g1_waist_yaw_joint",
+            "g1_waist_roll_joint",
+            "g1_waist_pitch_joint",
+            "g1_right_shoulder_pitch_joint",
+            "g1_right_shoulder_roll_joint",
+            "g1_right_shoulder_yaw_joint",
+            "g1_right_elbow_joint",
+            "g1_right_wrist_roll_joint",
+            "g1_right_wrist_pitch_joint",
+            "g1_right_wrist_yaw_joint"
+          ],
+          "high": [
+            2.618,
+            0.52,
+            0.52,
+            2.6704,
+            1.5882,
+            2.618,
+            2.0944,
+            1.9722,
+            1.6144,
+            1.6144
+          ],
+          "low": [
+            -2.618,
+            -0.52,
+            -0.52,
+            -3.0892,
+            -2.2515,
+            -2.618,
+            -1.0472,
+            -1.9722,
+            -1.6144,
+            -1.6144
+          ],
+          "name": "robot.joint_position",
+          "size": 10,
+          "source": "robot"
+        },
+        {
+          "element_names": [
+            "g1_waist_yaw_joint",
+            "g1_waist_roll_joint",
+            "g1_waist_pitch_joint",
+            "g1_right_shoulder_pitch_joint",
+            "g1_right_shoulder_roll_joint",
+            "g1_right_shoulder_yaw_joint",
+            "g1_right_elbow_joint",
+            "g1_right_wrist_roll_joint",
+            "g1_right_wrist_pitch_joint",
+            "g1_right_wrist_yaw_joint"
+          ],
+          "high": [
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0
+          ],
+          "low": [
+            -10.0,
+            -10.0,
+            -10.0,
+            -10.0,
+            -10.0,
+            -10.0,
+            -10.0,
+            -10.0,
+            -10.0,
+            -10.0
+          ],
+          "name": "robot.joint_velocity",
+          "size": 10,
+          "source": "robot"
+        },
+        {
+          "high": [
+            -1.05,
+            1.0,
+            2.0
+          ],
+          "low": [
+            -2.95,
+            -1.0,
+            0.3
+          ],
+          "name": "effector.position",
+          "size": 3,
+          "source": "robot"
+        },
+        {
+          "high": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "low": [
+            -1.0,
+            -1.0,
+            -1.0,
+            -1.0
+          ],
+          "name": "effector.quaternion",
+          "size": 4,
+          "source": "robot"
+        },
+        {
+          "high": [
+            50.0,
+            50.0,
+            50.0
+          ],
+          "low": [
+            -50.0,
+            -50.0,
+            -50.0
+          ],
+          "name": "effector.linear_velocity",
+          "size": 3,
+          "source": "robot"
+        }
+      ],
+      "robot_independent_fields": [
+        "ball.position",
+        "ball.linear_velocity",
+        "ball.angular_velocity",
+        "effector.position",
+        "effector.quaternion",
+        "effector.linear_velocity"
+      ],
+      "size": 39
+    },
+    "reward": {
+      "hit": 1.0,
+      "target_hit": 1.0,
+      "valid_return": 3.0
+    },
+    "robot_id": "unitree-g1-standing-tabletennis-v2",
+    "split": "dev",
+    "sport": "table_tennis",
+    "strike_zone": {
+      "plane_x_m": -1.55,
+      "y_m": [
+        -0.45,
+        0.4
+      ],
+      "z_m": [
+        0.88,
+        1.36
+      ]
+    },
+    "table": {
+      "center_y_m": 0.0,
+      "length_m": 2.74,
+      "net_plane_x_m": 0.0,
+      "top_height_m": 0.76,
+      "width_m": 1.525
+    },
+    "task_id": "table-tennis-return-g1-standing-v2",
+    "timeout_s": 2.0,
+    "workspace": {
+      "position_high": [
+        -1.05,
+        1.0,
+        2.0
+      ],
+      "position_low": [
+        -2.95,
+        -1.0,
+        0.3
+      ]
+    }
+  },
+  "track": {
+    "id": "vision",
+    "privileged_ball_state": false,
+    "sensors": [
+      {
+        "depth": true,
+        "fovy_deg": 70.0,
+        "height": 240,
+        "kind": "camera",
+        "mount": "world",
+        "name": "ball_camera_left",
+        "position": [
+          -0.7,
+          -2.1,
+          1.55
+        ],
+        "quaternion": [
+          0.7888877278595352,
+          0.6104350085498074,
+          -0.04338228034371747,
+          -0.05606452462650368
+        ],
+        "rate_hz": 120.0,
+        "width": 320
+      },
+      {
+        "kind": "imu",
+        "mount": "g1_pelvis",
+        "name": "balance_imu",
+        "rate_hz": 1000.0
+      },
+      {
+        "kind": "frame_transform",
+        "mount": "world",
+        "name": "blade_pose",
+        "rate_hz": 200.0
+      },
+      {
+        "kind": "imu",
+        "mount": "g1_benchmark_paddle",
+        "name": "blade_imu",
+        "rate_hz": 200.0
+      },
+      {
+        "kind": "contact",
+        "mount": "g1_benchmark_paddle",
+        "name": "blade_contact",
+        "rate_hz": 200.0
+      },
+      {
+        "joint_names": [
+          "g1_waist_yaw_joint",
+          "g1_waist_roll_joint",
+          "g1_waist_pitch_joint",
+          "g1_right_shoulder_pitch_joint",
+          "g1_right_shoulder_roll_joint",
+          "g1_right_shoulder_yaw_joint",
+          "g1_right_elbow_joint",
+          "g1_right_wrist_roll_joint",
+          "g1_right_wrist_pitch_joint",
+          "g1_right_wrist_yaw_joint"
+        ],
+        "kind": "joint_torque",
+        "mount": "g1_benchmark_paddle",
+        "name": "arm_torque",
+        "rate_hz": 200.0
+      }
+    ]
+  }
+}

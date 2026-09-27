@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import argparse
+import json
 import platform
 import sys
 from collections.abc import Sequence
 from dataclasses import replace
 from datetime import datetime, timezone
+from math import isfinite
 from pathlib import Path
 
 import mujoco
@@ -27,10 +29,11 @@ from .benchmark.shot_bank import VALID_LEVELS, ShotBank, ShotBankError
 from .benchmark.task_config import (
     TABLE_TENNIS_RETURN_G1_V1,
     TABLE_TENNIS_RETURN_PANDA_V1,
+    TABLE_TENNIS_RETURN_STANDING_G1_V2,
     TABLE_TENNIS_RETURN_V0,
     TENNIS_RETURN_V0,
 )
-from .benchmark.vision import TABLE_TENNIS_VISION_SENSORS, VisionTrackBackend
+from .benchmark.vision import RGBDBallTracker, VisionTrackBackend, vision_sensors_for
 
 MOCAP_TASKS = {
     "table_tennis": TABLE_TENNIS_RETURN_V0,
@@ -47,10 +50,10 @@ ROBOT_CONTROLLERS = ("intercept", "random", "hold")
 ROBOT_TASKS = {
     "panda": TABLE_TENNIS_RETURN_PANDA_V1,
     "g1": TABLE_TENNIS_RETURN_G1_V1,
+    "g1-standing": TABLE_TENNIS_RETURN_STANDING_G1_V2,
 }
-# The vision track is declared and measured for the Panda only; a track that
-# has not been run is not one the CLI should let a user think exists.
-VISION_ROBOTS = ("panda",)
+# Sensor suites are bound to each robot's own paddle and joints.
+VISION_ROBOTS = ("panda", "g1", "g1-standing")
 # A vision controller may only run on the vision track; it has no way to read
 # privileged ball state, and the track wrapper makes sure it cannot start.
 VISION_CONTROLLERS = ("vision",)
@@ -85,6 +88,15 @@ def parser() -> argparse.ArgumentParser:
             "The built-in mocap controller is a diagnostic fixture, not a robot submission."
         ),
     )
+    result.add_argument("--policy", help="custom module:policy or module:factory")
+    result.add_argument("--rate-margin", type=_positive_float, help="joint setpoint speed fraction")
+    result.add_argument("--blade-tilt-deg", type=float, help="paddle tilt in degrees")
+    result.add_argument("--swing-lead-s", type=_positive_float, help="begin forward swing this early")
+    result.add_argument("--viewer", action="store_true", help="show the scored robot rollout")
+    result.add_argument("--video", type=Path, help="record the scored robot rollout as GIF")
+    result.add_argument("--sensor-config", type=Path, help="JSON camera specifications")
+    result.add_argument("--config", type=Path, help="JSON defaults; CLI values override")
+    result.add_argument("--perception", choices=("stereo", "rgbd", "depth"), default="stereo")
     result.add_argument(
         "--sport",
         choices=("table-tennis", "table_tennis", "tennis"),
@@ -132,7 +144,7 @@ def parser() -> argparse.ArgumentParser:
         help=(
             "'none' runs the v0 mocap fixture; 'panda' runs the embodied "
             "table-tennis-return-panda-v1 task on an actuated Franka Panda; "
-            "'g1' runs table-tennis-return-g1-v1 on a fixed-base Unitree G1"
+            "'g1' uses a fixed pelvis; 'g1-standing' uses a free pelvis and ankle balance"
         ),
     )
     result.add_argument(
@@ -210,7 +222,7 @@ def _default_controller(robot: str, track: str = "state") -> str:
     return "vision" if track == "vision" else "intercept"
 
 
-def _robot_controller(name: str, *, control_dt: float, robot: str = "panda"):
+def _robot_controller(name: str, *, control_dt: float, robot: str = "panda", **settings):
     """Build one embodied baseline, importing the robot stack lazily.
 
     Every baseline is parameterised by the embodiment rather than duplicated per
@@ -227,7 +239,7 @@ def _robot_controller(name: str, *, control_dt: float, robot: str = "panda"):
     )
 
     task = ROBOT_TASKS[robot]
-    swing = SWING_ROBOTS[robot]
+    swing = SWING_ROBOTS["g1" if robot == "g1-standing" else robot]
     if name == "hold":
         return HoldPoseController(swing.ready_qpos)
     if name == "random":
@@ -240,8 +252,8 @@ def _robot_controller(name: str, *, control_dt: float, robot: str = "panda"):
             velocity_limit=swing.velocity_limit,
         )
     if name == "vision":
-        return VisionInterceptController(control_dt=control_dt, robot=swing)
-    return ScriptedInterceptController(control_dt=control_dt, robot=swing)
+        return VisionInterceptController(control_dt=control_dt, robot=swing, **settings)
+    return ScriptedInterceptController(control_dt=control_dt, robot=swing, **settings)
 
 
 def robot_metadata(backend, task) -> dict[str, object]:
@@ -256,6 +268,9 @@ def robot_metadata(backend, task) -> dict[str, object]:
         "adapter": f"{describe['backend']}-joint-position",
         "control_mode": task.joint_action.control_mode,
         "asset": describe["robot"]["asset"],
+        "base": describe["robot"].get("base", "fixed arm"),
+        **({"balance_controller": describe["robot"]["balance_controller"]}
+           if "balance_controller" in describe["robot"] else {}),
         "mount": describe["robot"]["mount"],
         "safety_limits": describe["robot"]["safety_limits"],
         # The shot bank is still an experimental development fixture
@@ -271,11 +286,13 @@ def _robot_run(args: argparse.Namespace, source_bank: ShotBank, shots):
         MujocoG1TableTennisBackend,
         MujocoPandaTableTennisBackend,
     )
+    from .benchmark.backends.mujoco_standing import MujocoStandingG1TableTennisBackend
     from .benchmark.robot import WorkspaceBox
 
     backends = {
         "panda": MujocoPandaTableTennisBackend,
         "g1": MujocoG1TableTennisBackend,
+        "g1-standing": MujocoStandingG1TableTennisBackend,
     }
     timeout_s = float(source_bank.manifest["episode"]["timeout_s"])
     task = replace(
@@ -285,30 +302,80 @@ def _robot_run(args: argparse.Namespace, source_bank: ShotBank, shots):
         timeout_s=timeout_s,
     )
     vision_track = getattr(args, "track", "state") == "vision"
-    sensors = TABLE_TENNIS_VISION_SENSORS if vision_track else ()
+    sensors = vision_sensors_for(
+        args.robot, depth=getattr(args, "perception", "stereo") in {"rgbd", "depth"}
+    ) if vision_track else ()
+    if getattr(args, "sensor_config", None) is not None:
+        from .benchmark.sensors import CameraSpec
+        camera_config = json.loads(args.sensor_config.read_text())
+        if not isinstance(camera_config, list):
+            raise ValueError("sensor config must be a list of camera specifications")
+        try:
+            cameras = tuple(CameraSpec(**item) for item in camera_config)
+        except TypeError as exc:
+            raise ValueError(f"invalid camera specification: {exc}") from exc
+        expected = 1 if getattr(args, "perception", "stereo") in {"rgbd", "depth"} else 2
+        if len(cameras) != expected:
+            raise ValueError(f"perception requires {expected} cameras")
+        if any(camera.mount != "world" for camera in cameras):
+            raise ValueError("reference trackers require world-mounted cameras")
+        sensors = (*cameras, *(s for s in sensors if not isinstance(s, CameraSpec)))
     backend = backends[args.robot](
         workspace=WorkspaceBox(
             task.workspace.position_low, task.workspace.position_high
         ),
         sensors=sensors,
     )
+    controller_settings = {
+        key: getattr(args, key) for key in ("rate_margin", "blade_tilt_deg", "swing_lead_s")
+        if getattr(args, key, None) is not None
+    }
     controller = _robot_controller(
         args.controller,
         control_dt=task.control_dt(backend.timestep),
         robot=args.robot,
+        **controller_settings,
     )
+    if vision_track and getattr(args, "perception", "stereo") == "rgbd":
+        controller.tracker = RGBDBallTracker(camera=sensors[0])
+        controller.controller_id = f"rgbd-{args.robot}-intercept-v1"
+    elif vision_track and getattr(args, "perception", "stereo") == "depth":
+        from .benchmark.depth_vision import DepthBallTracker
+        background = backend.read_sensors().camera(sensors[0].name).depth
+        controller.tracker = DepthBallTracker(camera=sensors[0], background=background)
+        controller.controller_id = f"depth-{args.robot}-intercept-v1"
+    elif vision_track and getattr(args, "sensor_config", None) is not None:
+        from .benchmark.vision import StereoBallTracker
+        controller.tracker = StereoBallTracker(left=sensors[0], right=sensors[1])
+    if getattr(args, "policy", None) is not None:
+        from .benchmark.policy_eval import PolicyController, load_policy
+        controller = PolicyController(load_policy(args.policy), policy_id=args.policy,
+                                      track=args.track, task=task)
+    if controller_settings:
+        controller.controller_id = f"configured-{controller.controller_id}"
     # The wrapper is what enforces the track: on the vision track the object the
     # controller receives has no ball attribute at all.
-    runner_backend = VisionTrackBackend(backend) if vision_track else backend
+    runner_backend = VisionTrackBackend(
+        backend, depth_only=getattr(args, "perception", "stereo") == "depth"
+    ) if vision_track else backend
     perturbations = for_level(source_bank.manifest, args.level)
     if not perturbations.is_identity:
         runner_backend = PerturbedBackend(runner_backend, perturbations)
-    output = run_shots(
-        runner_backend,
-        controller,
-        shots,
-        config=RunConfig.from_task_config(task, seed=args.seed),
-    )
+    from .benchmark.visualization import RolloutDisplay
+
+    try:
+        with RolloutDisplay(backend, viewer=getattr(args, "viewer", False),
+                            video=getattr(args, "video", None)) as display:
+            output = run_shots(
+                runner_backend,
+                controller,
+                shots,
+                config=RunConfig.from_task_config(task, seed=args.seed),
+                on_step=display if display.viewer_enabled or display.video else None,
+            )
+    finally:
+        if backend.sensors is not None:
+            backend.sensors.close()
     return (
         backend,
         controller,
@@ -317,7 +384,12 @@ def _robot_run(args: argparse.Namespace, source_bank: ShotBank, shots):
         robot_metadata(backend, task),
         {
             "id": controller.controller_id,
-            "observation": _observation_label(args.controller, vision_track),
+            "parameters": controller_settings,
+            "observation": ("depth-only+proprioception" if vision_track and
+                            getattr(args, "perception", "stereo") == "depth" else
+                            "rgbd+proprioception" if vision_track and
+                            getattr(args, "perception", "stereo") == "rgbd" else
+                            _observation_label(args.controller, vision_track)),
             "track": "vision" if vision_track else "state",
             "benchmark_eligible": False,
         },
@@ -338,6 +410,27 @@ def run_from_args(args: argparse.Namespace) -> dict[str, object]:
     if args.controller is None:
         args.controller = _default_controller(args.robot, getattr(args, "track", "state"))
     track = getattr(args, "track", "state")
+    if getattr(args, "policy", None) is not None:
+        if args.robot not in ROBOT_TASKS:
+            raise ValueError("--policy requires a robot")
+        if any(getattr(args, key, None) is not None for key in
+               ("rate_margin", "blade_tilt_deg", "swing_lead_s")):
+            raise ValueError("custom policies cannot use built-in swing parameters")
+    for key in ("rate_margin", "blade_tilt_deg", "swing_lead_s"):
+        value = getattr(args, key, None)
+        if value is not None:
+            if args.controller not in {"intercept", "vision"}:
+                raise ValueError(f"{key} requires an intercept or vision controller")
+            if not isfinite(value):
+                raise ValueError(f"{key} must be finite")
+    if getattr(args, "rate_margin", None) is not None and args.rate_margin > 1.:
+        raise ValueError("rate_margin must be at most 1")
+    if args.robot == "none" and (getattr(args, "viewer", False) or
+                                 getattr(args, "video", None) is not None):
+        raise ValueError("--viewer and --video require a robot task")
+    if track != "vision" and (getattr(args, "sensor_config", None) is not None or
+                               getattr(args, "perception", "stereo") != "stereo"):
+        raise ValueError("camera configuration requires --track vision")
     if args.robot != "none" and _sport(args) != "table_tennis":
         raise ValueError(
             f"--robot {args.robot!r} is only available for table tennis; the "
@@ -533,6 +626,10 @@ def _assemble_report(
                 # Empty for the mocap fixture: it has no safety envelope and no
                 # actuators, so reporting zeros would claim checks that never ran.
                 "safety_violations": list(output.safety_violations),
+                "safety_details": [
+                    [violation.to_dict() for violation in episode]
+                    for episode in output.safety_details
+                ],
                 "energy_joule": [round(value, 6) for value in output.energy_joule],
                 "total_safety_violations": sum(output.safety_violations),
                 "mean_energy_joule": (
@@ -545,6 +642,7 @@ def _assemble_report(
             "inference_latency_ms": _latency_block(output),
             "track": {
                 "id": getattr(args, "track", "state"),
+                "perception": getattr(args, "perception", "stereo"),
                 "privileged_ball_state": getattr(args, "track", "state") != "vision",
                 "sensors": [
                     spec.to_dict() for spec in getattr(backend, "sensor_specs", ())
@@ -568,8 +666,31 @@ def _assemble_report(
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    arguments = parser().parse_args(argv)
+    cli = parser()
+    raw = list(sys.argv[1:] if argv is None else argv)
+    preliminary, _ = cli.parse_known_args(raw)
     try:
+        if preliminary.config is not None:
+            config = json.loads(preliminary.config.read_text())
+            if not isinstance(config, dict):
+                raise ValueError("config must be a JSON object")
+            actions = {a.dest: a for a in cli._actions if a.dest not in {"help", "config"}}
+            configured = []
+            for key, value in config.items():
+                if key not in actions:
+                    raise ValueError(f"unknown config key: {key}")
+                action = actions[key]
+                if isinstance(action, argparse._StoreTrueAction):
+                    if not isinstance(value, bool):
+                        raise ValueError(f"{key} must be boolean")
+                    if value:
+                        configured.append(action.option_strings[0])
+                else:
+                    if value is None or isinstance(value, (dict, list, bool)):
+                        raise ValueError(f"{key} must be a scalar value")
+                    configured.extend([action.option_strings[0], str(value)])
+            raw = configured + raw
+        arguments = cli.parse_args(raw)
         if arguments.report is not None and arguments.report.suffix.lower() != ".json":
             raise ValueError("--report path must end in .json")
         if arguments.markdown is not None and arguments.markdown.suffix.lower() not in {
@@ -580,11 +701,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         report = run_from_args(arguments)
         if arguments.report is not None:
             print(f"report={write_report(report, arguments.report)}")
+            metrics = report["metrics"]
+            print(f"episodes={report['episodes']} hit={metrics['hit_rate']:.0%} "
+                  f"valid_return={metrics['valid_return_rate']:.0%} "
+                  f"safety_violation={metrics['safety_violation_rate']:.0%}")
         if arguments.markdown is not None:
             print(f"markdown={write_report(report, arguments.markdown)}")
         if arguments.report is None and arguments.markdown is None:
             print(report_markdown(report), end="")
-    except (MetricsError, ShotBankError, OSError, RuntimeError, ValueError) as exc:
+    except (MetricsError, ShotBankError, OSError, RuntimeError, ValueError, ImportError) as exc:
         print(f"multisport-benchmark: error: {exc}", file=sys.stderr)
         return 2
 

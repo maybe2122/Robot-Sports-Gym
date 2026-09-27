@@ -26,7 +26,7 @@ A submission is free to replace it; it is a floor, not a ceiling.
 from __future__ import annotations
 
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from math import isfinite, radians, tan
 from typing import Any
 
@@ -36,6 +36,7 @@ from .robot import RobotObservation
 from .robots.panda import JOINT_NAMES, PADDLE_BODY, PADDLE_SITE
 from .sensors import (
     WORLD_FRAME,
+    CameraFrame,
     CameraSpec,
     ContactSensorSpec,
     FrameTransformSpec,
@@ -125,6 +126,25 @@ class VisionObservation:
     sensors: SensorReadings
 
 
+def vision_sensors_for(robot: str, *, depth: bool = False) -> tuple[SensorSpec, ...]:
+    """Bind sensor mounts and joint names to the actual embodiment."""
+    if robot == "panda":
+        from .robots import panda as embodiment
+    elif robot in {"g1", "g1-standing"}:
+        from .robots import g1 as embodiment
+    else:
+        raise ValueError(f"unsupported vision robot: {robot}")
+    cameras = (replace(LEFT_CAMERA, depth=True),) if depth else (LEFT_CAMERA, RIGHT_CAMERA)
+    balance = (ImuSpec(name="balance_imu", rate_hz=1000., mount="g1_pelvis"),) \
+        if robot == "g1-standing" else ()
+    return (*cameras, *balance,
+            replace(BLADE_POSE, target=embodiment.PADDLE_SITE),
+            replace(BLADE_IMU, mount=embodiment.PADDLE_BODY),
+            replace(BLADE_CONTACT, mount=embodiment.PADDLE_BODY),
+            replace(ARM_TORQUE, mount=embodiment.PADDLE_BODY,
+                    joint_names=embodiment.JOINT_NAMES))
+
+
 class VisionTrackBackend:
     """Wrap an embodied backend so its observations carry no privileged truth.
 
@@ -134,19 +154,27 @@ class VisionTrackBackend:
     allowed to see.
     """
 
-    def __init__(self, backend: Any) -> None:
+    def __init__(self, backend: Any, *, depth_only: bool = False) -> None:
         if getattr(backend, "sensors", None) is None:
             raise ValueError(
                 "the vision track needs a backend built with sensors; pass "
                 "sensors=TABLE_TENNIS_VISION_SENSORS"
             )
         self.backend = backend
+        self.depth_only = depth_only
 
     def observe(self) -> VisionObservation:
+        readings = self.backend.read_sensors()
+        if self.depth_only:
+            readings = SensorReadings(
+                replace(reading, rgb=np.zeros_like(reading.rgb))
+                if isinstance(reading, CameraFrame) else reading
+                for reading in readings.values()
+            )
         return VisionObservation(
             time_s=float(self.backend.time),
             robot=self.backend.robot_observation(),
-            sensors=self.backend.read_sensors(),
+            sensors=readings,
         )
 
     def __getattr__(self, name: str) -> Any:
@@ -367,6 +395,40 @@ class StereoBallTracker:
         )
 
 
+class RGBDBallTracker(StereoBallTracker):
+    """Localize an orange ball using RGB and aligned optical-axis depth in metres."""
+
+    def __init__(self, camera: CameraSpec | None = None, **kwargs):
+        camera = camera if camera is not None else replace(LEFT_CAMERA, depth=True)
+        if not camera.depth:
+            raise ValueError("RGBD tracking requires a depth camera")
+        super().__init__(left=camera, **kwargs)
+
+    def detect(self, readings: SensorReadings) -> BallDetection | None:
+        frame = readings.camera(self.left.name)
+        if frame.depth is None:
+            raise ValueError("RGBD tracking requires aligned metric depth")
+        time_s = float(frame.time_s)
+        if self._last_frame_time is not None and time_s <= self._last_frame_time:
+            return None
+        self._last_frame_time = time_s
+        blob = largest_blob(ball_mask(frame.rgb))
+        if blob is None:
+            return None
+        u, v, count = blob
+        depth = float(frame.depth[round(v), round(u)])
+        if not isfinite(depth) or depth <= 0:
+            return None
+        origin, ray = pixel_ray(self.left, u, v)
+        optical = quaternion_matrix(self.left.quaternion) @ np.array([0., 0., -1.])
+        # The renderer measures the visible surface; recover the sphere centre.
+        position = origin + ray * (depth / float(ray @ optical) + BALL_RADIUS_M)
+        detection = BallDetection(time_s, tuple(position), (count, 0), 0.0)
+        self._samples.append(detection)
+        del self._samples[:-self.history]
+        return detection
+
+
 def vision_observation_space_shapes(
     sensors: Sequence[SensorSpec] = TABLE_TENNIS_VISION_SENSORS,
 ) -> dict[str, tuple[int, ...]]:
@@ -380,6 +442,7 @@ def vision_observation_dict(
     observation: VisionObservation,
     *,
     sensors: Sequence[SensorSpec] = TABLE_TENNIS_VISION_SENSORS,
+    include_rgb: bool = True,
 ) -> dict[str, np.ndarray]:
     """Pack one vision observation into plain arrays for a learning framework.
 
@@ -392,9 +455,20 @@ def vision_observation_dict(
     packed: dict[str, np.ndarray] = {}
     for spec in sensors:
         if isinstance(spec, CameraSpec):
-            packed[spec.name] = np.asarray(
-                observation.sensors.camera(spec.name).rgb, dtype=np.uint8
-            )
+            if include_rgb:
+                packed[spec.name] = np.asarray(
+                    observation.sensors.camera(spec.name).rgb, dtype=np.uint8
+                )
+            if spec.depth:
+                depth = observation.sensors.camera(spec.name).depth
+                if depth is None:
+                    raise ValueError(f"camera {spec.name} did not provide declared depth")
+                packed[f"{spec.name}_depth"] = np.asarray(depth, dtype=np.float32)
+    if any(spec.name == "balance_imu" for spec in sensors):
+        imu = observation.sensors["balance_imu"]
+        packed["base_imu"] = np.asarray(
+            (*imu.orientation, *imu.angular_velocity, *imu.linear_acceleration), dtype=np.float32
+        )
     robot = observation.robot
     packed["joint_positions"] = np.asarray(robot.joint_positions, dtype=np.float32)
     packed["joint_velocities"] = np.asarray(robot.joint_velocities, dtype=np.float32)
@@ -434,6 +508,7 @@ __all__ = [
     "RIGHT_CAMERA",
     "TABLE_TENNIS_VISION_SENSORS",
     "BallDetection",
+    "RGBDBallTracker",
     "StereoBallTracker",
     "VisionObservation",
     "VisionTrackBackend",
@@ -444,4 +519,5 @@ __all__ = [
     "triangulate",
     "vision_observation_dict",
     "vision_observation_space_shapes",
+    "vision_sensors_for",
 ]

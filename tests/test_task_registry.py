@@ -41,6 +41,7 @@ def test_a_sport_with_several_embodiments_must_be_addressed_by_task_id() -> None
     entries = registry.tasks_for_sport(Sport.TABLE_TENNIS.value)
 
     assert [entry.task_id for entry in entries] == [
+        "table-tennis-return-g1-standing-v2",
         "table-tennis-return-g1-v1",
         "table-tennis-return-panda-v1",
         "table-tennis-return-v0",

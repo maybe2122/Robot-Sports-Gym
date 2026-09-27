@@ -325,6 +325,7 @@ VIOLATION_KINDS = (
     "joint_torque",
     "collision",
     "workspace",
+    "balance",
 )
 
 

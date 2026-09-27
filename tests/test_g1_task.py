@@ -240,8 +240,10 @@ class TestTheTaskItPlays:
         assert TABLE_TENNIS_RETURN_G1_V1.env_id.endswith("TableTennisReturn-G1-v1")
         assert TABLE_TENNIS_RETURN_G1_V1.task_id != TABLE_TENNIS_RETURN_PANDA_V1.task_id
 
-    def test_it_declares_no_vision_track_because_none_has_been_run(self) -> None:
-        assert TABLE_TENNIS_RETURN_G1_V1.vision_env_id is None
+    def test_it_registers_the_vision_track(self) -> None:
+        import gymnasium as gym
+
+        assert TABLE_TENNIS_RETURN_G1_V1.vision_env_id in gym.registry
 
     def test_the_observation_differs_only_in_the_widths_of_the_robot_blocks(self) -> None:
         """The claim the second embodiment exists to test."""

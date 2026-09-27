@@ -232,3 +232,17 @@ def test_a_mocap_backend_reports_no_contact_error_at_all() -> None:
     assert output.contact_offset_m == ()
     assert output.contact_speed_mps == ()
     assert len(output.inference_latency_ms) > 0
+
+
+def test_safety_diagnostics_and_terminal_callback_are_preserved():
+    from multisport_sim.benchmark.robot import SafetyViolation
+
+    backend = _StubEmbodiedBackend()
+    fault = SafetyViolation("balance", "pelvis tilt above standing envelope", .61, .6)
+    backend.safety_violations = lambda: (fault,)
+    seen = []
+    output = run_shots(backend, NoOpController(), [REFERENCE_SHOT],
+                       on_step=lambda b, shot, judge: seen.append(judge.result.failure_reason))
+    assert output.results[0].failure_reason == "safety"
+    assert output.safety_details == ((fault,),)
+    assert seen == ["safety"]

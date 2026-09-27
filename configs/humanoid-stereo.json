@@ -1,0 +1,12 @@
+{
+  "robot": "g1-standing",
+  "track": "vision",
+  "perception": "stereo",
+  "level": "L2",
+  "split": "dev",
+  "episodes": 5,
+  "report": "reports/humanoid-stereo.json",
+  "rate_margin": 0.2,
+  "blade_tilt_deg": 15,
+  "swing_lead_s": 0.08
+}

@@ -6,6 +6,19 @@ Robot Sports Gym (RSG) is an in-development, cross-embodiment platform for train
 
 > **Status: Alpha.** The scenes, ball dynamics, rebound-fidelity reports, an experimental table-tennis Shot Skill harness, and a MuJoCo Gymnasium fixture are operational. Real robot adapters, Isaac Lab RL environments, the remaining canonical tasks, and reference policies are planned. Do not describe the current release as a completed robot ball-sports benchmark.
 
+## Humanoid vision-driven table tennis
+
+A free-pelvis Unitree G1 can now return simulated balls using depth only, stereo RGB, or aligned RGB-D.
+An ankle feedback controller maintains standing while the waist and racket arm follow visual estimates.
+This is a standing, single-return baseline; walking, continuous rallies, and hardware deployment are not included.
+
+```bash
+MUJOCO_GL=glfw .venv/bin/python -m multisport_sim.benchmark_cli \
+  --config configs/humanoid-rgbd.json --viewer
+```
+
+See [setup, camera configuration, policy interfaces, and limitations](docs/HUMANOID_PLAY.md).
+
 ## Documentation
 
 - [Draft robot benchmark specification](docs/BENCHMARK_SPEC.md)
@@ -202,7 +215,7 @@ Committed baselines are available for [MuJoCo](reports/mujoco-fidelity.md) and [
 
 ## Toward a robot benchmark
 
-The experimental table-tennis Shot Skill validates fixed launches, true-contact events, judging, and report schemas with a MuJoCo fixture; it is not yet a robot environment or submission track. The proposed first public release contains five single-episode tasks: tennis return, table-tennis return, football kick-to-target, badminton serve, and basketball shooting. The draft protocol defines state, vision, robustness, and sim-to-real tracks; raw metrics; seeding; robot adapters; and reproducible submission artifacts.
+The experimental table-tennis Shot Skill validates fixed launches, physical racket contact, judging, and reporting. Embodied Panda and G1 environments now include vision input; the free-pelvis G1 also has an ankle standing controller. These reference baselines are not a certified submission track. The proposed first public release contains five single-episode tasks: tennis return, table-tennis return, football kick-to-target, badminton serve, and basketball shooting. The draft protocol defines state, vision, robustness, and sim-to-real tracks; raw metrics; seeding; robot adapters; and reproducible submission artifacts.
 
 The repository remains a physics foundation until at least one versioned Gymnasium environment, one vectorized Isaac Lab environment, licensed robot assets, fixed evaluation splits, and reproducible reference policies are available.
 

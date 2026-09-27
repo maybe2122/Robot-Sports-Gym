@@ -218,6 +218,7 @@ def build_g1_table_tennis_model(
     mount: G1Mount | None = None,
     source: AssetSource = UNITREE_G1,
     cameras: Sequence[CameraSpec] = (),
+    fixed_base: bool = True,
 ) -> mujoco.MjModel:
     """Compile the table-tennis scene with a fixed-base G1 and its paddle.
 
@@ -232,7 +233,11 @@ def build_g1_table_tennis_model(
     # One compiled model holds one impratio; the scene's calibrated bounce
     # depends on its value, so the scene wins.  Recorded as a modification.
     robot.option.impratio = spec.option.impratio
-    _fix_base(robot)
+    if fixed_base:
+        _fix_base(robot)
+    else:
+        for key in list(robot.keys):
+            robot.delete(key)
     _attach_paddle(robot)
     frame = spec.worldbody.add_frame(pos=list(placement.position))
     frame.attach_body(robot.worldbody.first_body(), PREFIX, "")
@@ -696,7 +701,8 @@ def _model_joint_order(model: mujoco.MjModel) -> list[str]:
     names: list[str] = []
     for joint in range(model.njnt):
         name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, joint)
-        if name is not None and name.startswith(PREFIX):
+        if (name is not None and name.startswith(PREFIX)
+                and model.jnt_type[joint] != mujoco.mjtJoint.mjJNT_FREE):
             names.append(name)
     return names
 

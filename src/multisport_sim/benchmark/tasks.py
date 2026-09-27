@@ -11,6 +11,7 @@ from .rules.base import ShotJudge
 from .task_config import (
     TABLE_TENNIS_RETURN_G1_V1,
     TABLE_TENNIS_RETURN_PANDA_V1,
+    TABLE_TENNIS_RETURN_STANDING_G1_V2,
     TABLE_TENNIS_RETURN_V0,
     TENNIS_RETURN_V0,
     ShotTaskConfig,
@@ -85,6 +86,7 @@ TABLE_TENNIS_RETURN_G1 = TaskEntry(
     judge_factory=_table_tennis_judge,
     backend_factory=_table_tennis_g1_backend,
     env_entry_point="multisport_sim.benchmark.envs:TableTennisReturnG1Env",
+    vision_env_entry_point="multisport_sim.benchmark.envs:TableTennisReturnG1VisionEnv",
 )
 
 
@@ -103,11 +105,29 @@ TENNIS_RETURN = TaskEntry(
 )
 
 
+def _standing_g1_backend(config):
+    from .backends.mujoco_standing import MujocoStandingG1TableTennisBackend
+    from .robot import WorkspaceBox
+
+    return MujocoStandingG1TableTennisBackend(
+        workspace=WorkspaceBox(config.workspace.position_low, config.workspace.position_high))
+
+
+TABLE_TENNIS_RETURN_STANDING_G1 = TaskEntry(
+    config=TABLE_TENNIS_RETURN_STANDING_G1_V2,
+    judge_factory=_table_tennis_judge,
+    backend_factory=_standing_g1_backend,
+    env_entry_point="multisport_sim.benchmark.envs:TableTennisReturnStandingG1Env",
+    vision_env_entry_point="multisport_sim.benchmark.envs:TableTennisReturnStandingG1VisionEnv",
+)
+
+
 def register_builtin_tasks() -> None:
     """Register every shipped task; safe to call repeatedly."""
     register_task(TABLE_TENNIS_RETURN, replace=True)
     register_task(TABLE_TENNIS_RETURN_PANDA, replace=True)
     register_task(TABLE_TENNIS_RETURN_G1, replace=True)
+    register_task(TABLE_TENNIS_RETURN_STANDING_G1, replace=True)
     register_task(TENNIS_RETURN, replace=True)
 
 

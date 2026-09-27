@@ -1,0 +1,42 @@
+[
+  {
+    "name": "ball_camera_left",
+    "rate_hz": 120.0,
+    "mount": "world",
+    "width": 320,
+    "height": 240,
+    "fovy_deg": 70.0,
+    "depth": false,
+    "position": [
+      -0.7,
+      -2.1,
+      1.55
+    ],
+    "quaternion": [
+      0.7888877278595352,
+      0.6104350085498074,
+      -0.04338228034371747,
+      -0.05606452462650368
+    ]
+  },
+  {
+    "name": "ball_camera_right",
+    "rate_hz": 120.0,
+    "mount": "world",
+    "width": 320,
+    "height": 240,
+    "fovy_deg": 70.0,
+    "depth": false,
+    "position": [
+      -0.7,
+      2.1,
+      1.55
+    ],
+    "quaternion": [
+      -0.05606452462650368,
+      -0.04338228034371747,
+      0.6104350085498074,
+      0.7888877278595352
+    ]
+  }
+]

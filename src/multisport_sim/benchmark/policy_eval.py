@@ -32,7 +32,7 @@ from typing import Any
 
 import numpy as np
 
-from .envs import panda_observation_vector
+from .envs import robot_observation_vector
 from .metrics import robustness_gap
 from .perturbations import PerturbedBackend, for_level
 from .reporting import report_markdown, write_report
@@ -51,7 +51,7 @@ TASK = TABLE_TENNIS_RETURN_PANDA_V1
 class PolicyController:
     """Adapt a ``obs -> action`` callable to the benchmark controller protocol."""
 
-    def __init__(self, policy: Any, *, policy_id: str, track: str = "state") -> None:
+    def __init__(self, policy: Any, *, policy_id: str, track: str = "state", task=TASK) -> None:
         act = getattr(policy, "act", None)
         self._call = act if callable(act) else policy
         if not callable(self._call):
@@ -61,10 +61,11 @@ class PolicyController:
         if track not in TRACKS:
             raise ValueError(f"track must be one of {', '.join(TRACKS)}")
         self.track = track
+        self.task = task
         # float32, matching the Gymnasium action space: a limit rounded to
         # float32 must not read as a violation of itself.
         self._low, self._high = (
-            np.asarray(bound, dtype=np.float32) for bound in TASK.action_bounds()
+            np.asarray(bound, dtype=np.float32) for bound in task.action_bounds()
         )
 
     def reset(self, shot, *, seed: int | None = None) -> None:
@@ -79,12 +80,12 @@ class PolicyController:
         payload = (
             observation
             if self.track == "vision"
-            else panda_observation_vector(observation)
+            else robot_observation_vector(observation, self.task)
         )
         action = np.asarray(self._call(payload), dtype=np.float32)
-        if action.shape != (TASK.ACTION_DIM,) or not np.all(np.isfinite(action)):
+        if action.shape != (self.task.ACTION_DIM,) or not np.all(np.isfinite(action)):
             raise ValueError(
-                f"policy must return {TASK.ACTION_DIM} finite joint setpoints, "
+                f"policy must return {self.task.ACTION_DIM} finite joint setpoints, "
                 f"got shape {action.shape}"
             )
         if np.any(action < self._low) or np.any(action > self._high):
