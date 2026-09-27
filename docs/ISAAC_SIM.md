@@ -78,7 +78,7 @@ multisport-isaac --headless --device cpu --scene tennis \
 
 Isaac Sim 每个 Kit 进程只评测一个单项场景，以避免重复创建 `SimulationContext`。`make evaluate-isaac` 会依次启动六个进程，并将结果聚合为 `reports/isaac-fidelity.json` 和 Markdown 报告。
 
-## Isaac Lab 向量化 Shot Skill 环境（experimental，未验证）
+## Isaac Lab 向量化 Shot Skill 环境（experimental，CPU PhysX 已实跑）
 
 `src/multisport_sim/benchmark/backends/isaac_lab.py` 提供 `table-tennis-return-v0` 的
 `ManagerBasedRLEnv` 向量化实现，与 MuJoCo 环境共享同一份
@@ -109,9 +109,47 @@ env = IsaacTableTennisReturnEnv(make_env_cfg(num_envs=1024, device="cuda:0"))
 - **场景只包含规则可见的物体**，不含装饰几何；测试用拍面是长方体而非 MuJoCo 的椭球，拍面边缘的接触时刻
   因此不具备逐步可比性。
 
-> **状态：experimental，尚未在真实 Isaac 运行时验证。** 仓库 CI 没有 Isaac 运行时，
-> `tests/test_isaac_lab_env.py` 在缺少 `isaaclab` 时自动 skip，只保证 MuJoCo 路径不会被 Isaac 导入
-> 污染。在 GPU 工作站完成实跑验证前，不要用它产出任何 benchmark 数字。
+### 实跑验证（2026-09-27）
+
+在 Isaac Sim 5.0.0 + Isaac Lab 0.46.2、CPU PhysX 上实例化 300 个并行环境，`return-v1` dev 全集每个环境
+一条球、拍面停放，逐控制步采样球状态，与 MuJoCo 3.13 的同一批球逐条比较
+（[`scripts/backend_parity.py`](../scripts/backend_parity.py)，`make parity`）。完整结果见
+[`reports/table-tennis-backend-parity.md`](../reports/table-tennis-backend-parity.md)：
+
+| 量 | 中位数 | p95 |
+|---|---:|---:|
+| 首次落台前轨迹最大偏差 | 3.5 mm | 4.7 mm |
+| 首次落台时间差 | 0 ms | 5 ms（= 一个采样周期） |
+| 首次落台位置差 | 1.8 mm | 19 mm |
+| 落台后 0.1 s 内最大偏差 | 78 mm | 219 mm |
+| 反弹最高点高度差 | 50 mm | 102 mm |
+
+Judge 判定一致率：`incoming_valid` 98.7%、`failure_reason` 99.3%。4 个不一致全部带 `deep` 标签——落点
+贴着己方台端线，毫米级差异就会让界内变界外。
+
+读法：**飞行段两个后端一致**（毫米级，残差来自积分器与 5 ms 采样）；**接触段不一致**，反弹高度差约
+一成，是 MuJoCo 软接触与 PhysX 恢复系数/摩擦模型的差别。这是 M4 要标定的量，不是 bug；在它被标定
+之前，两个后端上的回球类分数不可直接互比。
+
+实跑中发现并修复的缺陷：
+
+- **气动力被施加两次。** 物理回调里调用了 `ball.write_data_to_sim()`，而 `ManagerBasedRLEnv` 在每个
+  物理步前本就会写入所有资产的外力，PhysX 会把同一步内的多次施加累加——阻力实际翻倍，0.3 s 时轨迹差
+  32 cm、L0 判定一致率只有 62.5%。回调现在只缓存外力。
+- **固定集参数漏传。** 环境按 `split` 加载固定集时没有传 `task=bank_resource`，任何非默认固定集的任务
+  配置都会静默回退到 `return-v0`。
+- 新增 `env.shot_queue`（按顺序派发指定球）与 `env.current_shots`，跨后端比较需要知道每个环境在打哪一条球。
+
+仍未验证：**GPU PhysX**（验证时本机显存被其他训练任务占满，PhysX 无法分配 GPU 内存；另外 PhysX 在 GPU
+上不支持 CCD，需要单独确认高速球是否穿透）；机体（Panda/G1）在 Isaac 侧的 adapter；网球等其他运动的
+Isaac 环境。
+
+本机的 Isaac 环境需要额外把 Isaac Lab 源码目录放到 `PYTHONPATH` 上（其可编辑安装指向的目录已被移走）：
+
+```bash
+make parity ISAAC_PYTHON=~/code/rl/env_isaaclab/bin/python \
+  ISAAC_PYTHONPATH=~/Downloads/0915/IsaacLab-main/source/isaaclab
+```
 
 ## 无头快速退出
 

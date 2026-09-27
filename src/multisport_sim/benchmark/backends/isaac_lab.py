@@ -18,9 +18,11 @@ hidden:
 * the blade is an axis-aligned box rather than MuJoCo's ellipsoid, so contact
   timing near the blade rim is not bit-comparable across backends.
 
-Status: experimental.  The repository's CI has no Isaac runtime, so this module
-is exercised only by import-guarded tests and must be validated on a GPU
-workstation before any result from it is reported.
+Status: experimental.  Validated on CPU PhysX against the MuJoCo reference by
+``scripts/backend_parity.py``: ball flight agrees to millimetres, ball-surface
+contact does not yet (see ``reports/table-tennis-backend-parity.md``), so return
+scores from the two backends are not directly comparable.  GPU PhysX has not
+been run.  The repository's CI has no Isaac runtime.
 """
 
 from __future__ import annotations
@@ -386,7 +388,13 @@ class IsaacTableTennisReturnEnv(ManagerBasedRLEnv):
     def __init__(self, cfg: TableTennisReturnEnvCfg, **kwargs: Any) -> None:
         super().__init__(cfg, **kwargs)
         self.task = cfg.task
-        self.shot_bank = ShotBank.from_resource(split=self.task.split)
+        self.shot_bank = ShotBank.from_resource(
+            split=self.task.split, task=self.task.bank_resource
+        )
+        # Shots queued here are launched before any sampled one, in order.  A
+        # cross-backend comparison needs to know exactly which shot each
+        # environment is playing; training leaves the queue empty.
+        self.shot_queue: deque[ShotSpec] = deque()
         self._semantic_names = tuple(name for name, _ in SEMANTIC_FILTERS)
         self._judges = [
             TableTennisReturnJudge(
@@ -421,6 +429,11 @@ class IsaacTableTennisReturnEnv(ManagerBasedRLEnv):
     @property
     def blade(self) -> RigidObject:
         return self.scene["blade"]
+
+    @property
+    def current_shots(self) -> tuple[ShotSpec | None, ...]:
+        """The shot each environment is playing, by environment index."""
+        return tuple(self._shots)
 
     def _task_positions(self, positions: torch.Tensor) -> torch.Tensor:
         """Convert world positions to the per-environment task frame."""
@@ -462,7 +475,10 @@ class IsaacTableTennisReturnEnv(ManagerBasedRLEnv):
         sampled = self._shot_rng.integers(len(self.shot_bank), size=len(indices))
         root_state = self.ball.data.default_root_state[env_ids].clone()
         for row, env_index in enumerate(indices):
-            shot = self.shot_bank[int(sampled[row])]
+            if self.shot_queue:
+                shot = self.shot_queue.popleft()
+            else:
+                shot = self.shot_bank[int(sampled[row])]
             self._shots[env_index] = shot
             self._judges[env_index].reset(shot)
             self._episode_time_s[env_index] = 0.0
@@ -534,10 +550,13 @@ class IsaacTableTennisReturnEnv(ManagerBasedRLEnv):
         force = force + torch.where(
             (speed > 0.1) & (axis_norm > 1e-9), magnus, torch.zeros_like(magnus)
         )
+        # Only buffered here.  ManagerBasedRLEnv writes every asset's wrench
+        # before each physics step, and PhysX accumulates applied forces until
+        # the step runs: writing it here as well doubled the drag.  Found by
+        # scripts/backend_parity.py -- 32 cm of flight divergence at 0.3 s.
         ball.set_external_force_and_torque(
             force.unsqueeze(1), torch.zeros_like(force).unsqueeze(1), is_global=True
         )
-        ball.write_data_to_sim()
 
     def _on_physics_step(self, dt: float) -> None:
         if self._judging:  # pragma: no cover - guards re-entrant Kit callbacks

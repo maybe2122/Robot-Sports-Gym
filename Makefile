@@ -8,7 +8,7 @@ SUBMISSION_OUT ?= submission
 SPORT ?= table_tennis
 
 .PHONY: test lint verify check-reports test-isaac verify-all evaluate evaluate-isaac benchmark \
-	benchmark-robot benchmark-g1 baselines baselines-g1 tennis tennis-baselines \
+	parity benchmark-robot benchmark-g1 baselines baselines-g1 tennis tennis-baselines \
 	shot-bank calibrate submission \
 	demo-squash verify-squash-demo \
 	watch-squash-demo run run-isaac
@@ -29,6 +29,19 @@ test-isaac:
 	PYTHONPATH=src $(ISAAC_PYTHON) -m multisport_sim.isaac_cli --headless --device cpu --scene campus --duration 0.1
 
 verify-all: verify test-isaac
+
+# Same shots, same initial conditions, MuJoCo vs Isaac Lab (blade parked).
+# ISAAC_PYTHONPATH must put the Isaac Lab source tree on the path when the
+# Isaac environment's editable install points somewhere else.
+parity:
+	mkdir -p generated
+	PYTHONPATH=src $(PYTHON) scripts/backend_parity.py mujoco --out generated/parity-mujoco.json
+	PYTHONPATH=src$(if $(ISAAC_PYTHONPATH),:$(ISAAC_PYTHONPATH)) $(ISAAC_PYTHON) scripts/backend_parity.py \
+		isaac --device cpu --out generated/parity-isaac.json
+	PYTHONPATH=src $(PYTHON) scripts/backend_parity.py compare \
+		generated/parity-mujoco.json generated/parity-isaac.json \
+		--report reports/table-tennis-backend-parity.json \
+		--markdown reports/table-tennis-backend-parity.md
 
 evaluate:
 	PYTHONPATH=src $(PYTHON) -m multisport_sim.evaluation_cli \

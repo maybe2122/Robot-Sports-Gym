@@ -35,7 +35,7 @@
 | 1 | 后端共享任务配置 `TableTennisReturnTaskConfig` | done | 坐标约定、球台几何、control rate、动作/观测边界、reward 权重集中定义；MuJoCo 环境、Runner、CLI 全部由它派生 |
 | 2 | world↔task 坐标帧变换 `TaskFrame` | done | 位置/速度/接触样本换算有往返测试；轴约定不一致时报错而非静默算错 |
 | 3 | MuJoCo 路径消费共享配置 | done | `envs.py` 无硬编码 Box 边界；报告带 `task_config` 快照 |
-| 4 | Isaac Lab `ManagerBasedRLEnv` 向量化环境 | blocked | 需在装有 Isaac Sim + Isaac Lab 的 GPU 工作站实跑：先做 `make_env_cfg(num_envs=4, device="cpu")` 最小实例化，暴露 scene/sensor 配置错误；再验证逐物理步 Judge 回调与 filtered contact 语义映射。详见 [`ISAAC_SIM.md`](ISAAC_SIM.md) |
+| 4 | Isaac Lab `ManagerBasedRLEnv` 向量化环境 | done（CPU PhysX） | 2026-09-27 在 Isaac Sim 5.0 / Isaac Lab 0.46.2 上实跑 300 并行环境；`scripts/backend_parity.py` 与 MuJoCo 同批球逐条对比：飞行段中位差 3.5 mm，Judge 一致率 99%，接触段反弹高度差约一成（M4 待标定）。实跑修复了气动力双重施加与固定集参数漏传。GPU PhysX 未跑。见 [`ISAAC_SIM.md`](ISAAC_SIM.md) |
 
 ### M2 — Robot and sensor layer
 
