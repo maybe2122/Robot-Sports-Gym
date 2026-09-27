@@ -279,6 +279,8 @@ class TestTheScalarInnerLoop:
                 )
             batches.append((time.perf_counter() - start) / repeats * 1000.0)
         per_call_ms = min(batches)
-        # The task runs at 200 Hz, so the budget is 5 ms; leave a wide margin so
-        # this is a regression guard and not a benchmark of the test machine.
-        assert per_call_ms < 2.5, f"{per_call_ms:.2f} ms per prediction"
+        # The task runs at 200 Hz, so the budget is 5 ms.  A tighter 2.5 ms
+        # bound failed intermittently on GitHub's Python 3.10 runners (1.15 ms
+        # locally on 3.10, ~2.5x slower there); the regression this guards
+        # against -- the numpy-array integrator -- took 23 ms.
+        assert per_call_ms < 5.0, f"{per_call_ms:.2f} ms per prediction"
