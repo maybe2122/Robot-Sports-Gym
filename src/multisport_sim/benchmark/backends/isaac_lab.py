@@ -21,8 +21,9 @@ hidden:
 Status: experimental.  Validated on CPU PhysX against the MuJoCo reference by
 ``scripts/backend_parity.py``: ball flight agrees to millimetres, ball-surface
 contact does not yet (see ``reports/table-tennis-backend-parity.md``), so return
-scores from the two backends are not directly comparable.  GPU PhysX has not
-been run.  The repository's CI has no Isaac runtime.
+scores from the two backends are not directly comparable.  CPU and GPU PhysX
+agree with each other to within a millimetre of flight.  The repository's CI
+has no Isaac runtime.
 """
 
 from __future__ import annotations

@@ -4,7 +4,7 @@
 
 Robot Sports Gym (RSG) is an in-development, cross-embodiment platform for training and evaluating robot perception, planning, control, robustness, and sim-to-real performance across tennis, table tennis, football, badminton, basketball, and squash under shared tasks, physics specifications, and metrics. The current repository provides the asset-free **MuJoCo + Isaac Sim/PhysX** physics foundation with regulation-scale scenes and sport-specific dynamics.
 
-> **Status: Alpha (v0.3.0).** All five canonical single-shot tasks run in MuJoCo with fixed shot banks (100 test episodes per level), versioned Gymnasium environments, frozen L0–L5 criteria, reference baselines and — for the three launch tasks — learned PPO baselines over 5 seeds. Table tennis additionally runs on an actuated Franka Panda and a Unitree G1 with state and vision tracks, and its Isaac Lab environment has been run and compared episode by episode with MuJoCo. Every shot bank is still `experimental` and no leaderboard is open: this is a benchmark candidate, not a certified benchmark. What is missing is listed in [docs/TODO.md](docs/TODO.md).
+> **Status: Alpha (v0.3.0).** All five canonical single-shot tasks run in MuJoCo with fixed shot banks (100 test episodes per level), versioned Gymnasium environments, frozen L0–L5 criteria, reference baselines and learned PPO baselines over 5 seeds for every task. Table tennis additionally runs on an actuated Franka Panda and a Unitree G1 with state and vision tracks, and its Isaac Lab environment has been run and compared episode by episode with MuJoCo. Every shot bank is still `experimental` and no leaderboard is open: this is a benchmark candidate, not a certified benchmark. What is missing is listed in [docs/TODO.md](docs/TODO.md).
 
 ## Humanoid vision-driven table tennis
 
@@ -224,9 +224,9 @@ make cross-task        # one table: every task x level x controller
 
 Launch tasks start with the object on the robot's side (released, resting or rolling) and put the task frame's origin at the goal, so the robot is always at x < 0 launching toward +x. L3 placement targets are task information and reach the policy through `info["target"]`, the `TargetObservation` wrapper, and `reset(target=...)`.
 
-**Learned baselines.** `scripts/train_launch_policies.py` trains a PPO policy (Stable-Baselines3) over a single swing primitive — face speed, elevation and yaw offset — from observable geometry only, 5 seeds per task on the train split, scored on the test split through the same report path as every other baseline, with a random-primitive floor alongside. Weights, training curves, wall time and hardware are committed under `baselines/learned/`; results in `reports/learned-*-baselines.md`.
+**Learned baselines.** `scripts/train_launch_policies.py` trains a PPO policy (Stable-Baselines3) over a single swing primitive — face speed, elevation and yaw offset — from observable geometry only, 5 seeds per task (all five sports) on the train split, scored on the test split through the same report path as every other baseline, next to two controls: the untrained primitive (every parameter mid-range) and a random primitive. Learning clearly helps table tennis, basketball and badminton placement, only matches the prior on tennis, and hurts football placement — see [docs/LEARNED_BASELINES.md](docs/LEARNED_BASELINES.md). Weights, training curves, wall time and hardware are committed under `baselines/learned/`; results in `reports/learned-*-baselines.md`.
 
-**Backend parity.** The Isaac Lab table-tennis environment was run on Isaac Sim 5.0 / Isaac Lab 0.46.2 (CPU PhysX) and compared shot by shot with MuJoCo on the 300-shot dev split: ball flight agrees to 3.5 mm (median), judge verdicts to 99%, while the post-bounce apex differs by ~50 mm (contact models; M4 calibration). The run found and fixed a doubled aerodynamic force in the Isaac environment. See [the parity report](reports/table-tennis-backend-parity.md).
+**Backend parity.** The Isaac Lab table-tennis environment was run on Isaac Sim 5.0 / Isaac Lab 0.46.2 (CPU and GPU PhysX) and compared shot by shot with MuJoCo on the 300-shot dev split: ball flight agrees to 3.5 mm (median), judge verdicts to 99%, while the post-bounce apex differs by ~50 mm (contact models; M4 calibration). The run found and fixed a doubled aerodynamic force in the Isaac environment. See [the parity report](reports/table-tennis-backend-parity.md).
 
 **Auditable results.** `scripts/audit_submission.py` recomputes every verdict and metric of a result package from its raw episodes, checks that each level contains exactly the bank's shots, verifies bank digests and weight hashes, and can replay the package. See [docs/LEADERBOARD.md](docs/LEADERBOARD.md). Every published file format has a versioned JSON Schema in `multisport_sim.benchmark.schemas`.
 
@@ -245,7 +245,7 @@ Committed baselines are available for [MuJoCo](reports/mujoco-fidelity.md) and [
 
 - **Not a leaderboard.** Every shot bank is `experimental`; the audit tooling exists, the table does not.
 - **Not embodied for every sport.** Tennis, badminton, football and basketball use mocap fixtures; only table tennis has robot arms/humanoids. The biped asset football needs is not in (M2).
-- **Not validated on GPU PhysX or for robots on Isaac.** The Isaac environment covers the table-tennis fixture on CPU PhysX.
+- **Not validated for robots on Isaac.** The Isaac environment covers the table-tennis fixture (CPU and GPU PhysX); the Panda/G1 adapters and the other sports have no Isaac environment yet.
 - **Not calibrated against the real world.** Fidelity covers first-rebound tests; there is no measured trajectory, impact or robot data yet (M4), and no external reproduction (M6).
 
 ## Development

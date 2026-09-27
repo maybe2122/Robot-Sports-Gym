@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 LEVELS = ("L0", "L1", "L2", "L3", "L4", "L5")
+LEARNED_SPORTS = ("table_tennis", "tennis", "badminton", "football", "basketball")
 # (report stem, human label, embodiment) in the order the table lists them.
 TABLES = (
     ("table-tennis-panda-baselines", "Table tennis return", "Franka Panda (joint space)"),
@@ -74,12 +75,44 @@ def summarise(reports: Path) -> dict[str, Any]:
                 "controllers": controllers,
             }
         )
+    learned = []
+    for sport in LEARNED_SPORTS:
+        payload = _load(reports / f"learned-{sport}-baselines.json")
+        if payload is None:
+            continue
+        learned.append(
+            {
+                "sport": sport,
+                "report": f"learned-{sport}-baselines.json",
+                "seeds": payload["seeds"],
+                "episodes_per_seed": payload["training"][0]["episodes"],
+                "levels": {
+                    level: {
+                        "mean": entry["primary_value"]["mean"],
+                        "ci95": entry["primary_value"]["ci95"],
+                        "seeds_passed": entry["seeds_passed"],
+                        "random_primitive": payload["random_primitive"]["levels"][level][
+                            "primary_value"
+                        ],
+                        "untrained_primitive": (
+                            payload.get("untrained_primitive") or {"levels": {level: {}}}
+                        )["levels"][level].get("primary_value"),
+                    }
+                    for level, entry in payload["aggregate"].items()
+                },
+            }
+        )
     return {
         "schema": "multisport-cross-task-summary-v0",
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "split": "test",
         "tasks": tasks,
+        "learned": learned,
     }
+
+
+def _short(value: float | None) -> str:
+    return "—" if value is None else f"{value:.0%}"
 
 
 def _cell(level: dict[str, Any] | None) -> str:
@@ -114,6 +147,31 @@ def markdown(summary: dict[str, Any]) -> str:
             lines.append(
                 f"| {task['label']} (`{task['task']}`) | {task['embodiment']} | `{controller}` | "
                 f"{cells} | {entry['levels_passed']}/{len(entry['levels'])} | {gap_text} |"
+            )
+    if summary.get("learned"):
+        lines += [
+            "",
+            "## Learned baselines",
+            "",
+            (
+                "PPO over a three-parameter swing primitive: mean over seeds of the primary "
+                "metric, with the untrained primitive (every parameter mid-range) and the random "
+                "primitive in brackets. See `docs/LEARNED_BASELINES.md`."
+            ),
+            "",
+            "| Sport | Seeds x episodes | " + " | ".join(LEVELS) + " |",
+            "|---|---|" + "---:|" * len(LEVELS),
+        ]
+        for entry in summary["learned"]:
+            cells = " | ".join(
+                f"{entry['levels'][level]['mean']:.0%} "
+                f"({_short(entry['levels'][level]['untrained_primitive'])} / "
+                f"{entry['levels'][level]['random_primitive']:.0%})"
+                for level in LEVELS
+            )
+            lines.append(
+                f"| {entry['sport']} | {len(entry['seeds'])} x {entry['episodes_per_seed']} "
+                f"| {cells} |"
             )
     lines += [
         "",

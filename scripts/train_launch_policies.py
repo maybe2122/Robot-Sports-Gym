@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Train and evaluate the learned launch baselines (M5).
+"""Train and evaluate the learned primitive baselines (M5).
 
-For one launch task, trains a PPO policy over the swing primitive of
+For one fixture task, trains a PPO policy over the swing primitive of
 ``multisport_sim.benchmark.learning`` on the *train* split, one run per seed,
 then scores every seed on every level of the *test* split through the same
 report path as every other baseline.  A ``random-primitive`` row -- uniformly
@@ -119,6 +119,21 @@ def _train(job: tuple[str, int, int, str]) -> dict:
     return record
 
 
+class _MidPrimitive:
+    """Every parameter at the middle of its range: the untrained policy's mean.
+
+    PPO starts from a zero-mean Gaussian, so this is what the deterministic
+    policy does before any learning.  When a primitive's mid-range happens to
+    sit near a good swing (tennis: 15 m/s, 15 degrees, trigger at -5.5 m, close
+    to the hand-tuned fixture), a learned row that merely matches it shows the
+    prior, not learning.
+    """
+
+    def predict(self, features, deterministic: bool = True):
+        del features, deterministic
+        return np.zeros(3, dtype=np.float32), None
+
+
 class _RandomPrimitive:
     """Uniform primitive parameters: the floor a learned policy must beat."""
 
@@ -131,8 +146,13 @@ class _RandomPrimitive:
 
 
 def _request(sport: str, level: str, seed: int) -> argparse.Namespace:
+    from multisport_sim.benchmark.learning import RETURN_SPECS
+
+    # Score on the bank the policy trained on: the table-tennis fixture
+    # defaults to the tiny frozen return-v0, but learns on return-v1.
+    bank = RETURN_SPECS[sport].bank if sport in RETURN_SPECS else None
     return argparse.Namespace(
-        sport=sport, task=None, backend="mujoco", level=level, split="test", bank=None,
+        sport=sport, task=None, backend="mujoco", level=level, split="test", bank=bank,
         shot_bank=None, episodes=None, seed=seed, robot="none", track="state",
         controller="scripted", control_hz=200.0, report=None, markdown=None,
         require_pass=False, learned_policy=None,
@@ -149,7 +169,11 @@ def _evaluate(job: tuple[str, str, str | None, int]) -> dict:
 
     rows = {}
     for level in LEVELS:
-        if weights is None:
+        if name == "untrained-primitive":
+            controller = LearnedLaunchController(
+                sport, _MidPrimitive(), policy_id="untrained-primitive"
+            )
+        elif weights is None:
             controller = LearnedLaunchController(
                 sport, _RandomPrimitive(seed), policy_id="random-primitive"
             )
@@ -180,7 +204,11 @@ def _summary(values: list[float]) -> dict[str, float | None]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--sport", choices=("badminton", "football", "basketball"), required=True)
+    parser.add_argument(
+        "--sport",
+        choices=("badminton", "football", "basketball", "tennis", "table_tennis"),
+        required=True,
+    )
     parser.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2, 3, 4])
     parser.add_argument("--episodes", type=int, default=6000)
     parser.add_argument("--workers", type=int, default=5)
@@ -206,10 +234,12 @@ def main(argv: list[str] | None = None) -> int:
         jobs = [(args.sport, "learned-primitive-ppo", record["weights"], record["seed"])
                 for record in training]
         jobs.append((args.sport, "random-primitive", None, 0))
+        jobs.append((args.sport, "untrained-primitive", None, 0))
         evaluations = list(pool.map(_evaluate, jobs))
 
     learned = [item for item in evaluations if item["name"] == "learned-primitive-ppo"]
     random_row = next(item for item in evaluations if item["name"] == "random-primitive")
+    untrained_row = next(item for item in evaluations if item["name"] == "untrained-primitive")
     aggregate = {
         level: {
             "primary_metric": learned[0]["levels"][level]["primary_metric"],
@@ -233,6 +263,7 @@ def main(argv: list[str] | None = None) -> int:
         "training": training,
         "per_seed": learned,
         "random_primitive": random_row,
+        "untrained_primitive": untrained_row,
         "aggregate": aggregate,
     }
     args.reports.mkdir(parents=True, exist_ok=True)
@@ -260,11 +291,12 @@ def markdown(payload: dict) -> str:
         "",
         ("The policy sees observable geometry only (contact distance and height, ball "
         "velocity, target) and knows nothing the simulator was calibrated with. "
-        "`random-primitive` draws the same three parameters uniformly."),
+        "`untrained-primitive` sets every parameter to the middle of its range (the untrained "
+        "policy's mean); `random-primitive` draws them uniformly."),
         "",
         ("| Level | Metric | Learned (mean over seeds) | 95% CI (t) | Seeds passing | "
-        "Random primitive |"),
-        "|---|---|---:|---:|---:|---:|",
+        "Untrained primitive | Random primitive |"),
+        "|---|---|---:|---:|---:|---:|---:|",
     ]
     for level in LEVELS:
         entry = payload["aggregate"][level]
@@ -273,6 +305,7 @@ def markdown(payload: dict) -> str:
             f"| {level} | `{entry['primary_metric']}` | {_pct(entry['primary_value']['mean'])} | "
             f"{'—' if ci is None else f'{max(ci[0], 0):.0%}–{min(ci[1], 1):.0%}'} | "
             f"{entry['seeds_passed']}/{len(payload['per_seed'])} | "
+            f"{_pct(payload['untrained_primitive']['levels'][level]['primary_value'])} | "
             f"{_pct(payload['random_primitive']['levels'][level]['primary_value'])} |"
         )
     lines += ["", "## Training", "", "| Seed | Wall time | First 128 | Last 128 |", "|---:|---:|---:|---:|"]

@@ -239,11 +239,125 @@ def load_learned_controller(sport: str, path: str) -> LearnedLaunchController:
     return LearnedLaunchController(sport, model, policy_id=f"learned-primitive-ppo:{path}")
 
 
+@dataclass(frozen=True)
+class ReturnPrimitiveSpec:
+    """Parameter ranges of the return fixture's swing, for one net sport.
+
+    The return primitive is the reference fixture's own swing -- track the
+    ball laterally, drive the blade forward once the ball passes a trigger --
+    with the three numbers the reference hard-codes left to the policy:
+    blade speed, face tilt and where the swing starts.
+    """
+
+    sport: str
+    task_id: str
+    bank: str
+    speed_mps: tuple[float, float]
+    tilt_degrees: tuple[float, float]
+    trigger_x_m: tuple[float, float]
+    feature_scale: tuple[float, ...]
+
+
+RETURN_SPECS: dict[str, ReturnPrimitiveSpec] = {
+    "table_tennis": ReturnPrimitiveSpec(
+        sport="table_tennis",
+        task_id="table-tennis-return-v0",
+        bank="table_tennis/return-v1",
+        speed_mps=(1.0, 6.0),
+        tilt_degrees=(5.0, 45.0),
+        trigger_x_m=(-1.4, -0.4),
+        feature_scale=(1.5, 0.5, 0.5, 5.0, 1.0, 3.0, 50.0, 100.0, 50.0, 1.0, 1.5, 0.5, 0.2),
+    ),
+    "tennis": ReturnPrimitiveSpec(
+        sport="tennis",
+        task_id="tennis-return-v0",
+        bank="tennis/return-v0",
+        speed_mps=(6.0, 24.0),
+        tilt_degrees=(0.0, 30.0),
+        trigger_x_m=(-9.0, -2.0),
+        feature_scale=(12.0, 3.0, 1.0, 20.0, 5.0, 5.0, 200.0, 300.0, 200.0, 1.0, 10.0, 4.0, 1.0),
+    ),
+}
+
+RETURN_FEATURES = (
+    "ball_x_m",
+    "ball_y_m",
+    "ball_z_m",
+    "ball_vx_mps",
+    "ball_vy_mps",
+    "ball_vz_mps",
+    "ball_wx_radps",
+    "ball_wy_radps",
+    "ball_wz_radps",
+    "target_present",
+    "target_u_m",
+    "target_v_m",
+    "target_radius_m",
+)
+
+
+class ReturnPrimitive:
+    """The reference return swing with three parameters chosen by a policy."""
+
+    def __init__(self, spec: ReturnPrimitiveSpec) -> None:
+        self.spec = spec
+        self._target: dict[str, Any] | None = None
+        self._controller: Any = None
+        self._idle = False
+
+    @property
+    def _plan(self) -> Any:
+        # The launch controller's contract: planned once the swing is chosen.
+        return self._controller
+
+    def reset(self, shot: ShotSpec, *, seed: int | None = None) -> None:
+        del seed
+        self._target = target_info(shot)
+        self._controller = None
+        self._idle = shot.level == "L0"
+
+    def features(self, observation: ControllerObservation) -> np.ndarray:
+        target = self._target
+        raw = np.array(
+            (
+                *observation.ball.position,
+                *observation.ball.linear_velocity,
+                *observation.ball.angular_velocity,
+                0.0 if target is None else 1.0,
+                *((0.0, 0.0) if target is None else target["center"]),
+                0.0 if target is None else target["radius_m"],
+            ),
+            dtype=np.float32,
+        )
+        return raw / np.asarray(self.spec.feature_scale, dtype=np.float32)
+
+    def choose(self, observation: ControllerObservation, action: np.ndarray) -> None:
+        from .controllers import SCRIPTED_DEFAULTS, ScriptedPaddleController
+
+        defaults = dict(SCRIPTED_DEFAULTS[self.spec.sport])
+        defaults["swing_speed_mps"] = _scale(action[0], self.spec.speed_mps)
+        defaults["upward_tilt_degrees"] = _scale(action[1], self.spec.tilt_degrees)
+        defaults["swing_trigger_x"] = _scale(action[2], self.spec.trigger_x_m)
+        self._controller = ScriptedPaddleController(**defaults)
+
+    def act(self, observation: ControllerObservation) -> PaddleCommand | None:
+        if self._idle or self._controller is None:
+            return None
+        return self._controller.act(observation)
+
+
+def primitive_for(sport: str) -> SwingPrimitive | ReturnPrimitive:
+    """The primitive a sport's learned baseline acts through."""
+    if sport in RETURN_SPECS:
+        return ReturnPrimitive(RETURN_SPECS[sport])
+    return SwingPrimitive(SPECS[sport])
+
+
 class LearnedLaunchController:
     """A trained policy driving :class:`SwingPrimitive`; the benchmark controller."""
 
     def __init__(self, sport: str, policy: Any, *, policy_id: str) -> None:
-        self.primitive = SwingPrimitive(SPECS[sport])
+        self.primitive = primitive_for(sport)
         self.policy = policy
         self.controller_id = policy_id
 
@@ -310,14 +424,21 @@ class PrimitiveLaunchEnv(gym.Env[np.ndarray, np.ndarray]):
         from .registry import get_task
 
         super().__init__()
-        self.spec_ = SPECS[sport]
+        self.spec_ = RETURN_SPECS[sport] if sport in RETURN_SPECS else SPECS[sport]
         entry = get_task(self.spec_.task_id)
-        self.task = replace(entry.config, split=split)
         bank = ShotBank.from_resource(split=split, task=self.spec_.bank)
+        # The bank's own timeout: the table-tennis fixture learns on return-v1.
+        self.task = replace(
+            entry.config,
+            split=split,
+            bank_resource=self.spec_.bank,
+            timeout_s=float(bank.manifest["episode"]["timeout_s"]),
+        )
         self.shots = [shot for shot in bank if shot.level in levels]
         self.backend = MujocoShotBackend(sport=sport)
-        self.primitive = SwingPrimitive(self.spec_)
-        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(len(FEATURES),), dtype=np.float32)
+        self.primitive = primitive_for(sport)
+        width = len(RETURN_FEATURES) if sport in RETURN_SPECS else len(FEATURES)
+        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(width,), dtype=np.float32)
         self.action_space = spaces.Box(-1.0, 1.0, shape=(3,), dtype=np.float32)
         self._shot: ShotSpec | None = None
 
@@ -338,7 +459,7 @@ class PrimitiveLaunchEnv(gym.Env[np.ndarray, np.ndarray]):
             config=RunConfig.from_task_config(self.task),
         )
         result = output.results[0]
-        features = np.zeros(len(FEATURES), dtype=np.float32)
+        features = np.zeros(self.observation_space.shape, dtype=np.float32)
         radius = None if self._shot.target is None else self._shot.target.radius_m
         reward = launch_reward(result, target_radius_m=radius)
         return features, reward, True, False, {"episode_result": result.to_dict()}
@@ -346,11 +467,16 @@ class PrimitiveLaunchEnv(gym.Env[np.ndarray, np.ndarray]):
 
 __all__ = [
     "FEATURES",
+    "RETURN_FEATURES",
+    "RETURN_SPECS",
     "SPECS",
     "LearnedLaunchController",
     "PrimitiveLaunchEnv",
     "PrimitiveSpec",
+    "ReturnPrimitive",
+    "ReturnPrimitiveSpec",
     "SwingPrimitive",
     "launch_reward",
     "load_learned_controller",
+    "primitive_for",
 ]

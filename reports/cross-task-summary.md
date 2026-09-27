@@ -22,4 +22,16 @@ Test split, primary metric per level (bold = meets the frozen threshold). Regene
 | Basketball shoot (`basketball-shoot-v0`) | mocap launcher fixture | `noop` | **100%** | 0% | 0% | 0% | 0% | 0% | 1/6 | +0% |
 | Basketball shoot (`basketball-shoot-v0`) | mocap launcher fixture | `scripted` | **100%** | **100%** | **100%** | 65% | 36% | 12% | 3/6 | +52% |
 
+## Learned baselines
+
+PPO over a three-parameter swing primitive: mean over seeds of the primary metric, with the untrained primitive (every parameter mid-range) and the random primitive in brackets. See `docs/LEARNED_BASELINES.md`.
+
+| Sport | Seeds x episodes | L0 | L1 | L2 | L3 | L4 | L5 |
+|---|---|---:|---:|---:|---:|---:|---:|
+| table_tennis | 5 x 8000 | 100% (100% / 100%) | 100% (100% / 100%) | 98% (0% / 13%) | 25% (0% / 4%) | 87% (0% / 7%) | 42% (14% / 9%) |
+| tennis | 5 x 8000 | 100% (100% / 100%) | 99% (99% / 99%) | 60% (58% / 22%) | 2% (2% / 0%) | 21% (22% / 5%) | 0% (0% / 0%) |
+| badminton | 5 x 8000 | 100% (100% / 100%) | 100% (100% / 100%) | 100% (100% / 62%) | 36% (19% / 8%) | 100% (100% / 36%) | 80% (79% / 36%) |
+| football | 5 x 8000 | 100% (100% / 100%) | 100% (100% / 100%) | 100% (100% / 78%) | 9% (49% / 9%) | 100% (100% / 56%) | 27% (21% / 15%) |
+| basketball | 5 x 8000 | 100% (100% / 100%) | 100% (100% / 100%) | 36% (2% / 4%) | 9% (0% / 2%) | 2% (4% / 0%) | 7% (0% / 0%) |
+
 Primary metrics: L0 `incoming_valid_rate`, L1 `hit_rate`, L2 `valid_return_rate`, L3 `target_rate`, L4/L5 the worst pass bucket's `valid_return_rate`. For the launch tasks `valid_return` means a legal serve, a goal or a made basket. Gap is `valid_return_rate` on L2-L3 minus L4-L5.

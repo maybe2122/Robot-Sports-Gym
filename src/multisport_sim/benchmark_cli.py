@@ -515,10 +515,11 @@ def run_from_args(
         # policy) runs through exactly the path a named one does.
         learned = learned or getattr(controller, "controller_id", "custom")
     elif learned is not None:
-        from .benchmark.learning import SPECS, load_learned_controller
+        from .benchmark.learning import RETURN_SPECS, SPECS, load_learned_controller
 
-        if sport not in SPECS:
-            raise ValueError(f"--learned-policy is available for {sorted(SPECS)}, not {sport!r}")
+        if sport not in SPECS and sport not in RETURN_SPECS:
+            known = sorted({*SPECS, *RETURN_SPECS})
+            raise ValueError(f"--learned-policy is available for {known}, not {sport!r}")
         controller = load_learned_controller(sport, str(learned))
     else:
         controller = _controller(args.controller, sport)

@@ -78,7 +78,7 @@ multisport-isaac --headless --device cpu --scene tennis \
 
 Isaac Sim 每个 Kit 进程只评测一个单项场景，以避免重复创建 `SimulationContext`。`make evaluate-isaac` 会依次启动六个进程，并将结果聚合为 `reports/isaac-fidelity.json` 和 Markdown 报告。
 
-## Isaac Lab 向量化 Shot Skill 环境（experimental，CPU PhysX 已实跑）
+## Isaac Lab 向量化 Shot Skill 环境（experimental，CPU 与 GPU PhysX 均已实跑）
 
 `src/multisport_sim/benchmark/backends/isaac_lab.py` 提供 `table-tennis-return-v0` 的
 `ManagerBasedRLEnv` 向量化实现，与 MuJoCo 环境共享同一份
@@ -140,9 +140,13 @@ Judge 判定一致率：`incoming_valid` 98.7%、`failure_reason` 99.3%。4 个�
   配置都会静默回退到 `return-v0`。
 - 新增 `env.shot_queue`（按顺序派发指定球）与 `env.current_shots`，跨后端比较需要知道每个环境在打哪一条球。
 
-仍未验证：**GPU PhysX**（验证时本机显存被其他训练任务占满，PhysX 无法分配 GPU 内存；另外 PhysX 在 GPU
-上不支持 CCD，需要单独确认高速球是否穿透）；机体（Panda/G1）在 Isaac 侧的 adapter；网球等其他运动的
-Isaac 环境。
+**GPU PhysX 同样验证过**（`--device cuda:0`，同 300 条球，见
+[`reports/table-tennis-backend-parity-gpu.md`](../reports/table-tennis-backend-parity-gpu.md)）：飞行段中位差
+3.4 mm、首次落台位置差中位 1.5 mm、判定一致率 98.7% / 99.3%，与 CPU PhysX 几乎相同。PhysX 在 GPU 上不支持
+CCD（启动时会提示忽略该设置），在这批球上没有出现穿透；更快的球（网球等）仍需单独确认。第一次尝试 GPU
+时本机显存被其他训练任务占满，PhysX 无法分配内存——这是环境问题，不是代码问题。
+
+仍未验证：机体（Panda/G1）在 Isaac 侧的 adapter；网球等其他运动的 Isaac 环境。
 
 如果 Isaac 环境里 Isaac Lab 的可编辑安装指向的源码目录已被移动，可以把源码目录临时放到 `PYTHONPATH` 上：
 

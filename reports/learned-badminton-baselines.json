@@ -1,0 +1,1060 @@
+{
+  "schema": "multisport-learned-baseline-v0",
+  "sport": "badminton",
+  "started_at": "2026-09-27T18:21:44+00:00",
+  "finished_at": "2026-09-27T18:23:56+00:00",
+  "evaluation_split": "test",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "training": [
+    {
+      "sport": "badminton",
+      "seed": 0,
+      "episodes": 8000,
+      "algorithm": "PPO (stable-baselines3), MLP 64x64, one decision per episode",
+      "hyperparameters": {
+        "n_steps": 256,
+        "batch_size": 128,
+        "n_epochs": 10,
+        "learning_rate": 0.0003,
+        "gamma": 0.0,
+        "ent_coef": 0.0,
+        "net_arch": [
+          64,
+          64
+        ],
+        "log_std_init": -0.5
+      },
+      "train_split": "train",
+      "train_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "reward": "0.1*hit + valid_return + target_hit + 0.5*exp(-(target_error/radius)^2) on success",
+      "mean_reward_per_128_episodes": [
+        0.6579191971104592,
+        0.5856492639286444,
+        0.7267792873317376,
+        0.6908291570143774,
+        0.714054485259112,
+        0.6379259401583113,
+        0.8242292110808194,
+        0.7363881704513915,
+        0.7563298656023107,
+        0.804825835453812,
+        0.7384195905178785,
+        0.8106246127863415,
+        0.7178385155857541,
+        0.8687354038120247,
+        0.7989375831093639,
+        0.805500398913864,
+        0.784070837427862,
+        0.8846445819945075,
+        0.7999159205355681,
+        0.8004774286528118,
+        0.7964585399022326,
+        0.837729346123524,
+        0.8005038061528467,
+        0.8737700839410536,
+        0.7550370398676023,
+        0.8011257288162597,
+        0.8631035161088221,
+        0.9056232055881992,
+        0.7915186643367633,
+        0.7582448396715336,
+        0.8376629829290323,
+        0.8081291412236169,
+        0.799710808263626,
+        0.8080602701520547,
+        0.798356294981204,
+        0.8207488383632153,
+        0.8441052665002644,
+        0.8945981154683977,
+        0.8857050822116435,
+        0.804593957553152,
+        0.9320000311126933,
+        0.8190992727177218,
+        0.8108323653577827,
+        0.8517604318330996,
+        0.9037639881134965,
+        0.8800942257512361,
+        0.7871070156106725,
+        0.8664761896361597,
+        0.8240134603111073,
+        0.8930390399764292,
+        0.9153495584032498,
+        0.8243917151703499,
+        0.8466397640295327,
+        0.7715861611068249,
+        0.82255315547809,
+        0.8138050534762442,
+        0.8771776673384011,
+        0.8356527327559888,
+        0.8085114584537223,
+        0.8278364942525513,
+        0.8166213441290893,
+        0.9877397555974312,
+        0.8469351100502536,
+        0.8390861210064031
+      ],
+      "wall_time_s": 1942.736456573999,
+      "hardware": {
+        "cpu": "x86_64",
+        "cpu_count": 32,
+        "python": "3.13.9",
+        "torch": "2.14.0+cpu"
+      },
+      "weights": "baselines/learned/badminton/seed0.zip"
+    },
+    {
+      "sport": "badminton",
+      "seed": 1,
+      "episodes": 8000,
+      "algorithm": "PPO (stable-baselines3), MLP 64x64, one decision per episode",
+      "hyperparameters": {
+        "n_steps": 256,
+        "batch_size": 128,
+        "n_epochs": 10,
+        "learning_rate": 0.0003,
+        "gamma": 0.0,
+        "ent_coef": 0.0,
+        "net_arch": [
+          64,
+          64
+        ],
+        "log_std_init": -0.5
+      },
+      "train_split": "train",
+      "train_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "reward": "0.1*hit + valid_return + target_hit + 0.5*exp(-(target_error/radius)^2) on success",
+      "mean_reward_per_128_episodes": [
+        0.5901529092807323,
+        0.6325170181808062,
+        0.7238339154282585,
+        0.6956688719801605,
+        0.6446424163877964,
+        0.6600898766191676,
+        0.7462926870211959,
+        0.775567033153493,
+        0.7525471856934018,
+        0.7123500072048046,
+        0.7143100876710378,
+        0.7693818148109131,
+        0.7557787002879195,
+        0.7886629560380243,
+        0.8618092606193386,
+        0.7756764165824279,
+        0.8222867563017644,
+        0.7718894321005791,
+        0.7668717197957449,
+        0.8263980479096062,
+        0.7870292536681518,
+        0.7670965912402608,
+        0.7660464126965962,
+        0.8171194049646147,
+        0.9405013805371709,
+        0.8284472611849196,
+        0.7827835395582952,
+        0.8277754065347835,
+        0.8349439371959306,
+        0.7807069688569754,
+        0.8152541355229914,
+        0.8900100557366386,
+        0.7921933957841247,
+        0.7830838715308346,
+        0.7946328879916109,
+        0.8137323961709626,
+        0.7968306323164143,
+        0.8430317745660432,
+        0.8193105348618701,
+        0.7912167336326092,
+        0.8330713118775748,
+        0.8120116526260972,
+        0.8357617358560674,
+        0.7811088932794519,
+        0.830080836021807,
+        0.8327118488959968,
+        0.828321831941139,
+        0.8247775969211943,
+        0.9111236825701781,
+        0.8511576204327866,
+        0.7576473070657812,
+        0.8424278273014352,
+        0.9057993752649054,
+        0.8036964752827771,
+        0.8505636113113724,
+        0.8677136594778858,
+        0.8965964762610383,
+        0.802149151917547,
+        0.8147368298377842,
+        0.7941545176436193,
+        0.8972785120713525,
+        0.827065956487786,
+        0.8686485421494581,
+        0.9097831549588591
+      ],
+      "wall_time_s": 1956.5155309980037,
+      "hardware": {
+        "cpu": "x86_64",
+        "cpu_count": 32,
+        "python": "3.13.9",
+        "torch": "2.14.0+cpu"
+      },
+      "weights": "baselines/learned/badminton/seed1.zip"
+    },
+    {
+      "sport": "badminton",
+      "seed": 2,
+      "episodes": 8000,
+      "algorithm": "PPO (stable-baselines3), MLP 64x64, one decision per episode",
+      "hyperparameters": {
+        "n_steps": 256,
+        "batch_size": 128,
+        "n_epochs": 10,
+        "learning_rate": 0.0003,
+        "gamma": 0.0,
+        "ent_coef": 0.0,
+        "net_arch": [
+          64,
+          64
+        ],
+        "log_std_init": -0.5
+      },
+      "train_split": "train",
+      "train_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "reward": "0.1*hit + valid_return + target_hit + 0.5*exp(-(target_error/radius)^2) on success",
+      "mean_reward_per_128_episodes": [
+        0.590985810616985,
+        0.5982649229699746,
+        0.6829979327740148,
+        0.5650327679468319,
+        0.6363242238294333,
+        0.6982001853175461,
+        0.7664508918533102,
+        0.77023497200571,
+        0.7314014358562417,
+        0.7142494738800451,
+        0.732714778801892,
+        0.7293038761708885,
+        0.8203719451557845,
+        0.7525078719481826,
+        0.8210100593860261,
+        0.8213726838584989,
+        0.7802502043196,
+        0.8177208830602467,
+        0.7560538012767211,
+        0.7637929251650348,
+        0.8783728636917658,
+        0.8541981023736298,
+        0.8727066739229485,
+        0.7267434804234654,
+        0.769536885083653,
+        0.7572750685503706,
+        0.8780111922533251,
+        0.8090846593840979,
+        0.8070203237002715,
+        0.882918955234345,
+        0.7400722479796968,
+        0.839063574327156,
+        0.8521280863205902,
+        0.8784436750574969,
+        0.8199557473417372,
+        0.8478354449034669,
+        0.7892662565573119,
+        0.7743235429516062,
+        0.8859224669868127,
+        0.8583347282256,
+        0.8642712677246891,
+        0.8736657169647515,
+        0.8567415148718283,
+        0.9095390842994675,
+        0.8941427899990231,
+        0.8993461229256354,
+        0.7797066561761312,
+        0.9042705322499387,
+        0.7272020156378858,
+        0.7849199283518828,
+        0.8570191991166212,
+        0.8615665627876297,
+        0.8980939610046335,
+        0.8513152395025827,
+        0.8463931149453856,
+        0.7934080881532282,
+        0.8684326233924367,
+        0.8447665206040256,
+        0.8067790865316056,
+        0.8705917260376737,
+        0.8743839524686337,
+        0.7962298571364954,
+        0.8470131977228448,
+        0.8243424466345459
+      ],
+      "wall_time_s": 1906.5951215820096,
+      "hardware": {
+        "cpu": "x86_64",
+        "cpu_count": 32,
+        "python": "3.13.9",
+        "torch": "2.14.0+cpu"
+      },
+      "weights": "baselines/learned/badminton/seed2.zip"
+    },
+    {
+      "sport": "badminton",
+      "seed": 3,
+      "episodes": 8000,
+      "algorithm": "PPO (stable-baselines3), MLP 64x64, one decision per episode",
+      "hyperparameters": {
+        "n_steps": 256,
+        "batch_size": 128,
+        "n_epochs": 10,
+        "learning_rate": 0.0003,
+        "gamma": 0.0,
+        "ent_coef": 0.0,
+        "net_arch": [
+          64,
+          64
+        ],
+        "log_std_init": -0.5
+      },
+      "train_split": "train",
+      "train_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "reward": "0.1*hit + valid_return + target_hit + 0.5*exp(-(target_error/radius)^2) on success",
+      "mean_reward_per_128_episodes": [
+        0.6478497690986842,
+        0.5697867660783231,
+        0.5841168325860053,
+        0.7209917002473958,
+        0.636263781983871,
+        0.6178605131572112,
+        0.741137069708202,
+        0.6708539271494374,
+        0.7118722059531137,
+        0.6532695954083465,
+        0.7811523890704848,
+        0.7368956586578861,
+        0.795651564723812,
+        0.7700151826720685,
+        0.8086958035710268,
+        0.7857680722954683,
+        0.7787049016333185,
+        0.8052174572949298,
+        0.7892761399853043,
+        0.8304337960435078,
+        0.8389346088515595,
+        0.850957021524664,
+        0.75094545801403,
+        0.8253699415363371,
+        0.7484580153832212,
+        0.7748306015273556,
+        0.745924616465345,
+        0.7814490215387195,
+        0.84617289819289,
+        0.8355030008824542,
+        0.7388920981320553,
+        0.8337049632682465,
+        0.8066219305037521,
+        0.8950073684100062,
+        0.8149533632677048,
+        0.8422387114842422,
+        0.7805306629743427,
+        0.8369064345024526,
+        0.8680144629324786,
+        0.7612824949901551,
+        0.8263000876759179,
+        0.8674645136343315,
+        0.819213509617839,
+        0.8017315824981779,
+        0.8195249116979539,
+        0.8188365976675414,
+        0.8362833317951299,
+        0.9179444949841127,
+        0.7831706234719604,
+        0.8422433310188353,
+        0.8185747172101401,
+        0.8561791135580279,
+        0.7957454505958594,
+        0.8694329560385086,
+        0.8294328945339657,
+        0.7595643954118714,
+        0.826769404578954,
+        0.8664344074786641,
+        0.8579479510663077,
+        0.8766235426301137,
+        0.8723973999149166,
+        0.8148584829177707,
+        0.7434634292731062,
+        0.860166733211372
+      ],
+      "wall_time_s": 1940.4809867199801,
+      "hardware": {
+        "cpu": "x86_64",
+        "cpu_count": 32,
+        "python": "3.13.9",
+        "torch": "2.14.0+cpu"
+      },
+      "weights": "baselines/learned/badminton/seed3.zip"
+    },
+    {
+      "sport": "badminton",
+      "seed": 4,
+      "episodes": 8000,
+      "algorithm": "PPO (stable-baselines3), MLP 64x64, one decision per episode",
+      "hyperparameters": {
+        "n_steps": 256,
+        "batch_size": 128,
+        "n_epochs": 10,
+        "learning_rate": 0.0003,
+        "gamma": 0.0,
+        "ent_coef": 0.0,
+        "net_arch": [
+          64,
+          64
+        ],
+        "log_std_init": -0.5
+      },
+      "train_split": "train",
+      "train_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "reward": "0.1*hit + valid_return + target_hit + 0.5*exp(-(target_error/radius)^2) on success",
+      "mean_reward_per_128_episodes": [
+        0.586661581590306,
+        0.6788465069257654,
+        0.6571009443723597,
+        0.6496868563699536,
+        0.7008129684836604,
+        0.7076012971810997,
+        0.7309435261995532,
+        0.7265661381534301,
+        0.7905593884643167,
+        0.7468217103159986,
+        0.8033659992506728,
+        0.6666714598541148,
+        0.8115882738493383,
+        0.7616134626441635,
+        0.8049594366457313,
+        0.8305563726462424,
+        0.8321505400235765,
+        0.8870773863163777,
+        0.9023028722731397,
+        0.8116246431600302,
+        0.8640511103440076,
+        0.8167417657678016,
+        0.8741778577677906,
+        0.7759631052613258,
+        0.8862809643615037,
+        0.8799282988184132,
+        0.8314237353624776,
+        0.8125163854565471,
+        0.7706705385353416,
+        0.8596079002018087,
+        0.8451634696684778,
+        0.8132348221843131,
+        0.8548570300335996,
+        0.8148062632535584,
+        0.773144182167016,
+        0.8292705939384177,
+        0.7820682158344425,
+        0.7933155857026577,
+        0.9082474043243565,
+        0.8898743298486806,
+        0.8258418397163041,
+        0.7690099598257802,
+        0.8503015785245225,
+        0.8412812643800862,
+        0.7566556284436956,
+        0.845675851451233,
+        0.8079455896513537,
+        0.9364563276758417,
+        0.8585037589655258,
+        0.8729345037136227,
+        0.7865107774268836,
+        0.8011757656931877,
+        0.8221367520163767,
+        0.845652277697809,
+        0.8296989793889225,
+        0.920618093223311,
+        0.8604887066758238,
+        0.8461976500693709,
+        0.8399011026485823,
+        0.8221285014878958,
+        0.8562761357752606,
+        0.797595840296708,
+        0.8288142540259287,
+        0.7424219705280848
+      ],
+      "wall_time_s": 1970.2218032139936,
+      "hardware": {
+        "cpu": "x86_64",
+        "cpu_count": 32,
+        "python": "3.13.9",
+        "torch": "2.14.0+cpu"
+      },
+      "weights": "baselines/learned/badminton/seed4.zip"
+    }
+  ],
+  "per_seed": [
+    {
+      "name": "learned-primitive-ppo",
+      "seed": 0,
+      "weights": "baselines/learned/badminton/seed0.zip",
+      "levels": {
+        "L0": {
+          "primary_metric": "incoming_valid_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 0.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L1": {
+          "primary_metric": "hit_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L2": {
+          "primary_metric": "valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L3": {
+          "primary_metric": "target_rate",
+          "primary_value": 0.36,
+          "passed": false,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.36,
+          "episodes": 100
+        },
+        "L4": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L5": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.7941176470588235,
+          "passed": true,
+          "hit_rate": 0.97,
+          "valid_return_rate": 0.84,
+          "target_rate": 0.0,
+          "episodes": 100
+        }
+      }
+    },
+    {
+      "name": "learned-primitive-ppo",
+      "seed": 1,
+      "weights": "baselines/learned/badminton/seed1.zip",
+      "levels": {
+        "L0": {
+          "primary_metric": "incoming_valid_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 0.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L1": {
+          "primary_metric": "hit_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L2": {
+          "primary_metric": "valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L3": {
+          "primary_metric": "target_rate",
+          "primary_value": 0.36,
+          "passed": false,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.36,
+          "episodes": 100
+        },
+        "L4": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L5": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.7941176470588235,
+          "passed": true,
+          "hit_rate": 0.98,
+          "valid_return_rate": 0.86,
+          "target_rate": 0.0,
+          "episodes": 100
+        }
+      }
+    },
+    {
+      "name": "learned-primitive-ppo",
+      "seed": 2,
+      "weights": "baselines/learned/badminton/seed2.zip",
+      "levels": {
+        "L0": {
+          "primary_metric": "incoming_valid_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 0.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L1": {
+          "primary_metric": "hit_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L2": {
+          "primary_metric": "valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L3": {
+          "primary_metric": "target_rate",
+          "primary_value": 0.37,
+          "passed": false,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.37,
+          "episodes": 100
+        },
+        "L4": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L5": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.7941176470588235,
+          "passed": true,
+          "hit_rate": 0.98,
+          "valid_return_rate": 0.87,
+          "target_rate": 0.0,
+          "episodes": 100
+        }
+      }
+    },
+    {
+      "name": "learned-primitive-ppo",
+      "seed": 3,
+      "weights": "baselines/learned/badminton/seed3.zip",
+      "levels": {
+        "L0": {
+          "primary_metric": "incoming_valid_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 0.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L1": {
+          "primary_metric": "hit_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L2": {
+          "primary_metric": "valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L3": {
+          "primary_metric": "target_rate",
+          "primary_value": 0.36,
+          "passed": false,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.36,
+          "episodes": 100
+        },
+        "L4": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L5": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.8235294117647058,
+          "passed": true,
+          "hit_rate": 0.98,
+          "valid_return_rate": 0.85,
+          "target_rate": 0.0,
+          "episodes": 100
+        }
+      }
+    },
+    {
+      "name": "learned-primitive-ppo",
+      "seed": 4,
+      "weights": "baselines/learned/badminton/seed4.zip",
+      "levels": {
+        "L0": {
+          "primary_metric": "incoming_valid_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 0.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L1": {
+          "primary_metric": "hit_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L2": {
+          "primary_metric": "valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L3": {
+          "primary_metric": "target_rate",
+          "primary_value": 0.36,
+          "passed": false,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.36,
+          "episodes": 100
+        },
+        "L4": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L5": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.7941176470588235,
+          "passed": true,
+          "hit_rate": 0.98,
+          "valid_return_rate": 0.85,
+          "target_rate": 0.0,
+          "episodes": 100
+        }
+      }
+    }
+  ],
+  "random_primitive": {
+    "name": "random-primitive",
+    "seed": 0,
+    "weights": null,
+    "levels": {
+      "L0": {
+        "primary_metric": "incoming_valid_rate",
+        "primary_value": 1.0,
+        "passed": true,
+        "hit_rate": 0.0,
+        "valid_return_rate": 0.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L1": {
+        "primary_metric": "hit_rate",
+        "primary_value": 1.0,
+        "passed": true,
+        "hit_rate": 1.0,
+        "valid_return_rate": 0.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L2": {
+        "primary_metric": "valid_return_rate",
+        "primary_value": 0.62,
+        "passed": false,
+        "hit_rate": 1.0,
+        "valid_return_rate": 0.62,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L3": {
+        "primary_metric": "target_rate",
+        "primary_value": 0.08,
+        "passed": false,
+        "hit_rate": 1.0,
+        "valid_return_rate": 0.61,
+        "target_rate": 0.08,
+        "episodes": 100
+      },
+      "L4": {
+        "primary_metric": "worst_bucket_valid_return_rate",
+        "primary_value": 0.36,
+        "passed": false,
+        "hit_rate": 1.0,
+        "valid_return_rate": 0.58,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L5": {
+        "primary_metric": "worst_bucket_valid_return_rate",
+        "primary_value": 0.36363636363636365,
+        "passed": false,
+        "hit_rate": 0.98,
+        "valid_return_rate": 0.45,
+        "target_rate": 0.0,
+        "episodes": 100
+      }
+    }
+  },
+  "untrained_primitive": {
+    "name": "untrained-primitive",
+    "seed": 0,
+    "weights": null,
+    "levels": {
+      "L0": {
+        "primary_metric": "incoming_valid_rate",
+        "primary_value": 1.0,
+        "passed": true,
+        "hit_rate": 0.0,
+        "valid_return_rate": 0.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L1": {
+        "primary_metric": "hit_rate",
+        "primary_value": 1.0,
+        "passed": true,
+        "hit_rate": 1.0,
+        "valid_return_rate": 0.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L2": {
+        "primary_metric": "valid_return_rate",
+        "primary_value": 1.0,
+        "passed": true,
+        "hit_rate": 1.0,
+        "valid_return_rate": 1.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L3": {
+        "primary_metric": "target_rate",
+        "primary_value": 0.19,
+        "passed": false,
+        "hit_rate": 1.0,
+        "valid_return_rate": 1.0,
+        "target_rate": 0.19,
+        "episodes": 100
+      },
+      "L4": {
+        "primary_metric": "worst_bucket_valid_return_rate",
+        "primary_value": 1.0,
+        "passed": true,
+        "hit_rate": 1.0,
+        "valid_return_rate": 1.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L5": {
+        "primary_metric": "worst_bucket_valid_return_rate",
+        "primary_value": 0.7941176470588235,
+        "passed": true,
+        "hit_rate": 0.99,
+        "valid_return_rate": 0.88,
+        "target_rate": 0.0,
+        "episodes": 100
+      }
+    }
+  },
+  "aggregate": {
+    "L0": {
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "seeds_passed": 5
+    },
+    "L1": {
+      "primary_metric": "hit_rate",
+      "primary_value": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "seeds_passed": 5
+    },
+    "L2": {
+      "primary_metric": "valid_return_rate",
+      "primary_value": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "seeds_passed": 5
+    },
+    "L3": {
+      "primary_metric": "target_rate",
+      "primary_value": {
+        "mean": 0.362,
+        "ci95": [
+          0.356448,
+          0.367552
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "seeds_passed": 0
+    },
+    "L4": {
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "seeds_passed": 5
+    },
+    "L5": {
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": {
+        "mean": 0.7999999999999999,
+        "ci95": [
+          0.783670588235294,
+          0.8163294117647059
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 0.854,
+        "ci95": [
+          0.8398451218302664,
+          0.8681548781697336
+        ]
+      },
+      "seeds_passed": 5
+    }
+  }
+}

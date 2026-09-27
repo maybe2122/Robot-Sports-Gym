@@ -12,14 +12,15 @@
 
 ## M1 — Benchmark API（P0）
 
-先行实验实现：`table-tennis-return-v0` 已具备固定 Shot Bank、后端无关事件/Judge、逐 episode schema、确定性 MuJoCo Runner、报告 CLI 与实验性 Gymnasium 测试夹具；它没有真实机器人 adapter，Isaac Lab 实现也尚未在真实运行时验证，因此本里程碑尚未完成。
+已完成：版本化 Gymnasium 环境、固定 Shot Bank、后端无关事件/Judge、逐 episode schema、共享任务配置，以及在真实
+Isaac Sim/Isaac Lab 运行时（CPU 与 GPU PhysX）上实跑、与 MuJoCo 逐条对比过的向量化环境。
 
 - [x] 引入 Gymnasium，注册版本化环境 ID（实验性 MuJoCo `MultiSportRobot/TableTennisReturn-v0`）
 - [x] 明确定义 observation/action/reward/termination/truncation（见 Shot Skill 文档）
 - [x] 实现 seed、episode recorder 和机器可读结果 schema（固定 Shot Bank 和 `EpisodeResult`）
 - [x] 通过 Gymnasium `check_env`（MuJoCo 乒乓球测试夹具）
 - [x] 建立 MuJoCo/Isaac 共享任务配置和坐标约定（`TableTennisReturnTaskConfig` 与 `TaskFrame`）
-- [x] Isaac Lab `ManagerBasedRLEnv` 向量化实现（CPU PhysX 实跑 300 并行环境，与 MuJoCo 同批球逐条对比，见 [`ISAAC_SIM.md`](ISAAC_SIM.md)；GPU PhysX 未跑）
+- [x] Isaac Lab `ManagerBasedRLEnv` 向量化实现（CPU 与 GPU PhysX 各实跑 300 并行环境，与 MuJoCo 同批球逐条对比，见 [`ISAAC_SIM.md`](ISAAC_SIM.md)）
 
 ## M2 — Robot and sensor layer（P0）
 
@@ -36,16 +37,16 @@
 
 ## M3 — Five canonical tasks（P0）
 
-`TableTennisReturn` 现有两个并列任务：mocap 夹具 `table-tennis-return-v0` 和带真实机体的
-`table-tennis-return-panda-v1`。后者已有 Panda adapter、安全包络、能耗指标、四条参考基线，并默认使用
-每级 100 条 test 的 `return-v1` 固定集；在双后端环境完成前仍保持未勾选。
+五项任务都有版本化环境、固定集、Judge 与三类基线（下限、参考控制器、学习基线），汇总见
+[`reports/cross-task-summary.md`](../reports/cross-task-summary.md)。`TableTennisReturn` 有 Panda/G1 机体任务，
+但机体在 Isaac 侧还没有 adapter，"同一机器人跑两个后端"尚未成立，因此保持未勾选；其余四项目前是 mocap 夹具任务。
 
 - [x] TennisReturn
 - [ ] TableTennisReturn
 - [x] FootballKickToTarget（mocap 夹具；机体版需双足资产，见 [`LAUNCH_TASKS.md`](LAUNCH_TASKS.md)）
 - [x] BadmintonServe（mocap 夹具，见 [`BADMINTON.md`](BADMINTON.md)）
 - [x] BasketballShoot（mocap 夹具，见 [`LAUNCH_TASKS.md`](LAUNCH_TASKS.md)）
-- [ ] 每项任务提供 scripted/control baseline、random baseline 和至少一个学习基线
+- [x] 每项任务提供 scripted/control baseline、random baseline 和至少一个学习基线（学习基线为挥拍原语上的 PPO，见 [`LEARNED_BASELINES.md`](LEARNED_BASELINES.md)）
 
 ## M4 — Fidelity and sim-to-real（P1）
 
@@ -58,20 +59,20 @@
 
 ## M5 — Reproducible baselines（P1）
 
-- [ ] 固定 train/dev/test 协议与隐藏扰动集
-- [ ] 5 个训练种子、置信区间和原始 episode 指标
-- [ ] Stable-Baselines3/RSL-RL/skrl 等参考训练配置
-- [ ] 权重、数据、视频、硬件与墙钟时间记录
-- [ ] CPU smoke CI、GPU/Isaac self-hosted CI 和 nightly fidelity 回归
+- [ ] 固定 train/dev/test 协议与隐藏扰动集（train/dev/test 已固定；隐藏扰动集未做）
+- [x] 5 个训练种子、置信区间和原始 episode 指标（五项任务的原语学习基线）
+- [x] Stable-Baselines3/RSL-RL/skrl 等参考训练配置（SB3 PPO：`scripts/train_launch_policies.py`）
+- [ ] 权重、数据、视频、硬件与墙钟时间记录（权重/训练曲线/硬件/墙钟已提交；学习基线的视频未做）
+- [ ] CPU smoke CI、GPU/Isaac self-hosted CI 和 nightly fidelity 回归（CPU CI 覆盖五项任务冒烟；GPU/Isaac CI 与 nightly 未做）
 
 ## M6 — Public benchmark release（发布门槛）
 
-- [ ] 英文主文档与完整 API 文档
-- [ ] 版本化任务和结果 schema
-- [ ] 资产/数据/权重的逐项许可证清单
-- [ ] 可审计 leaderboard 提交流程
-- [ ] PyPI/容器或可复现环境锁文件
-- [ ] 归档 DOI、正式 citation 和 release notes
+- [x] 英文主文档与完整 API 文档（`README.en.md`、[`API.md`](API.md)）
+- [x] 版本化任务和结果 schema（`multisport_sim.benchmark.schemas`）
+- [x] 资产/数据/权重的逐项许可证清单（[`THIRD_PARTY_LICENSES.md`](../THIRD_PARTY_LICENSES.md)）
+- [x] 可审计 leaderboard 提交流程（[`LEADERBOARD.md`](LEADERBOARD.md) + `scripts/audit_submission.py`；排行榜本身未开放）
+- [x] PyPI/容器或可复现环境锁文件（`uv.lock`，从零复现后 3.10/3.13 全部测试通过；wheel 可构建，未上传 PyPI）
+- [ ] 归档 DOI、正式 citation 和 release notes（citation 与 release notes 已有；DOI 需在 GitHub Release 接入 Zenodo 后生成）
 - [ ] 至少一个外部使用者成功复现实验
 
 ## 暂缓项

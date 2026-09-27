@@ -1,0 +1,1060 @@
+{
+  "schema": "multisport-learned-baseline-v0",
+  "sport": "football",
+  "started_at": "2026-09-27T18:13:02+00:00",
+  "finished_at": "2026-09-27T18:14:00+00:00",
+  "evaluation_split": "test",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "training": [
+    {
+      "sport": "football",
+      "seed": 0,
+      "episodes": 8000,
+      "algorithm": "PPO (stable-baselines3), MLP 64x64, one decision per episode",
+      "hyperparameters": {
+        "n_steps": 256,
+        "batch_size": 128,
+        "n_epochs": 10,
+        "learning_rate": 0.0003,
+        "gamma": 0.0,
+        "ent_coef": 0.0,
+        "net_arch": [
+          64,
+          64
+        ],
+        "log_std_init": -0.5
+      },
+      "train_split": "train",
+      "train_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "reward": "0.1*hit + valid_return + target_hit + 0.5*exp(-(target_error/radius)^2) on success",
+      "mean_reward_per_128_episodes": [
+        0.7425477736396715,
+        0.7066983046825044,
+        0.7761862344923429,
+        0.7105309281032532,
+        0.7128886802820489,
+        0.6810089136706665,
+        0.7293472919845954,
+        0.6728275759960525,
+        0.7373581193387508,
+        0.783550102787558,
+        0.7874467510264367,
+        0.7918211914366111,
+        0.6859910705243237,
+        0.7555395163362846,
+        0.7725197145482525,
+        0.7532582622370683,
+        0.7925422940170392,
+        0.7067869762540795,
+        0.786246545962058,
+        0.754473328765016,
+        0.7384496117592789,
+        0.7732335379114375,
+        0.6484175698133186,
+        0.8080056718899868,
+        0.8091810918413103,
+        0.7938233829918317,
+        0.7450659660971723,
+        0.7459577062982135,
+        0.77444491739152,
+        0.7349298870540224,
+        0.736221028957516,
+        0.7930347410729155,
+        0.8124776293989271,
+        0.7973003843799233,
+        0.7482901404146105,
+        0.7312412381288595,
+        0.7421612188336439,
+        0.8328736520488746,
+        0.860663088504225,
+        0.720638106635306,
+        0.8177324006101117,
+        0.7876937824767083,
+        0.7734647415345535,
+        0.7713344838120975,
+        0.8362533518229611,
+        0.8129572203033604,
+        0.7541046586120501,
+        0.8201098896097392,
+        0.783597395347897,
+        0.7862460559117608,
+        0.7377732751774602,
+        0.7713995747035369,
+        0.8158429126488045,
+        0.6871239743195474,
+        0.7462382392841391,
+        0.7406711397925392,
+        0.7927698597195558,
+        0.843749689985998,
+        0.7862803993630223,
+        0.786949350440409,
+        0.754201845091302,
+        0.8353967203875072,
+        0.8151662656455301,
+        0.8342662230716087
+      ],
+      "wall_time_s": 562.2493249000108,
+      "hardware": {
+        "cpu": "x86_64",
+        "cpu_count": 32,
+        "python": "3.13.9",
+        "torch": "2.14.0+cpu"
+      },
+      "weights": "baselines/learned/football/seed0.zip"
+    },
+    {
+      "sport": "football",
+      "seed": 1,
+      "episodes": 8000,
+      "algorithm": "PPO (stable-baselines3), MLP 64x64, one decision per episode",
+      "hyperparameters": {
+        "n_steps": 256,
+        "batch_size": 128,
+        "n_epochs": 10,
+        "learning_rate": 0.0003,
+        "gamma": 0.0,
+        "ent_coef": 0.0,
+        "net_arch": [
+          64,
+          64
+        ],
+        "log_std_init": -0.5
+      },
+      "train_split": "train",
+      "train_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "reward": "0.1*hit + valid_return + target_hit + 0.5*exp(-(target_error/radius)^2) on success",
+      "mean_reward_per_128_episodes": [
+        0.7194888050435111,
+        0.680016212107148,
+        0.7442300884285942,
+        0.700625283003319,
+        0.692851145460736,
+        0.6191430086037144,
+        0.7618945721769705,
+        0.7841632155468687,
+        0.7236730540753342,
+        0.7192064680857584,
+        0.7453816776978783,
+        0.7194797641132027,
+        0.7630609458428808,
+        0.7433261467376724,
+        0.8026866919826716,
+        0.7131157875410281,
+        0.7550403537461534,
+        0.7196207745582797,
+        0.789538556127809,
+        0.8458569897920825,
+        0.774658709182404,
+        0.6840949605684727,
+        0.6998415161506273,
+        0.793228771944996,
+        0.8952483140164986,
+        0.7678744533914141,
+        0.7185968831763603,
+        0.812511105381418,
+        0.7886006450280547,
+        0.7250537157524377,
+        0.763580396422185,
+        0.8398310939664952,
+        0.7415173029876314,
+        0.7012613688712008,
+        0.6778988263686188,
+        0.730956468381919,
+        0.7467394191771746,
+        0.8079079398303293,
+        0.7877245684503578,
+        0.7622269779676571,
+        0.7622364967828616,
+        0.7102550361887552,
+        0.85815242130775,
+        0.766036587243434,
+        0.7466568280360661,
+        0.6877124379388988,
+        0.7841914467280731,
+        0.7747428094735369,
+        0.8416304313577712,
+        0.8079480854212306,
+        0.6992199425585568,
+        0.8057878027902916,
+        0.8906664419919252,
+        0.7308539524674416,
+        0.8395286814193241,
+        0.8292914784396999,
+        0.8619026715750806,
+        0.746454231441021,
+        0.7795966580160893,
+        0.8121153014944866,
+        0.8428755859495141,
+        0.819172686256934,
+        0.7832256084075198,
+        0.8624744205735624
+      ],
+      "wall_time_s": 572.2867570560193,
+      "hardware": {
+        "cpu": "x86_64",
+        "cpu_count": 32,
+        "python": "3.13.9",
+        "torch": "2.14.0+cpu"
+      },
+      "weights": "baselines/learned/football/seed1.zip"
+    },
+    {
+      "sport": "football",
+      "seed": 2,
+      "episodes": 8000,
+      "algorithm": "PPO (stable-baselines3), MLP 64x64, one decision per episode",
+      "hyperparameters": {
+        "n_steps": 256,
+        "batch_size": 128,
+        "n_epochs": 10,
+        "learning_rate": 0.0003,
+        "gamma": 0.0,
+        "ent_coef": 0.0,
+        "net_arch": [
+          64,
+          64
+        ],
+        "log_std_init": -0.5
+      },
+      "train_split": "train",
+      "train_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "reward": "0.1*hit + valid_return + target_hit + 0.5*exp(-(target_error/radius)^2) on success",
+      "mean_reward_per_128_episodes": [
+        0.7359010544023477,
+        0.6296790113556199,
+        0.6850798689993098,
+        0.6135243632015772,
+        0.7228762459708378,
+        0.7197377337724902,
+        0.767817952495534,
+        0.8497055980260484,
+        0.7818060543504544,
+        0.7996305685956031,
+        0.6850909124477766,
+        0.7380085765034892,
+        0.7048478673095815,
+        0.7541934023029171,
+        0.7764799994765781,
+        0.8356419260962866,
+        0.790325733833015,
+        0.7998743183561601,
+        0.809412415837869,
+        0.7052753295283765,
+        0.7447054270887747,
+        0.7661541646230035,
+        0.8127708437968977,
+        0.6930123540805653,
+        0.7890143676195294,
+        0.7423388367751613,
+        0.8130837972857989,
+        0.7511577166733332,
+        0.8038371425354853,
+        0.8299590626265854,
+        0.7509845016757026,
+        0.8205568380071782,
+        0.8131271994789131,
+        0.7458394637214951,
+        0.7100550186587498,
+        0.7580866889911704,
+        0.7178873792872764,
+        0.7152854906744324,
+        0.8131349119357765,
+        0.8312237936188467,
+        0.8544125508633442,
+        0.7927311125677079,
+        0.7404105885070749,
+        0.8160596440429799,
+        0.8290372737683356,
+        0.8356174185173586,
+        0.7379655782715417,
+        0.7611220354447141,
+        0.6984307414968498,
+        0.7568321254220791,
+        0.7919917037361301,
+        0.8717141575179994,
+        0.7914043993805535,
+        0.787741627485957,
+        0.8428496926208027,
+        0.7628011303022504,
+        0.8455501015414484,
+        0.8542216849746183,
+        0.7612936038640328,
+        0.7950382841518149,
+        0.8489153994596563,
+        0.7431967161828652,
+        0.8303287948365323,
+        0.8028857394238003
+      ],
+      "wall_time_s": 551.354752010986,
+      "hardware": {
+        "cpu": "x86_64",
+        "cpu_count": 32,
+        "python": "3.13.9",
+        "torch": "2.14.0+cpu"
+      },
+      "weights": "baselines/learned/football/seed2.zip"
+    },
+    {
+      "sport": "football",
+      "seed": 3,
+      "episodes": 8000,
+      "algorithm": "PPO (stable-baselines3), MLP 64x64, one decision per episode",
+      "hyperparameters": {
+        "n_steps": 256,
+        "batch_size": 128,
+        "n_epochs": 10,
+        "learning_rate": 0.0003,
+        "gamma": 0.0,
+        "ent_coef": 0.0,
+        "net_arch": [
+          64,
+          64
+        ],
+        "log_std_init": -0.5
+      },
+      "train_split": "train",
+      "train_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "reward": "0.1*hit + valid_return + target_hit + 0.5*exp(-(target_error/radius)^2) on success",
+      "mean_reward_per_128_episodes": [
+        0.6735094496398233,
+        0.689779615320731,
+        0.7006822676630691,
+        0.7318128681508824,
+        0.6695613762130961,
+        0.6864304014598019,
+        0.7976002678042278,
+        0.6920779569773003,
+        0.7396655008778907,
+        0.6677598789101467,
+        0.7355148148490116,
+        0.7588242581114173,
+        0.8202992600854486,
+        0.8062389475526288,
+        0.7825726526207291,
+        0.7371963052428328,
+        0.7269255327992141,
+        0.8091230956488289,
+        0.6683819979079999,
+        0.8167285640956834,
+        0.7929198261117563,
+        0.7987142889760435,
+        0.7061844105483033,
+        0.7939947565319017,
+        0.7686134569230489,
+        0.7150604915805161,
+        0.7098303119419143,
+        0.7446708834613673,
+        0.7238646351615898,
+        0.767304165288806,
+        0.7767607334535569,
+        0.7965018574032001,
+        0.7260329342097975,
+        0.8252490311278962,
+        0.8212068711873144,
+        0.7930799704045057,
+        0.8178450620616786,
+        0.7818568968796171,
+        0.8000278330873698,
+        0.7772747314884327,
+        0.7144631421542726,
+        0.8383702547289431,
+        0.7214542949805036,
+        0.7672364134341478,
+        0.8529823780991137,
+        0.692733138508629,
+        0.8458285369561054,
+        0.8175065143732354,
+        0.7889542743214406,
+        0.8428722427343018,
+        0.7903377132024616,
+        0.8344986963202246,
+        0.775181221019011,
+        0.7569210205110721,
+        0.795410463702865,
+        0.7502349996939301,
+        0.7998701523174532,
+        0.7599446648382582,
+        0.7513343741884455,
+        0.8062107860459946,
+        0.746123100805562,
+        0.8147400078596547,
+        0.7359324919525534,
+        0.8552196131204255
+      ],
+      "wall_time_s": 558.65590796998,
+      "hardware": {
+        "cpu": "x86_64",
+        "cpu_count": 32,
+        "python": "3.13.9",
+        "torch": "2.14.0+cpu"
+      },
+      "weights": "baselines/learned/football/seed3.zip"
+    },
+    {
+      "sport": "football",
+      "seed": 4,
+      "episodes": 8000,
+      "algorithm": "PPO (stable-baselines3), MLP 64x64, one decision per episode",
+      "hyperparameters": {
+        "n_steps": 256,
+        "batch_size": 128,
+        "n_epochs": 10,
+        "learning_rate": 0.0003,
+        "gamma": 0.0,
+        "ent_coef": 0.0,
+        "net_arch": [
+          64,
+          64
+        ],
+        "log_std_init": -0.5
+      },
+      "train_split": "train",
+      "train_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "reward": "0.1*hit + valid_return + target_hit + 0.5*exp(-(target_error/radius)^2) on success",
+      "mean_reward_per_128_episodes": [
+        0.5950348834157921,
+        0.7811086720321327,
+        0.6979544314672239,
+        0.6946781254373491,
+        0.7502058033132926,
+        0.660427788447123,
+        0.7233715169713832,
+        0.7504687233013101,
+        0.7458832023548894,
+        0.7305385565850884,
+        0.7481521986774169,
+        0.7070533885271288,
+        0.7607016335823573,
+        0.7145078027970158,
+        0.7895448056515306,
+        0.7827495108940639,
+        0.7771709663211368,
+        0.7833265544613823,
+        0.8032630201196298,
+        0.7442290693870746,
+        0.7741490492480807,
+        0.8188527328893542,
+        0.7736754225334153,
+        0.6977977680508047,
+        0.8067526574595831,
+        0.854153728170786,
+        0.849044791306369,
+        0.7776805274188519,
+        0.7927588518359698,
+        0.7136123631498776,
+        0.7620986638357863,
+        0.7710131835192442,
+        0.8336126535432413,
+        0.8052653837366961,
+        0.707677589787636,
+        0.762041357695125,
+        0.7844842267804779,
+        0.7812750668963417,
+        0.8240487911389209,
+        0.842524713370949,
+        0.774327484134119,
+        0.7769358746591024,
+        0.8301872077281587,
+        0.7937545020249672,
+        0.739607535302639,
+        0.7637605065247044,
+        0.8255771418916993,
+        0.823364635987673,
+        0.818548774055671,
+        0.8304534556809813,
+        0.7551365254330449,
+        0.7406217694515362,
+        0.8218554345075972,
+        0.7627834401791915,
+        0.7625962918391451,
+        0.8734037674148567,
+        0.7872700456064194,
+        0.7866503736004233,
+        0.7508305115625262,
+        0.7312642327160574,
+        0.801216067862697,
+        0.7832670913776383,
+        0.8024613878806122,
+        0.7809314816840924
+      ],
+      "wall_time_s": 561.9056509580114,
+      "hardware": {
+        "cpu": "x86_64",
+        "cpu_count": 32,
+        "python": "3.13.9",
+        "torch": "2.14.0+cpu"
+      },
+      "weights": "baselines/learned/football/seed4.zip"
+    }
+  ],
+  "per_seed": [
+    {
+      "name": "learned-primitive-ppo",
+      "seed": 0,
+      "weights": "baselines/learned/football/seed0.zip",
+      "levels": {
+        "L0": {
+          "primary_metric": "incoming_valid_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 0.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L1": {
+          "primary_metric": "hit_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L2": {
+          "primary_metric": "valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L3": {
+          "primary_metric": "target_rate",
+          "primary_value": 0.08,
+          "passed": false,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.77,
+          "target_rate": 0.08,
+          "episodes": 100
+        },
+        "L4": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L5": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.2727272727272727,
+          "passed": false,
+          "hit_rate": 0.86,
+          "valid_return_rate": 0.34,
+          "target_rate": 0.0,
+          "episodes": 100
+        }
+      }
+    },
+    {
+      "name": "learned-primitive-ppo",
+      "seed": 1,
+      "weights": "baselines/learned/football/seed1.zip",
+      "levels": {
+        "L0": {
+          "primary_metric": "incoming_valid_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 0.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L1": {
+          "primary_metric": "hit_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L2": {
+          "primary_metric": "valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L3": {
+          "primary_metric": "target_rate",
+          "primary_value": 0.07,
+          "passed": false,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.74,
+          "target_rate": 0.07,
+          "episodes": 100
+        },
+        "L4": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L5": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.2727272727272727,
+          "passed": false,
+          "hit_rate": 0.87,
+          "valid_return_rate": 0.34,
+          "target_rate": 0.0,
+          "episodes": 100
+        }
+      }
+    },
+    {
+      "name": "learned-primitive-ppo",
+      "seed": 2,
+      "weights": "baselines/learned/football/seed2.zip",
+      "levels": {
+        "L0": {
+          "primary_metric": "incoming_valid_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 0.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L1": {
+          "primary_metric": "hit_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L2": {
+          "primary_metric": "valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L3": {
+          "primary_metric": "target_rate",
+          "primary_value": 0.1,
+          "passed": false,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.83,
+          "target_rate": 0.1,
+          "episodes": 100
+        },
+        "L4": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L5": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.2727272727272727,
+          "passed": false,
+          "hit_rate": 0.87,
+          "valid_return_rate": 0.34,
+          "target_rate": 0.0,
+          "episodes": 100
+        }
+      }
+    },
+    {
+      "name": "learned-primitive-ppo",
+      "seed": 3,
+      "weights": "baselines/learned/football/seed3.zip",
+      "levels": {
+        "L0": {
+          "primary_metric": "incoming_valid_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 0.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L1": {
+          "primary_metric": "hit_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L2": {
+          "primary_metric": "valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L3": {
+          "primary_metric": "target_rate",
+          "primary_value": 0.07,
+          "passed": false,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.75,
+          "target_rate": 0.07,
+          "episodes": 100
+        },
+        "L4": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L5": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.2727272727272727,
+          "passed": false,
+          "hit_rate": 0.85,
+          "valid_return_rate": 0.34,
+          "target_rate": 0.0,
+          "episodes": 100
+        }
+      }
+    },
+    {
+      "name": "learned-primitive-ppo",
+      "seed": 4,
+      "weights": "baselines/learned/football/seed4.zip",
+      "levels": {
+        "L0": {
+          "primary_metric": "incoming_valid_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 0.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L1": {
+          "primary_metric": "hit_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L2": {
+          "primary_metric": "valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L3": {
+          "primary_metric": "target_rate",
+          "primary_value": 0.12,
+          "passed": false,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.88,
+          "target_rate": 0.12,
+          "episodes": 100
+        },
+        "L4": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 1.0,
+          "valid_return_rate": 1.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L5": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.24242424242424243,
+          "passed": false,
+          "hit_rate": 0.85,
+          "valid_return_rate": 0.34,
+          "target_rate": 0.0,
+          "episodes": 100
+        }
+      }
+    }
+  ],
+  "random_primitive": {
+    "name": "random-primitive",
+    "seed": 0,
+    "weights": null,
+    "levels": {
+      "L0": {
+        "primary_metric": "incoming_valid_rate",
+        "primary_value": 1.0,
+        "passed": true,
+        "hit_rate": 0.0,
+        "valid_return_rate": 0.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L1": {
+        "primary_metric": "hit_rate",
+        "primary_value": 1.0,
+        "passed": true,
+        "hit_rate": 1.0,
+        "valid_return_rate": 0.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L2": {
+        "primary_metric": "valid_return_rate",
+        "primary_value": 0.78,
+        "passed": false,
+        "hit_rate": 1.0,
+        "valid_return_rate": 0.78,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L3": {
+        "primary_metric": "target_rate",
+        "primary_value": 0.09,
+        "passed": false,
+        "hit_rate": 1.0,
+        "valid_return_rate": 0.54,
+        "target_rate": 0.09,
+        "episodes": 100
+      },
+      "L4": {
+        "primary_metric": "worst_bucket_valid_return_rate",
+        "primary_value": 0.56,
+        "passed": false,
+        "hit_rate": 1.0,
+        "valid_return_rate": 0.7,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L5": {
+        "primary_metric": "worst_bucket_valid_return_rate",
+        "primary_value": 0.15151515151515152,
+        "passed": false,
+        "hit_rate": 0.86,
+        "valid_return_rate": 0.22,
+        "target_rate": 0.0,
+        "episodes": 100
+      }
+    }
+  },
+  "untrained_primitive": {
+    "name": "untrained-primitive",
+    "seed": 0,
+    "weights": null,
+    "levels": {
+      "L0": {
+        "primary_metric": "incoming_valid_rate",
+        "primary_value": 1.0,
+        "passed": true,
+        "hit_rate": 0.0,
+        "valid_return_rate": 0.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L1": {
+        "primary_metric": "hit_rate",
+        "primary_value": 1.0,
+        "passed": true,
+        "hit_rate": 1.0,
+        "valid_return_rate": 0.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L2": {
+        "primary_metric": "valid_return_rate",
+        "primary_value": 1.0,
+        "passed": true,
+        "hit_rate": 1.0,
+        "valid_return_rate": 1.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L3": {
+        "primary_metric": "target_rate",
+        "primary_value": 0.49,
+        "passed": false,
+        "hit_rate": 1.0,
+        "valid_return_rate": 1.0,
+        "target_rate": 0.49,
+        "episodes": 100
+      },
+      "L4": {
+        "primary_metric": "worst_bucket_valid_return_rate",
+        "primary_value": 1.0,
+        "passed": true,
+        "hit_rate": 1.0,
+        "valid_return_rate": 1.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L5": {
+        "primary_metric": "worst_bucket_valid_return_rate",
+        "primary_value": 0.21212121212121213,
+        "passed": false,
+        "hit_rate": 0.87,
+        "valid_return_rate": 0.29,
+        "target_rate": 0.0,
+        "episodes": 100
+      }
+    }
+  },
+  "aggregate": {
+    "L0": {
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "seeds_passed": 5
+    },
+    "L1": {
+      "primary_metric": "hit_rate",
+      "primary_value": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "seeds_passed": 5
+    },
+    "L2": {
+      "primary_metric": "valid_return_rate",
+      "primary_value": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "seeds_passed": 5
+    },
+    "L3": {
+      "primary_metric": "target_rate",
+      "primary_value": {
+        "mean": 0.08800000000000001,
+        "ci95": [
+          0.06108568143162456,
+          0.11491431856837546
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 0.794,
+        "ci95": [
+          0.7202398464209843,
+          0.8677601535790158
+        ]
+      },
+      "seeds_passed": 0
+    },
+    "L4": {
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "seeds_passed": 5
+    },
+    "L5": {
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": {
+        "mean": 0.26666666666666666,
+        "ci95": [
+          0.24984242424242425,
+          0.28349090909090907
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 0.34,
+        "ci95": [
+          0.34,
+          0.34
+        ]
+      },
+      "seeds_passed": 0
+    }
+  }
+}

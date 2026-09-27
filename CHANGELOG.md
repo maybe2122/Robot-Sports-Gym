@@ -16,9 +16,10 @@ still `experimental`; no leaderboard is open.
 ### Added
 
 - **M5 学习基线**：`multisport_sim.benchmark.learning`（挥拍原语、单决策环境 `PrimitiveLaunchEnv`、
-  `LearnedLaunchController`）与 `scripts/train_launch_policies.py`：PPO（Stable-Baselines3）只看可观测几何量，
-  三项发射类任务各 5 个种子，train 训练、test 评测，与随机原语下限并列；权重、训练曲线、墙钟时间与硬件在
-  `baselines/learned/`，报告 `reports/learned-*-baselines.md`。CLI `--learned-policy PATH`；新 `train` extra。
+  `ReturnPrimitive`、`LearnedLaunchController`）与 `scripts/train_launch_policies.py`：PPO（Stable-Baselines3）
+  只看可观测几何量，**五项任务**各 5 个种子、每种子 8000 回合，train 训练、test 评测，与未训练原语、随机原语两个
+  对照并列；权重、训练曲线、墙钟时间与硬件在 `baselines/learned/`，报告 `reports/learned-*-baselines.md`，
+  解读见 `docs/LEARNED_BASELINES.md`。CLI `--learned-policy PATH`；新 `train` extra。
 - **可审计提交**：`scripts/audit_submission.py` 从结果包原始回合重算全部判定与指标、核对每级 shot 集完整性、
   固定集 digest、权重哈希，可 `--rerun` 重放；流程见 `docs/LEADERBOARD.md`。
 - **版本化 JSON Schema**：`multisport_sim.benchmark.schemas`（episode result、shot record、bank manifest、

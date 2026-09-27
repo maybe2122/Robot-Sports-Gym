@@ -4,7 +4,7 @@
 
 Robot Sports Gym（RSG）是面向多种机器人形态的球类运动训练与评测平台，目标是在统一任务、物理规范和指标下，通过网球、乒乓球、足球、羽毛球、篮球和壁球训练并评测机器人在感知、规划、控制、鲁棒性与 sim-to-real 方面的能力。当前仓库提供无外部美术资产依赖的 **MuJoCo + Isaac Sim/PhysX 双后端** 物理基础层，并按国际比赛尺寸程序化构建场地、球体和运动器材。
 
-> **项目状态：Alpha（v0.3.0）。** 五项标准单回合任务均可在 MuJoCo 上运行：固定集（每级 test 100 条）、版本化 Gymnasium 环境、冻结的 L0–L5 判定、参考基线，三项发射类任务还有 5 种子的 PPO 学习基线。乒乓球另有 Franka Panda 与 Unitree G1 机体任务（状态与视觉两条轨道），其 Isaac Lab 环境已实跑并与 MuJoCo 逐条对比。所有固定集仍是 `experimental`、排行榜未开放：这是 benchmark 候选版，不是认证版。缺什么见 [docs/TODO.md](docs/TODO.md)。
+> **项目状态：Alpha（v0.3.0）。** 五项标准单回合任务均可在 MuJoCo 上运行：固定集（每级 test 100 条）、版本化 Gymnasium 环境、冻结的 L0–L5 判定、参考基线，五项任务都有 5 种子的 PPO 原语学习基线。乒乓球另有 Franka Panda 与 Unitree G1 机体任务（状态与视觉两条轨道），其 Isaac Lab 环境已实跑并与 MuJoCo 逐条对比。所有固定集仍是 `experimental`、排行榜未开放：这是 benchmark 候选版，不是认证版。缺什么见 [docs/TODO.md](docs/TODO.md)。
 
 ## 人形机器人视觉打球：直接运行
 
@@ -277,8 +277,8 @@ manifest 会**如实记录工作区是否是脏的**，录像按 shot_id 排序�
 ### 学习基线、后端一致性与可审计结果
 
 - **学习基线**：`scripts/train_launch_policies.py` 用 PPO（Stable-Baselines3）在一个挥拍原语（面速、仰角、偏航修正）上
-  学习，只看可观测几何量，不使用任何标定知识；三项发射类任务各 5 个种子，train split 训练、test split 评测，
-  与"随机原语"下限并列报告。权重、训练曲线、墙钟时间与硬件都在 `baselines/learned/`，结果见 `reports/learned-*-baselines.md`。
+  学习，只看可观测几何量，不使用任何标定知识；五项任务各 5 个种子，train split 训练、test split 评测，
+  与两个对照并列报告：未训练原语（参数全取中值）与随机原语。学习在乒乓球、篮球与羽毛球定点上明显有效，网球只与先验持平，足球定点反而变差——见 [`docs/LEARNED_BASELINES.md`](docs/LEARNED_BASELINES.md)。权重、训练曲线、墙钟时间与硬件都在 `baselines/learned/`，结果见 `reports/learned-*-baselines.md`。
 - **Isaac Lab 实跑与一致性**：乒乓球 Isaac Lab 环境在 CPU PhysX 上实跑，与 MuJoCo 同批球逐条对比（`make parity`）：
   飞行段中位差 3.5 mm、判定一致 99%，反弹后高度差约 5 cm（M4 待标定）。见 [一致性报告](reports/table-tennis-backend-parity.md)。
 - **可审计结果**：`scripts/audit_submission.py` 从结果包的原始回合重算全部判定与指标、核对每级 shot 集完整、

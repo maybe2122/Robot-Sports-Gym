@@ -1,0 +1,1060 @@
+{
+  "schema": "multisport-learned-baseline-v0",
+  "sport": "tennis",
+  "started_at": "2026-09-27T18:15:06+00:00",
+  "finished_at": "2026-09-27T18:16:18+00:00",
+  "evaluation_split": "test",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "training": [
+    {
+      "sport": "tennis",
+      "seed": 0,
+      "episodes": 8000,
+      "algorithm": "PPO (stable-baselines3), MLP 64x64, one decision per episode",
+      "hyperparameters": {
+        "n_steps": 256,
+        "batch_size": 128,
+        "n_epochs": 10,
+        "learning_rate": 0.0003,
+        "gamma": 0.0,
+        "ent_coef": 0.0,
+        "net_arch": [
+          64,
+          64
+        ],
+        "log_std_init": -0.5
+      },
+      "train_split": "train",
+      "train_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "reward": "0.1*hit + valid_return + target_hit + 0.5*exp(-(target_error/radius)^2) on success",
+      "mean_reward_per_128_episodes": [
+        0.3079450262594037,
+        0.27968750649597496,
+        0.28595108160516247,
+        0.2579084458993748,
+        0.2786165767465718,
+        0.2742208732524887,
+        0.2179697907413356,
+        0.31587369047338143,
+        0.30000000598374754,
+        0.26955462130717933,
+        0.26993911783210933,
+        0.2906250598025508,
+        0.33125014731194824,
+        0.32189293910050765,
+        0.34808618715032935,
+        0.29141099064145237,
+        0.25237866275710985,
+        0.2461191268521361,
+        0.2650013275560923,
+        0.34865208505652845,
+        0.28154158499091864,
+        0.3400254630832933,
+        0.279025032708887,
+        0.30657428555423394,
+        0.34218884899746627,
+        0.32350060919998214,
+        0.3203769856481813,
+        0.3750379264820367,
+        0.308440251275897,
+        0.2755078360787593,
+        0.29850725922733545,
+        0.3836050054524094,
+        0.27266136184334755,
+        0.3087393490714021,
+        0.29142251948360354,
+        0.3048850806080736,
+        0.3094282353413291,
+        0.35078129812609404,
+        0.34455656009959057,
+        0.26643326733028516,
+        0.3526079305447638,
+        0.314094060449861,
+        0.30547121760901064,
+        0.32734416547464207,
+        0.3375026778667234,
+        0.339848285948392,
+        0.31496269325725734,
+        0.3630028472398408,
+        0.3382056971313432,
+        0.32812500663567334,
+        0.3062926104175858,
+        0.31328441068762913,
+        0.30313265504082665,
+        0.24843780568335205,
+        0.3140904897591099,
+        0.30784404108999297,
+        0.3422209349228069,
+        0.3400365387205966,
+        0.351881202950608,
+        0.2837660987279378,
+        0.32504689355846494,
+        0.38243264134507626,
+        0.33886931161396205,
+        0.35625907278154045
+      ],
+      "wall_time_s": 895.7976683130255,
+      "hardware": {
+        "cpu": "x86_64",
+        "cpu_count": 32,
+        "python": "3.13.9",
+        "torch": "2.14.0+cpu"
+      },
+      "weights": "baselines/learned/tennis/seed0.zip"
+    },
+    {
+      "sport": "tennis",
+      "seed": 1,
+      "episodes": 8000,
+      "algorithm": "PPO (stable-baselines3), MLP 64x64, one decision per episode",
+      "hyperparameters": {
+        "n_steps": 256,
+        "batch_size": 128,
+        "n_epochs": 10,
+        "learning_rate": 0.0003,
+        "gamma": 0.0,
+        "ent_coef": 0.0,
+        "net_arch": [
+          64,
+          64
+        ],
+        "log_std_init": -0.5
+      },
+      "train_split": "train",
+      "train_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "reward": "0.1*hit + valid_return + target_hit + 0.5*exp(-(target_error/radius)^2) on success",
+      "mean_reward_per_128_episodes": [
+        0.28047262894688174,
+        0.27422181761357933,
+        0.31328125816071406,
+        0.26640653650974855,
+        0.266413300705608,
+        0.24453525664284825,
+        0.28359508648281917,
+        0.258619834901765,
+        0.2868019088637084,
+        0.2594195101992227,
+        0.3093716881121509,
+        0.3530576732591726,
+        0.3089182281983085,
+        0.2703125109546818,
+        0.30961402552202344,
+        0.3230398533632979,
+        0.350964093755465,
+        0.2687500052852556,
+        0.2664064396522008,
+        0.35000352089991793,
+        0.33517045312328264,
+        0.2406622091657482,
+        0.3297410018276423,
+        0.234394718776457,
+        0.4101960143307224,
+        0.27425784955266863,
+        0.2734375082072802,
+        0.2735397450742312,
+        0.3496239088708535,
+        0.32241357467137277,
+        0.32112123421393335,
+        0.24974121450213715,
+        0.34375014109537005,
+        0.31486629898427054,
+        0.31588352023391053,
+        0.28531296778237447,
+        0.29082027153344825,
+        0.3328453424037434,
+        0.39353855478111655,
+        0.31100944272475317,
+        0.3144695939263329,
+        0.3258315033162944,
+        0.335162119474262,
+        0.2734731434029527,
+        0.35511646390659735,
+        0.3134049405925907,
+        0.32032129069557413,
+        0.2773700067191385,
+        0.2409574495977722,
+        0.3195916061522439,
+        0.33223482384346426,
+        0.2980716241290793,
+        0.32278156967367977,
+        0.30483139731222764,
+        0.3195451741339639,
+        0.35157164064003155,
+        0.38125047442736104,
+        0.2907144080963917,
+        0.3532399660907686,
+        0.29455440951278433,
+        0.35752241307636723,
+        0.28242224955465645,
+        0.402382334577851,
+        0.28359375562286004
+      ],
+      "wall_time_s": 888.4369488969969,
+      "hardware": {
+        "cpu": "x86_64",
+        "cpu_count": 32,
+        "python": "3.13.9",
+        "torch": "2.14.0+cpu"
+      },
+      "weights": "baselines/learned/tennis/seed1.zip"
+    },
+    {
+      "sport": "tennis",
+      "seed": 2,
+      "episodes": 8000,
+      "algorithm": "PPO (stable-baselines3), MLP 64x64, one decision per episode",
+      "hyperparameters": {
+        "n_steps": 256,
+        "batch_size": 128,
+        "n_epochs": 10,
+        "learning_rate": 0.0003,
+        "gamma": 0.0,
+        "ent_coef": 0.0,
+        "net_arch": [
+          64,
+          64
+        ],
+        "log_std_init": -0.5
+      },
+      "train_split": "train",
+      "train_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "reward": "0.1*hit + valid_return + target_hit + 0.5*exp(-(target_error/radius)^2) on success",
+      "mean_reward_per_128_episodes": [
+        0.2914124090457335,
+        0.1929877116344869,
+        0.29225881252205,
+        0.25000462331809103,
+        0.26719048735685647,
+        0.24921876791631803,
+        0.3000000088359229,
+        0.29066672164481133,
+        0.25002330378629267,
+        0.3234391353907995,
+        0.2710941204568371,
+        0.32892334734788164,
+        0.2849432841176167,
+        0.30614367441739887,
+        0.28623653505928814,
+        0.35943373932968825,
+        0.3219173201941885,
+        0.3385617370950058,
+        0.3259648230741732,
+        0.2868993282900192,
+        0.312524740351364,
+        0.31363195326412097,
+        0.298437780700624,
+        0.25859427847899497,
+        0.25942260498413816,
+        0.32133016060106456,
+        0.28934053832199425,
+        0.3457337296567857,
+        0.27968752139713615,
+        0.28207448666216806,
+        0.28515672782668844,
+        0.3128555060829967,
+        0.37503512972034514,
+        0.3675852123997174,
+        0.31721794948680326,
+        0.28906261938391253,
+        0.29951639380306005,
+        0.35156463616294786,
+        0.3664702021051198,
+        0.33138859790051356,
+        0.27744474535575137,
+        0.30861003760946915,
+        0.354158062604256,
+        0.35785428644157946,
+        0.30717655090847984,
+        0.4139669536380097,
+        0.3518810000969097,
+        0.29772706161020324,
+        0.29785595106659457,
+        0.31493726855842397,
+        0.33841317309997976,
+        0.39511403371579945,
+        0.34835280769038945,
+        0.3265791065059602,
+        0.4238172275945544,
+        0.31094244320411235,
+        0.3367442983435467,
+        0.3048761985846795,
+        0.35700597160030156,
+        0.3203138438402675,
+        0.3277837333153002,
+        0.3156250063329935,
+        0.31412227859254926,
+        0.2648437570896931
+      ],
+      "wall_time_s": 885.9929591179825,
+      "hardware": {
+        "cpu": "x86_64",
+        "cpu_count": 32,
+        "python": "3.13.9",
+        "torch": "2.14.0+cpu"
+      },
+      "weights": "baselines/learned/tennis/seed2.zip"
+    },
+    {
+      "sport": "tennis",
+      "seed": 3,
+      "episodes": 8000,
+      "algorithm": "PPO (stable-baselines3), MLP 64x64, one decision per episode",
+      "hyperparameters": {
+        "n_steps": 256,
+        "batch_size": 128,
+        "n_epochs": 10,
+        "learning_rate": 0.0003,
+        "gamma": 0.0,
+        "ent_coef": 0.0,
+        "net_arch": [
+          64,
+          64
+        ],
+        "log_std_init": -0.5
+      },
+      "train_split": "train",
+      "train_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "reward": "0.1*hit + valid_return + target_hit + 0.5*exp(-(target_error/radius)^2) on success",
+      "mean_reward_per_128_episodes": [
+        0.24927217181539163,
+        0.2742192024597898,
+        0.23653463693335652,
+        0.29045991168823093,
+        0.2716664125910029,
+        0.27578406914835796,
+        0.2507836893782951,
+        0.3064632046734914,
+        0.243082917178981,
+        0.2633157495292835,
+        0.2769114478142001,
+        0.27814791892888024,
+        0.3023730145068839,
+        0.33609812025679275,
+        0.33671905857045203,
+        0.3315867495839484,
+        0.2614748504711315,
+        0.29611413326347247,
+        0.22734376275911927,
+        0.2849447287735529,
+        0.23906711005838588,
+        0.2515625049127266,
+        0.26016915671061724,
+        0.2959801924880594,
+        0.282840283238329,
+        0.3085938111762516,
+        0.21876298123970628,
+        0.3148583901929669,
+        0.3148842586087994,
+        0.22657454357249662,
+        0.3232341263210401,
+        0.28906283917604014,
+        0.2828125056112185,
+        0.3046926134848036,
+        0.3824828291544691,
+        0.31015832658158615,
+        0.2679963979171589,
+        0.29989335854770616,
+        0.300820896809455,
+        0.2914088988909498,
+        0.348993459076155,
+        0.31416641955729574,
+        0.2578170108026825,
+        0.3102043460239656,
+        0.34310140495654196,
+        0.3075008201994933,
+        0.3031445759697817,
+        0.3718758522882126,
+        0.2797093907138333,
+        0.2657208887976594,
+        0.23451765615027398,
+        0.35937501944135875,
+        0.3585944269434549,
+        0.3454707029159181,
+        0.29219527496024966,
+        0.3587665859959088,
+        0.33753089321544394,
+        0.3822479514637962,
+        0.3552408331306651,
+        0.31954748008865863,
+        0.3194316662847996,
+        0.2851931183831766,
+        0.3289116536616348,
+        0.3031250247149728
+      ],
+      "wall_time_s": 879.9319568770006,
+      "hardware": {
+        "cpu": "x86_64",
+        "cpu_count": 32,
+        "python": "3.13.9",
+        "torch": "2.14.0+cpu"
+      },
+      "weights": "baselines/learned/tennis/seed3.zip"
+    },
+    {
+      "sport": "tennis",
+      "seed": 4,
+      "episodes": 8000,
+      "algorithm": "PPO (stable-baselines3), MLP 64x64, one decision per episode",
+      "hyperparameters": {
+        "n_steps": 256,
+        "batch_size": 128,
+        "n_epochs": 10,
+        "learning_rate": 0.0003,
+        "gamma": 0.0,
+        "ent_coef": 0.0,
+        "net_arch": [
+          64,
+          64
+        ],
+        "log_std_init": -0.5
+      },
+      "train_split": "train",
+      "train_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "reward": "0.1*hit + valid_return + target_hit + 0.5*exp(-(target_error/radius)^2) on success",
+      "mean_reward_per_128_episodes": [
+        0.36255093122599646,
+        0.27968842757400125,
+        0.30473688762867823,
+        0.2040425568120554,
+        0.281396129343193,
+        0.27037152322009206,
+        0.29062623978825286,
+        0.33490171999437734,
+        0.2649736533057876,
+        0.272861834615469,
+        0.2132852307986468,
+        0.29531250591389835,
+        0.3009612956084311,
+        0.32578193180961534,
+        0.2977462850394659,
+        0.3347638791310601,
+        0.31014014640823007,
+        0.37500035879202187,
+        0.25636206270428374,
+        0.29069944843649864,
+        0.3766623371047899,
+        0.318518890067935,
+        0.3868784175137989,
+        0.3109598719747737,
+        0.31172048108419403,
+        0.3210938300471753,
+        0.285185665008612,
+        0.32813242927659303,
+        0.29141711501870304,
+        0.3414569750893861,
+        0.2942045221570879,
+        0.3531349034165032,
+        0.2984543787315488,
+        0.31019768986152485,
+        0.2617588095017709,
+        0.3015646136482246,
+        0.2664067404693924,
+        0.33595035440521315,
+        0.3351578931324184,
+        0.37506496370770037,
+        0.35082807659637183,
+        0.3486416484811343,
+        0.31817263411358,
+        0.3000000470201485,
+        0.2931692207348533,
+        0.3304788466193713,
+        0.38439909333828837,
+        0.35472593357553706,
+        0.3206490374286659,
+        0.27970351034309715,
+        0.323439072992187,
+        0.36252056166995317,
+        0.33750155282905325,
+        0.38366222952026874,
+        0.3987407682579942,
+        0.32465228345245123,
+        0.3985640509054065,
+        0.30547472124453634,
+        0.30468756571644917,
+        0.24921886943047866,
+        0.3754549028817564,
+        0.3144729161285795,
+        0.3992380095878616,
+        0.2820315070566721
+      ],
+      "wall_time_s": 890.7619928869826,
+      "hardware": {
+        "cpu": "x86_64",
+        "cpu_count": 32,
+        "python": "3.13.9",
+        "torch": "2.14.0+cpu"
+      },
+      "weights": "baselines/learned/tennis/seed4.zip"
+    }
+  ],
+  "per_seed": [
+    {
+      "name": "learned-primitive-ppo",
+      "seed": 0,
+      "weights": "baselines/learned/tennis/seed0.zip",
+      "levels": {
+        "L0": {
+          "primary_metric": "incoming_valid_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 0.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L1": {
+          "primary_metric": "hit_rate",
+          "primary_value": 0.99,
+          "passed": true,
+          "hit_rate": 0.99,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L2": {
+          "primary_metric": "valid_return_rate",
+          "primary_value": 0.61,
+          "passed": false,
+          "hit_rate": 0.95,
+          "valid_return_rate": 0.61,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L3": {
+          "primary_metric": "target_rate",
+          "primary_value": 0.02,
+          "passed": false,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.72,
+          "target_rate": 0.02,
+          "episodes": 100
+        },
+        "L4": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.21951219512195122,
+          "passed": false,
+          "hit_rate": 0.9,
+          "valid_return_rate": 0.58,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L5": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.0,
+          "passed": false,
+          "hit_rate": 0.44,
+          "valid_return_rate": 0.09,
+          "target_rate": 0.0,
+          "episodes": 100
+        }
+      }
+    },
+    {
+      "name": "learned-primitive-ppo",
+      "seed": 1,
+      "weights": "baselines/learned/tennis/seed1.zip",
+      "levels": {
+        "L0": {
+          "primary_metric": "incoming_valid_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 0.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L1": {
+          "primary_metric": "hit_rate",
+          "primary_value": 0.99,
+          "passed": true,
+          "hit_rate": 0.99,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L2": {
+          "primary_metric": "valid_return_rate",
+          "primary_value": 0.61,
+          "passed": false,
+          "hit_rate": 0.95,
+          "valid_return_rate": 0.61,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L3": {
+          "primary_metric": "target_rate",
+          "primary_value": 0.02,
+          "passed": false,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.67,
+          "target_rate": 0.02,
+          "episodes": 100
+        },
+        "L4": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.21951219512195122,
+          "passed": false,
+          "hit_rate": 0.9,
+          "valid_return_rate": 0.57,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L5": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.0,
+          "passed": false,
+          "hit_rate": 0.44,
+          "valid_return_rate": 0.09,
+          "target_rate": 0.0,
+          "episodes": 100
+        }
+      }
+    },
+    {
+      "name": "learned-primitive-ppo",
+      "seed": 2,
+      "weights": "baselines/learned/tennis/seed2.zip",
+      "levels": {
+        "L0": {
+          "primary_metric": "incoming_valid_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 0.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L1": {
+          "primary_metric": "hit_rate",
+          "primary_value": 0.99,
+          "passed": true,
+          "hit_rate": 0.99,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L2": {
+          "primary_metric": "valid_return_rate",
+          "primary_value": 0.59,
+          "passed": false,
+          "hit_rate": 0.95,
+          "valid_return_rate": 0.59,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L3": {
+          "primary_metric": "target_rate",
+          "primary_value": 0.01,
+          "passed": false,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.62,
+          "target_rate": 0.01,
+          "episodes": 100
+        },
+        "L4": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.21951219512195122,
+          "passed": false,
+          "hit_rate": 0.9,
+          "valid_return_rate": 0.57,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L5": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.0,
+          "passed": false,
+          "hit_rate": 0.44,
+          "valid_return_rate": 0.09,
+          "target_rate": 0.0,
+          "episodes": 100
+        }
+      }
+    },
+    {
+      "name": "learned-primitive-ppo",
+      "seed": 3,
+      "weights": "baselines/learned/tennis/seed3.zip",
+      "levels": {
+        "L0": {
+          "primary_metric": "incoming_valid_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 0.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L1": {
+          "primary_metric": "hit_rate",
+          "primary_value": 0.99,
+          "passed": true,
+          "hit_rate": 0.99,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L2": {
+          "primary_metric": "valid_return_rate",
+          "primary_value": 0.62,
+          "passed": false,
+          "hit_rate": 0.95,
+          "valid_return_rate": 0.62,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L3": {
+          "primary_metric": "target_rate",
+          "primary_value": 0.02,
+          "passed": false,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.7,
+          "target_rate": 0.02,
+          "episodes": 100
+        },
+        "L4": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.21951219512195122,
+          "passed": false,
+          "hit_rate": 0.9,
+          "valid_return_rate": 0.55,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L5": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.0,
+          "passed": false,
+          "hit_rate": 0.44,
+          "valid_return_rate": 0.1,
+          "target_rate": 0.0,
+          "episodes": 100
+        }
+      }
+    },
+    {
+      "name": "learned-primitive-ppo",
+      "seed": 4,
+      "weights": "baselines/learned/tennis/seed4.zip",
+      "levels": {
+        "L0": {
+          "primary_metric": "incoming_valid_rate",
+          "primary_value": 1.0,
+          "passed": true,
+          "hit_rate": 0.0,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L1": {
+          "primary_metric": "hit_rate",
+          "primary_value": 0.99,
+          "passed": true,
+          "hit_rate": 0.99,
+          "valid_return_rate": 0.0,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L2": {
+          "primary_metric": "valid_return_rate",
+          "primary_value": 0.57,
+          "passed": false,
+          "hit_rate": 0.95,
+          "valid_return_rate": 0.57,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L3": {
+          "primary_metric": "target_rate",
+          "primary_value": 0.01,
+          "passed": false,
+          "hit_rate": 1.0,
+          "valid_return_rate": 0.71,
+          "target_rate": 0.01,
+          "episodes": 100
+        },
+        "L4": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.1951219512195122,
+          "passed": false,
+          "hit_rate": 0.9,
+          "valid_return_rate": 0.55,
+          "target_rate": 0.0,
+          "episodes": 100
+        },
+        "L5": {
+          "primary_metric": "worst_bucket_valid_return_rate",
+          "primary_value": 0.0,
+          "passed": false,
+          "hit_rate": 0.44,
+          "valid_return_rate": 0.09,
+          "target_rate": 0.0,
+          "episodes": 100
+        }
+      }
+    }
+  ],
+  "random_primitive": {
+    "name": "random-primitive",
+    "seed": 0,
+    "weights": null,
+    "levels": {
+      "L0": {
+        "primary_metric": "incoming_valid_rate",
+        "primary_value": 1.0,
+        "passed": true,
+        "hit_rate": 0.0,
+        "valid_return_rate": 0.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L1": {
+        "primary_metric": "hit_rate",
+        "primary_value": 0.99,
+        "passed": true,
+        "hit_rate": 0.99,
+        "valid_return_rate": 0.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L2": {
+        "primary_metric": "valid_return_rate",
+        "primary_value": 0.22,
+        "passed": false,
+        "hit_rate": 0.94,
+        "valid_return_rate": 0.22,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L3": {
+        "primary_metric": "target_rate",
+        "primary_value": 0.0,
+        "passed": false,
+        "hit_rate": 0.98,
+        "valid_return_rate": 0.2,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L4": {
+        "primary_metric": "worst_bucket_valid_return_rate",
+        "primary_value": 0.04878048780487805,
+        "passed": false,
+        "hit_rate": 0.89,
+        "valid_return_rate": 0.13,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L5": {
+        "primary_metric": "worst_bucket_valid_return_rate",
+        "primary_value": 0.0,
+        "passed": false,
+        "hit_rate": 0.44,
+        "valid_return_rate": 0.05,
+        "target_rate": 0.0,
+        "episodes": 100
+      }
+    }
+  },
+  "untrained_primitive": {
+    "name": "untrained-primitive",
+    "seed": 0,
+    "weights": null,
+    "levels": {
+      "L0": {
+        "primary_metric": "incoming_valid_rate",
+        "primary_value": 1.0,
+        "passed": true,
+        "hit_rate": 0.0,
+        "valid_return_rate": 0.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L1": {
+        "primary_metric": "hit_rate",
+        "primary_value": 0.99,
+        "passed": true,
+        "hit_rate": 0.99,
+        "valid_return_rate": 0.0,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L2": {
+        "primary_metric": "valid_return_rate",
+        "primary_value": 0.58,
+        "passed": false,
+        "hit_rate": 0.95,
+        "valid_return_rate": 0.58,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L3": {
+        "primary_metric": "target_rate",
+        "primary_value": 0.02,
+        "passed": false,
+        "hit_rate": 1.0,
+        "valid_return_rate": 0.69,
+        "target_rate": 0.02,
+        "episodes": 100
+      },
+      "L4": {
+        "primary_metric": "worst_bucket_valid_return_rate",
+        "primary_value": 0.21951219512195122,
+        "passed": false,
+        "hit_rate": 0.9,
+        "valid_return_rate": 0.54,
+        "target_rate": 0.0,
+        "episodes": 100
+      },
+      "L5": {
+        "primary_metric": "worst_bucket_valid_return_rate",
+        "primary_value": 0.0,
+        "passed": false,
+        "hit_rate": 0.44,
+        "valid_return_rate": 0.09,
+        "target_rate": 0.0,
+        "episodes": 100
+      }
+    }
+  },
+  "aggregate": {
+    "L0": {
+      "primary_metric": "incoming_valid_rate",
+      "primary_value": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "seeds_passed": 5
+    },
+    "L1": {
+      "primary_metric": "hit_rate",
+      "primary_value": {
+        "mean": 0.99,
+        "ci95": [
+          0.99,
+          0.99
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "seeds_passed": 5
+    },
+    "L2": {
+      "primary_metric": "valid_return_rate",
+      "primary_value": {
+        "mean": 0.6,
+        "ci95": [
+          0.5751707011778423,
+          0.6248292988221577
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 0.6,
+        "ci95": [
+          0.5751707011778423,
+          0.6248292988221577
+        ]
+      },
+      "seeds_passed": 0
+    },
+    "L3": {
+      "primary_metric": "target_rate",
+      "primary_value": {
+        "mean": 0.016,
+        "ci95": [
+          0.0092002164740339,
+          0.0227997835259661
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 0.6839999999999999,
+        "ci95": [
+          0.6338780150432965,
+          0.7341219849567033
+        ]
+      },
+      "seeds_passed": 0
+    },
+    "L4": {
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": {
+        "mean": 0.2146341463414634,
+        "ci95": [
+          0.20109268292682927,
+          0.22817560975609755
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 0.564,
+        "ci95": [
+          0.547344,
+          0.5806559999999998
+        ]
+      },
+      "seeds_passed": 0
+    },
+    "L5": {
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "primary_value": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "valid_return_rate": {
+        "mean": 0.092,
+        "ci95": [
+          0.086448,
+          0.097552
+        ]
+      },
+      "seeds_passed": 0
+    }
+  }
+}

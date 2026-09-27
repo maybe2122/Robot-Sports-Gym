@@ -4,29 +4,29 @@
 
 状态含义：`done` 已合入并有测试覆盖；`blocked` 代码就位但缺运行环境验证；`todo` 未开始。
 
-**最后核对：2026-09-02，分支 `feat/shared-task-config`。**
+**最后核对：2026-09-28，v0.3.0 发布前，分支 `feat/shared-task-config`。**
 
 ---
 
 ## 一、现在做到哪了
 
-一句话：**乒乓球是一个能跑的机体基准（state + vision 两条轨道），网球是一个能跑的夹具基准；
-其余三项运动、双足机体、Isaac 实跑、学习基线都还没有。**
+一句话：**五项标准单回合任务都能跑、都有固定集与基线（含学习基线），乒乓球还有两台机体和视觉轨道；
+缺的是机体化（除乒乓球外都是 mocap 夹具）、双足资产、真实世界标定和排行榜本身。**
 
 | 维度 | 现状 |
 |---|---|
-| 已注册任务 | 4 个：`table-tennis-return-v0`（mocap 夹具）、`table-tennis-return-panda-v1`（Franka Panda，7 关节）、`table-tennis-return-g1-v1`（固定基座 Unitree G1，10 关节）、`tennis-return-v0`（mocap 夹具） |
-| Gymnasium 环境 | 5 个，全部通过 `check_env`：`TableTennisReturn-v0`、`TableTennisReturn-Panda-v1`(obs 33)、`TableTennisReturn-Panda-Vision-v1`、`TableTennisReturn-G1-v1`(obs 39)、`TennisReturn-v0` |
-| 观测轨道 | state 与 vision 两条；vision 的观测对象上没有 `ball` 字段，由构造保证 |
-| 后端 | MuJoCo 全通；Isaac Lab 代码就位但**未实跑** |
-| 固定集 | `table_tennis/return-v0`（冻结，dev 12 / test 24）、`table_tennis/return-v1` 与 `tennis/return-v0`（各 train 1200 / dev 300 / test 600，每级 100） |
-| 指标 | `BENCHMARK_SPEC` §7 八项全部落地（含 safety、energy、contact_error、robustness_gap、latency） |
-| 基线 | Panda 4 条（hold/random/intercept/vision）、G1 3 条（hold/random/intercept）、网球 2 条。**没有一条是可提交成绩**。Panda `intercept` L1 命中 100%（过 90% 门槛），G1 85% |
-| 提交链路 | `scripts/package_submission.py`（`make submission`）产出完整结果包 |
-| 测试 | 379 项收集，**378 通过 / 1 skip**（skip 是 `test_isaac_lab_env`，缺 Isaac Lab 运行时） |
-| Lint | `ruff check src tests scripts` 零问题 |
+| 已注册任务 | 8 个：乒乓球 4 个（mocap 夹具 v0、Panda v1、G1 v1、站立 G1 v2）、`tennis-return-v0`、`badminton-serve-v0`、`football-kick-v0`、`basketball-shoot-v0` |
+| Gymnasium 环境 | 11 个（含 3 个视觉环境），全部通过 `check_env` |
+| 后端 | MuJoCo 全通；Isaac Lab 乒乓球夹具环境在 CPU 与 GPU PhysX 上实跑，与 MuJoCo 逐条对比（飞行段 3.5 mm、判定一致 99%） |
+| 固定集 | 7 份：`table_tennis/return-v0`（冻结小集）、`return-v1`、`tennis/return-v0`、`badminton/serve-v0`、`football/kick-v0`、`basketball/shoot-v0`，每级 train 200 / dev 50 / test 100；全部 `experimental` |
+| 基线 | 每项任务都有下限（hold/noop/random）与参考控制器；**五项任务都有 5 种子的 PPO 原语学习基线**（`docs/LEARNED_BASELINES.md`）；`reports/cross-task-summary.md` 一表汇总 |
+| 策略接口 | L3 目标经 `info["target"]` / `TargetObservation` / `reset(target=...)` 交给策略 |
+| 发布件 | 带版本号的 JSON Schema、结果包 + `audit_submission.py`、`THIRD_PARTY_LICENSES.md`、英文 `API.md`、`uv.lock`（3.10 与 3.13 从零复现后全部测试通过）、wheel/sdist 可构建 |
+| 测试 | 530 项：529 通过、1 skip（`test_isaac_lab_env` 在无 Isaac 的环境里跳过）；Python 3.10 与 3.13 均验证 |
 
-按里程碑：**M1 Isaac 已在 CPU PhysX 实跑（GPU 未跑）；M2 差双足资产与 Isaac 侧实现；M3 五项运动都有可运行任务（足球/羽毛球/篮球/网球为 mocap 夹具），学习基线待做。**
+按里程碑：**M1 完成**（Isaac 实跑 + 共享任务配置）；**M2 差双足资产与 Isaac 侧机体 adapter**；**M3 五项都有任务与
+三类基线，但只有乒乓球是机体任务**；M4 未开始；M5 有了第一批学习基线与 5 种子协议；M6 的文档/schema/许可证/
+审计/锁文件已具备，DOI 与外部复现未做。
 
 ### M1 — Benchmark API
 
@@ -35,7 +35,7 @@
 | 1 | 后端共享任务配置 `TableTennisReturnTaskConfig` | done | 坐标约定、球台几何、control rate、动作/观测边界、reward 权重集中定义；MuJoCo 环境、Runner、CLI 全部由它派生 |
 | 2 | world↔task 坐标帧变换 `TaskFrame` | done | 位置/速度/接触样本换算有往返测试；轴约定不一致时报错而非静默算错 |
 | 3 | MuJoCo 路径消费共享配置 | done | `envs.py` 无硬编码 Box 边界；报告带 `task_config` 快照 |
-| 4 | Isaac Lab `ManagerBasedRLEnv` 向量化环境 | done（CPU PhysX） | 2026-09-27 在 Isaac Sim 5.0 / Isaac Lab 0.46.2 上实跑 300 并行环境；`scripts/backend_parity.py` 与 MuJoCo 同批球逐条对比：飞行段中位差 3.5 mm，Judge 一致率 99%，接触段反弹高度差约一成（M4 待标定）。实跑修复了气动力双重施加与固定集参数漏传。GPU PhysX 未跑。见 [`ISAAC_SIM.md`](ISAAC_SIM.md) |
+| 4 | Isaac Lab `ManagerBasedRLEnv` 向量化环境 | done（CPU + GPU PhysX） | 2026-09-27 在 Isaac Sim 5.0 / Isaac Lab 0.46.2 上实跑 300 并行环境；`scripts/backend_parity.py` 与 MuJoCo 同批球逐条对比：飞行段中位差 3.5 mm，Judge 一致率 99%，接触段反弹高度差约一成（M4 待标定）。实跑修复了气动力双重施加与固定集参数漏传。GPU PhysX 同样实跑（与 CPU 结果几乎相同）。见 [`ISAAC_SIM.md`](ISAAC_SIM.md) |
 
 ### M2 — Robot and sensor layer
 
@@ -73,25 +73,15 @@
 
 ## 二、接下来计划做什么
 
-按依赖和收益排序。前三项是"把已经做完的东西变成可信的东西"，之后才是加运动。
-
-| 顺序 | 动作 | 为什么现在做 | 完成标志 |
+| 顺序 | 动作 | 为什么 | 完成标志 |
 |---:|---|---|---|
-| 1 | **提交本批次** | 工作区有 60+ 个未提交文件，整个 M2/M3 都还没进历史；现在产出的任何结果包都带脏树标记，不可复现（问题 1） | `git status` 干净，`package_submission.py` 的 manifest 不再标脏 |
-| 2 | ~~机体基线表切到 `table_tennis/return-v1` 并重跑~~（done） | Panda 默认 bank 与脚本已切换，完整基线表已重跑 | dev 每格 n=50、test 每格 n=100；报告记录 v1 digest、逐级结果和区间 |
-| 3 | ~~复查 L4/L5 分级构造~~（done） | L4 与 L5 是独立分层的 challenge distribution，只有 L5 加扰动，点估计不保证单调 | `robustness_gap.level_breakdown` 分开报告 L4/L5 的 n、点估计与 Wilson 区间；解释写入 `SUBMISSION.md` |
-| 4 | **M3 剩余三项运动**（#13/#14/#15） | 网球已经把模板跑通，边际成本最低的扩展 | 每项：环境过 `check_env`、固定集有 manifest、两条基线进统一报告 |
-| 5 | **双足机器人资产**（#10b） | 是 #13 足球的硬前置 | 与 Panda 同一套 `RobotAdapter` 与 `assets.py` 解析路径，许可证清单进报告 |
-| 6 | **Isaac Lab GPU 实跑 + Isaac 侧 adapter/sensor 实现**（M1 #4） | "同一机器人跑两个后端"是发布门槛，目前只是设计不是事实（问题 4、5） | `test_isaac_lab_env` 不再 skip；双后端相同初始条件的轨迹差异报告 |
-| 7 | **统一跨任务报告**（#16） | 五项运动齐了才有意义 | 一条命令产出全部任务 × 全部难度的汇总表 |
-| 8 | **M4 保真标定 / M5 学习基线** | 没有学习基线，所有分数都还是脚本控制器读特权状态跑出来的（问题 8、9） | 见路线图 |
-
-小项（随手可做，不排队）：
-
-- ~~同步 `ROADMAP.md` 的传感器层与 TennisReturn 勾选~~（done）。
-- ~~让 CI 与 Makefile 一样 lint `src tests scripts`~~（done）。
-
----
+| 1 | **双足资产 + 足球机体任务**（#10b / #13 机体版） | 足球是唯一"应该用腿"的任务，现在只有 mocap 鞋面 | G1 站立任务的机体层复用到踢球；许可证清单进报告 |
+| 2 | **网球/羽毛球/篮球的机体任务** | 除乒乓球外全是夹具，分数不描述机器人 | 至少一项在 Panda/G1 上跑通 L0–L2 |
+| 3 | **Isaac 侧机体 adapter 与其他运动的 Isaac 环境** | 双后端目前只覆盖乒乓球夹具 | Panda 在 Isaac 上跑同一批球，出一致性报告 |
+| 4 | **M4 保真标定** | 反弹后轨迹两后端差约 5 cm、接触参数都来自夹具设定 | 至少一项运动有实测轨迹/冲量数据与拟合 |
+| 5 | **闭环学习基线** | 现在的学习基线是"一次决策的原语参数"，L3 定点基本没学出来 | 至少一项任务上闭环策略超过原语策略 |
+| 6 | **排行榜落地**（M6） | 审计工具有了，表没有；固定集都还是 experimental | 冻结一份 `leaderboard_eligible` 固定集 + 隐藏测试集 |
+| 7 | **DOI 与外部复现** | M6 发布门槛 | GitHub Release 接入 Zenodo；至少一位外部用户按 README 复现一张基线表 |
 
 ## 三、当前已知问题
 
@@ -99,16 +89,16 @@
 
 | # | 问题 | 具体表现 | 影响 | 处理方向 |
 |---:|---|---|---|---|
-| 1 | **整批工作未提交** | 工作区 60+ 个改动/新增文件，`feat/shared-task-config` 上最后一次提交还停在框架泛化之前 | 结果包 manifest 会打脏树标记；任何人拿到 commit 都复现不出这些报告 | 分批提交，见计划 1 |
+| 1 | ~~整批工作未提交~~（已解决） | 工作区 60+ 个改动/新增文件，`feat/shared-task-config` 上最后一次提交还停在框架泛化之前 | 结果包 manifest 会打脏树标记；任何人拿到 commit 都复现不出这些报告 | 分批提交，见计划 1 |
 | 2 | ~~机体基线统计量不足~~（已修复） | Panda 默认固定集已改为 `table_tennis/return-v1`，完整报告已重跑 | dev 每格 n=50 / test 每格 n=100，v1 digest 与 Wilson 区间已记录 |
 | 3 | ~~难度分级不单调~~（已澄清） | 网球 scripted 的聚合 gap 曾为负：一半因为 L1 被计入分布内分子（已改，见 #15），一半因为 mocap 路径从未施加 L5 扰动（已修，L5 现在 0%，gap +31%） | 报告新增逐级 breakdown 与区间；规范明确两级点估计不承诺单调 |
-| 4 | **Isaac Lab 从未实跑** | `test_isaac_lab_env` 是全套 379 项里唯一的 skip（缺运行时） | 双后端是发布门槛。目前 Isaac 路径的正确性完全没有证据 | 需要一台装 Isaac Sim 的 GPU 机器，先做最小实例化 |
+| 4 | ~~Isaac Lab 从未实跑~~（已解决） | 2026-09-27 在 CPU 与 GPU PhysX 上实跑并与 MuJoCo 逐条对比，修复了两个缺陷 | 见 `ISAAC_SIM.md` | 机体 adapter 仍缺（问题 5） |
 | 5 | **Isaac 侧没有 robot / sensor 实现** | `robot.py`、`sensors.py` 是后端无关协议，但只有 MuJoCo 的实现（`backends/mujoco_robot.py`、`mujoco_sensors.py`） | "同一个 Panda 跑两个后端"目前是设计意图，不是已验证事实 | 与问题 4 一起做 |
 | 6 | ~~力矩控制模式未实现~~（已修复） | Panda adapter 将 affine 位置 actuator 显式切换为 unit-gain、zero-bias torque actuator，并可逆恢复 | 命令以 N·m 解释并按 87/12 N·m 限幅；reset 回到位置模式；模式往返有物理测试 |
 | 7 | **bucket 级样本量仍有限（已缓解）** | v1 每级 100 条，但每 bucket 只有 14–68 条 | L4/L5 主指标噪声仍较大 | `assessment` 已逐 bucket 报样本量与 Wilson 95% 区间；发表级结果仍应扩固定集 |
-| 8 | **没有学习基线** | 全部基线都是脚本控制器，且 `intercept` / `scripted` 读特权球状态 | 现在所有分数刻画的是"夹具/机体能力上限"，不是"策略能做到什么" | M5 |
+| 8 | **学习基线只有原语参数级别**（部分解决） | 全部基线都是脚本控制器，且 `intercept` / `scripted` 读特权球状态 | 现在所有分数刻画的是"夹具/机体能力上限"，不是"策略能做到什么" | M5 |
 | 9 | **物理保真只覆盖回弹** | `reports/` 只有回弹保真；飞行段轨迹、击球冲量未对真实测量标定。拍面 e≈0.82–0.86 只是落在文献区间内，不是拟合本项目实测数据 | sim-to-real gap 无法量化 | M4 |
-| 10 | **双足资产空缺** | 未选型 | 直接阻塞 #13 FootballKickToTarget | 计划 5 |
+| 10 | **双足资产空缺** | 未选型（G1 站立任务已有，但没有踢球的腿部控制） | 足球只有 mocap 鞋面夹具 | 计划 1 |
 | 11 | **Panda 在这份固定集上的能力上限很硬**（已按 v1 重测） | 逐球标定：1197 条 train 球够到 1196 条、其中 1182 条来得及（L0–L3 全中，L4 193/197，L5 189/200）。拍面前向最大速度 1.16–4.70 m/s，合法回球（吊高）需要 3.44–6.48 m/s | 拦截已不是瓶颈——`intercept` 在 L1 命中 100%；回球才是，test 上 L2 只有 16%，L3 以上 `target_rate` 仍为 0 | **这是真实能力上限不是 bug**，但要在 spec 里写清楚。注意别读 `verdict.can_reach_every_shot_in_time`：那个判据打的是外接矩形的角点，没有球去过那里 |
 | 12 | **CI 覆盖面仍窄（已缓解）** | CPU job 已 lint `src tests scripts`，校验基线报告的 bank digest/n/区间/breakdown，并 smoke 跑乒乓与网球 CLI；仍没有 GPU/Isaac job 或 nightly 物理重跑 | 报告与固定集口径漂移已会失败；物理回归漂移仍需 nightly | M5 的 CI 项 |
 | 13 | **leaderboard 审计流程未定** | 结果包格式已定，怎么审没定 | M6 发布门槛 | M6 |

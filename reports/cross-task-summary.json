@@ -1,5 +1,377 @@
 {
-  "generated_at": "2026-09-27T17:04:10+00:00",
+  "generated_at": "2026-09-27T18:24:03+00:00",
+  "learned": [
+    {
+      "episodes_per_seed": 8000,
+      "levels": {
+        "L0": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "mean": 1.0,
+          "random_primitive": 1.0,
+          "seeds_passed": 5,
+          "untrained_primitive": 1.0
+        },
+        "L1": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "mean": 1.0,
+          "random_primitive": 1.0,
+          "seeds_passed": 5,
+          "untrained_primitive": 1.0
+        },
+        "L2": {
+          "ci95": [
+            0.9716131590943156,
+            0.9923868409056844
+          ],
+          "mean": 0.982,
+          "random_primitive": 0.13,
+          "seeds_passed": 5,
+          "untrained_primitive": 0.0
+        },
+        "L3": {
+          "ci95": [
+            0.18870400558503242,
+            0.3032959944149676
+          ],
+          "mean": 0.246,
+          "random_primitive": 0.04,
+          "seeds_passed": 0,
+          "untrained_primitive": 0.0
+        },
+        "L4": {
+          "ci95": [
+            0.8430282369177697,
+            0.8891369695903655
+          ],
+          "mean": 0.8660826032540676,
+          "random_primitive": 0.07142857142857142,
+          "seeds_passed": 5,
+          "untrained_primitive": 0.0
+        },
+        "L5": {
+          "ci95": [
+            0.36653952594755906,
+            0.4800077886304461
+          ],
+          "mean": 0.42327365728900257,
+          "random_primitive": 0.08823529411764706,
+          "seeds_passed": 0,
+          "untrained_primitive": 0.14285714285714285
+        }
+      },
+      "report": "learned-table_tennis-baselines.json",
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "sport": "table_tennis"
+    },
+    {
+      "episodes_per_seed": 8000,
+      "levels": {
+        "L0": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "mean": 1.0,
+          "random_primitive": 1.0,
+          "seeds_passed": 5,
+          "untrained_primitive": 1.0
+        },
+        "L1": {
+          "ci95": [
+            0.99,
+            0.99
+          ],
+          "mean": 0.99,
+          "random_primitive": 0.99,
+          "seeds_passed": 5,
+          "untrained_primitive": 0.99
+        },
+        "L2": {
+          "ci95": [
+            0.5751707011778423,
+            0.6248292988221577
+          ],
+          "mean": 0.6,
+          "random_primitive": 0.22,
+          "seeds_passed": 0,
+          "untrained_primitive": 0.58
+        },
+        "L3": {
+          "ci95": [
+            0.0092002164740339,
+            0.0227997835259661
+          ],
+          "mean": 0.016,
+          "random_primitive": 0.0,
+          "seeds_passed": 0,
+          "untrained_primitive": 0.02
+        },
+        "L4": {
+          "ci95": [
+            0.20109268292682927,
+            0.22817560975609755
+          ],
+          "mean": 0.2146341463414634,
+          "random_primitive": 0.04878048780487805,
+          "seeds_passed": 0,
+          "untrained_primitive": 0.21951219512195122
+        },
+        "L5": {
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "mean": 0.0,
+          "random_primitive": 0.0,
+          "seeds_passed": 0,
+          "untrained_primitive": 0.0
+        }
+      },
+      "report": "learned-tennis-baselines.json",
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "sport": "tennis"
+    },
+    {
+      "episodes_per_seed": 8000,
+      "levels": {
+        "L0": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "mean": 1.0,
+          "random_primitive": 1.0,
+          "seeds_passed": 5,
+          "untrained_primitive": 1.0
+        },
+        "L1": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "mean": 1.0,
+          "random_primitive": 1.0,
+          "seeds_passed": 5,
+          "untrained_primitive": 1.0
+        },
+        "L2": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "mean": 1.0,
+          "random_primitive": 0.62,
+          "seeds_passed": 5,
+          "untrained_primitive": 1.0
+        },
+        "L3": {
+          "ci95": [
+            0.356448,
+            0.367552
+          ],
+          "mean": 0.362,
+          "random_primitive": 0.08,
+          "seeds_passed": 0,
+          "untrained_primitive": 0.19
+        },
+        "L4": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "mean": 1.0,
+          "random_primitive": 0.36,
+          "seeds_passed": 5,
+          "untrained_primitive": 1.0
+        },
+        "L5": {
+          "ci95": [
+            0.783670588235294,
+            0.8163294117647059
+          ],
+          "mean": 0.7999999999999999,
+          "random_primitive": 0.36363636363636365,
+          "seeds_passed": 5,
+          "untrained_primitive": 0.7941176470588235
+        }
+      },
+      "report": "learned-badminton-baselines.json",
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "sport": "badminton"
+    },
+    {
+      "episodes_per_seed": 8000,
+      "levels": {
+        "L0": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "mean": 1.0,
+          "random_primitive": 1.0,
+          "seeds_passed": 5,
+          "untrained_primitive": 1.0
+        },
+        "L1": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "mean": 1.0,
+          "random_primitive": 1.0,
+          "seeds_passed": 5,
+          "untrained_primitive": 1.0
+        },
+        "L2": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "mean": 1.0,
+          "random_primitive": 0.78,
+          "seeds_passed": 5,
+          "untrained_primitive": 1.0
+        },
+        "L3": {
+          "ci95": [
+            0.06108568143162456,
+            0.11491431856837546
+          ],
+          "mean": 0.08800000000000001,
+          "random_primitive": 0.09,
+          "seeds_passed": 0,
+          "untrained_primitive": 0.49
+        },
+        "L4": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "mean": 1.0,
+          "random_primitive": 0.56,
+          "seeds_passed": 5,
+          "untrained_primitive": 1.0
+        },
+        "L5": {
+          "ci95": [
+            0.24984242424242425,
+            0.28349090909090907
+          ],
+          "mean": 0.26666666666666666,
+          "random_primitive": 0.15151515151515152,
+          "seeds_passed": 0,
+          "untrained_primitive": 0.21212121212121213
+        }
+      },
+      "report": "learned-football-baselines.json",
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "sport": "football"
+    },
+    {
+      "episodes_per_seed": 8000,
+      "levels": {
+        "L0": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "mean": 1.0,
+          "random_primitive": 1.0,
+          "seeds_passed": 5,
+          "untrained_primitive": 1.0
+        },
+        "L1": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "mean": 1.0,
+          "random_primitive": 1.0,
+          "seeds_passed": 5,
+          "untrained_primitive": 1.0
+        },
+        "L2": {
+          "ci95": [
+            0.24154095175937387,
+            0.48645904824062614
+          ],
+          "mean": 0.364,
+          "random_primitive": 0.04,
+          "seeds_passed": 0,
+          "untrained_primitive": 0.02
+        },
+        "L3": {
+          "ci95": [
+            0.06508568143162455,
+            0.11891431856837545
+          ],
+          "mean": 0.092,
+          "random_primitive": 0.02,
+          "seeds_passed": 0,
+          "untrained_primitive": 0.0
+        },
+        "L4": {
+          "ci95": [
+            -0.028415999999999997,
+            0.060416
+          ],
+          "mean": 0.016,
+          "random_primitive": 0.0,
+          "seeds_passed": 0,
+          "untrained_primitive": 0.04
+        },
+        "L5": {
+          "ci95": [
+            -0.04709985192431537,
+            0.179705912530376
+          ],
+          "mean": 0.06630303030303031,
+          "random_primitive": 0.0,
+          "seeds_passed": 0,
+          "untrained_primitive": 0.0
+        }
+      },
+      "report": "learned-basketball-baselines.json",
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "sport": "basketball"
+    }
+  ],
   "schema": "multisport-cross-task-summary-v0",
   "split": "test",
   "tasks": [
