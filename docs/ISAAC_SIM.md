@@ -146,7 +146,19 @@ Judge 判定一致率：`incoming_valid` 98.7%、`failure_reason` 99.3%。4 个�
 CCD（启动时会提示忽略该设置），在这批球上没有出现穿透；更快的球（网球等）仍需单独确认。第一次尝试 GPU
 时本机显存被其他训练任务占满，PhysX 无法分配内存——这是环境问题，不是代码问题。
 
-仍未验证：机体（Panda/G1）在 Isaac 侧的 adapter；网球等其他运动的 Isaac 环境。
+### 机体：Franka Panda 的运动学一致性（2026-09-28）
+
+Isaac 侧加载 Franka 官方 USD（`franka.usd`，由 `MULTISPORT_FRANKA_USD` 指定，不随仓库分发），与 MuJoCo 侧
+Menagerie 的 Panda 在 50 组随机关节角下比较手部坐标系（`scripts/robot_kinematic_parity.py`，报告
+[`reports/panda-kinematic-parity.json`](../reports/panda-kinematic-parity.json)）：
+
+- 手部位置差最大 0.46 µm，7 个关节限位最大差 5.7e-8 rad——**两边是同一条运动学链**；
+- 手部姿态差是一个在所有位形下都恒定的绕手部 z 轴 180° 旋转（各位形间偏差 5.9e-7）：两份资产对手部坐标系的
+  约定不同，Isaac 侧装拍面时要把偏移量先转这 180°。
+- Isaac Lab 默认初始位形不在 joint4 的限位内（0 ∉ [−3.07, −0.07]），必须显式给 ready pose 作为初始状态。
+
+仍未完成：Isaac 侧的 Panda 回球环境本身（装拍、关节位置动作、同一 Judge、与 MuJoCo 的轨迹对比）；G1 与其他运动
+的 Isaac 环境。
 
 如果 Isaac 环境里 Isaac Lab 的可编辑安装指向的源码目录已被移动，可以把源码目录临时放到 `PYTHONPATH` 上：
 
