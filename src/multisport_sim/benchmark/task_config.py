@@ -20,6 +20,10 @@ from ..specs import CAMPUS_OFFSETS, Sport
 from .observation import ObservationLayout, joint_space_layout
 from .rules.badminton import BADMINTON as BADMINTON_RULES
 from .rules.badminton import BadmintonCourtSpec
+from .rules.basketball import BASKET as BASKET_RULES
+from .rules.basketball import BasketSpec
+from .rules.football import FOOTBALL_GOAL as FOOTBALL_GOAL_RULES
+from .rules.football import FootballGoalSpec
 from .rules.table_tennis import TABLE_TENNIS as TABLE_TENNIS_RULES
 from .rules.table_tennis import TableTennisTableSpec
 from .rules.tennis import TENNIS as TENNIS_RULES
@@ -609,6 +613,103 @@ class BadmintonServeTaskConfig(ShotTaskConfig):
 
 BADMINTON_SERVE_V0 = BadmintonServeTaskConfig()
 """Shared configuration of the experimental badminton serve task."""
+
+
+@dataclass(frozen=True)
+class FootballKickTaskConfig(ShotTaskConfig):
+    """Football kick-to-target: IFAB goal geometry, task frame at the goal line.
+
+    The frame's origin is the centre of the east goal line on the ground; the
+    kicker is at x < 0, so every shared convention -- robot side negative,
+    launch toward +x -- holds without a special case.
+    """
+
+    task_id: str = "football-kick-v0"
+    env_id: str = "MultiSportRobot/FootballKick-v0"
+    sport: str = Sport.FOOTBALL.value
+    bank_resource: str = "football/kick-v0"
+    timeout_s: float = 3.0
+    goal: FootballGoalSpec = FOOTBALL_GOAL_RULES
+    frame: TaskFrame = field(default_factory=lambda: TaskFrame(origin_xyz=(52.5, 0.0, 0.0)))
+    workspace: EffectorWorkspace = field(
+        default_factory=lambda: EffectorWorkspace(
+            position_low=(-30.0, -34.0, 0.02),
+            position_high=(-0.5, 34.0, 1.2),
+        )
+    )
+    ball_limits: BallObservationLimits = field(
+        default_factory=lambda: BallObservationLimits(
+            position_low=(-110.0, -40.0, -1.0),
+            position_high=(10.0, 40.0, 20.0),
+            linear_velocity_limit=60.0,
+            angular_velocity_limit=200.0,
+        )
+    )
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if not isinstance(self.goal, FootballGoalSpec):
+            raise TypeError("goal must be a FootballGoalSpec")
+
+    def rule_geometry(self) -> dict[str, Any]:
+        return {
+            "goal": {
+                "goal_half_width_m": self.goal.goal_half_width_m,
+                "crossbar_height_m": self.goal.crossbar_height_m,
+                "pitch_length_m": self.goal.pitch_length_m,
+                "pitch_width_m": self.goal.pitch_width_m,
+                "ball_radius_m": self.goal.ball_radius_m,
+            }
+        }
+
+
+FOOTBALL_KICK_V0 = FootballKickTaskConfig()
+"""Shared configuration of the experimental football kick task."""
+
+
+@dataclass(frozen=True)
+class BasketballShootTaskConfig(ShotTaskConfig):
+    """Basketball shooting: FIBA basket geometry, task frame below the rim."""
+
+    task_id: str = "basketball-shoot-v0"
+    env_id: str = "MultiSportRobot/BasketballShoot-v0"
+    sport: str = Sport.BASKETBALL.value
+    bank_resource: str = "basketball/shoot-v0"
+    timeout_s: float = 4.0
+    basket: BasketSpec = BASKET_RULES
+    frame: TaskFrame = field(default_factory=lambda: TaskFrame(origin_xyz=(12.425, 0.0, 0.0)))
+    workspace: EffectorWorkspace = field(
+        default_factory=lambda: EffectorWorkspace(
+            position_low=(-9.0, -7.5, 0.3),
+            position_high=(-0.3, 7.5, 3.2),
+        )
+    )
+    ball_limits: BallObservationLimits = field(
+        default_factory=lambda: BallObservationLimits(
+            position_low=(-16.0, -9.0, -1.0),
+            position_high=(3.0, 9.0, 10.0),
+            linear_velocity_limit=30.0,
+            angular_velocity_limit=100.0,
+        )
+    )
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if not isinstance(self.basket, BasketSpec):
+            raise TypeError("basket must be a BasketSpec")
+
+    def rule_geometry(self) -> dict[str, Any]:
+        return {
+            "basket": {
+                "rim_height_m": self.basket.rim_height_m,
+                "rim_inner_radius_m": self.basket.rim_inner_radius_m,
+                "ball_radius_m": self.basket.ball_radius_m,
+            }
+        }
+
+
+BASKETBALL_SHOOT_V0 = BasketballShootTaskConfig()
+"""Shared configuration of the experimental basketball shooting task."""
 
 
 @dataclass(frozen=True)

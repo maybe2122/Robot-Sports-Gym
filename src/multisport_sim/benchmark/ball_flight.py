@@ -33,7 +33,7 @@ import numpy as np
 from ..specs import AIR_DENSITY, BALLS, Sport
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
-    from collections.abc import Sequence
+    from collections.abc import Callable, Sequence
 
 GRAVITY = 9.81
 
@@ -265,6 +265,63 @@ class BallFlightModel:
         lift = min(MAGNUS_LIFT_CEILING, MAGNUS_SCALE * self.radius * rate / speed)
         scale = self._lift_factor * speed * speed * lift / (self.mass * spin_norm)
         return ax + scale * sx, ay + scale * sy, az + scale * sz
+
+    def fly_until(
+        self,
+        position: Sequence[float],
+        velocity: Sequence[float],
+        event: Callable[[tuple[float, float, float], tuple[float, float, float]], float],
+        *,
+        horizon_s: float = 3.0,
+        floor_z: float | None = None,
+    ) -> tuple[float, tuple[float, float, float], tuple[float, float, float]] | None:
+        """Integrate free flight until ``event(position, velocity)`` changes sign.
+
+        ``event`` is evaluated after every step; the first step at which it
+        goes from negative to non-negative is the event, located by linear
+        interpolation inside that step.  Returns ``(time, position, velocity)``
+        at the event, or ``None`` if it does not happen within ``horizon_s`` or
+        the ball's centre first drops below ``floor_z``.
+
+        The launch tasks' planners ask "where does this ball cross the goal
+        line" or "where does it come down through the rim's plane"; this is the
+        one integrator both use, with the backend's force law and no spin.
+        """
+        px, py, pz = (float(value) for value in position)
+        vx, vy, vz = (float(value) for value in velocity)
+        dt = self.timestep_s
+        half, sixth = 0.5 * dt, dt / 6.0
+        elapsed = 0.0
+        previous_value = event((px, py, pz), (vx, vy, vz))
+        while elapsed < horizon_s:
+            ppx, ppy, ppz, pvx, pvy, pvz = px, py, pz, vx, vy, vz
+            a1x, a1y, a1z = self._scalar_acceleration(vx, vy, vz, None)
+            b1x, b1y, b1z = vx + half * a1x, vy + half * a1y, vz + half * a1z
+            a2x, a2y, a2z = self._scalar_acceleration(b1x, b1y, b1z, None)
+            b2x, b2y, b2z = vx + half * a2x, vy + half * a2y, vz + half * a2z
+            a3x, a3y, a3z = self._scalar_acceleration(b2x, b2y, b2z, None)
+            b3x, b3y, b3z = vx + dt * a3x, vy + dt * a3y, vz + dt * a3z
+            a4x, a4y, a4z = self._scalar_acceleration(b3x, b3y, b3z, None)
+            px += sixth * (vx + 2.0 * b1x + 2.0 * b2x + b3x)
+            py += sixth * (vy + 2.0 * b1y + 2.0 * b2y + b3y)
+            pz += sixth * (vz + 2.0 * b1z + 2.0 * b2z + b3z)
+            vx += sixth * (a1x + 2.0 * a2x + 2.0 * a3x + a4x)
+            vy += sixth * (a1y + 2.0 * a2y + 2.0 * a3y + a4y)
+            vz += sixth * (a1z + 2.0 * a2z + 2.0 * a3z + a4z)
+            elapsed += dt
+            if floor_z is not None and pz < floor_z:
+                return None
+            value = event((px, py, pz), (vx, vy, vz))
+            if previous_value < 0.0 <= value:
+                span = value - previous_value
+                alpha = 1.0 if span <= 0.0 else -previous_value / span
+                return (
+                    elapsed - dt + alpha * dt,
+                    (ppx + alpha * (px - ppx), ppy + alpha * (py - ppy), ppz + alpha * (pz - ppz)),
+                    (pvx + alpha * (vx - pvx), pvy + alpha * (vy - pvy), pvz + alpha * (vz - pvz)),
+                )
+            previous_value = value
+        return None
 
     def predict_plane_crossing(
         self,

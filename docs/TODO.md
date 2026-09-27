@@ -26,7 +26,7 @@
 | 测试 | 379 项收集，**378 通过 / 1 skip**（skip 是 `test_isaac_lab_env`，缺 Isaac Lab 运行时） |
 | Lint | `ruff check src tests scripts` 零问题 |
 
-按里程碑：**M1 Isaac 已在 CPU PhysX 实跑（GPU 未跑）；M2 差双足资产与 Isaac 侧实现；M3 五项运动做完三项。**
+按里程碑：**M1 Isaac 已在 CPU PhysX 实跑（GPU 未跑）；M2 差双足资产与 Isaac 侧实现；M3 五项运动都有可运行任务（足球/羽毛球/篮球/网球为 mocap 夹具），学习基线待做。**
 
 ### M1 — Benchmark API
 
@@ -64,10 +64,10 @@
 |---|---|---|---|---|
 | 11 | 多运动任务框架泛化 | done | — | `ShotTaskConfig`、`ShotJudge`、`RectangularSurface`、`NetReturnJudge`、`MujocoSportProfile`、`TaskEntry`；Shot Bank 支持声明 opponent→robot 来球或 robot-side 静止/向前发球，旧 manifest 兼容 |
 | 12 | TennisReturn | done | 11 | `tennis-return-v0`：复用 `NetReturnJudge` 与全部 L0–L5 门槛、网球 benchmark 线床夹具（e≈0.79 标定）、固定 Shot Bank、`TennisReturn-v0` 通过 `check_env`、noop+scripted 基线。见 [`TENNIS.md`](TENNIS.md) |
-| 13 | FootballKickToTarget | todo | 11, 10b | 新 Judge（触球、目标区/球门命中、出界）、踢球器夹具、Shot Bank、环境注册、baseline |
+| 13 | FootballKickToTarget | done（mocap 夹具） | 11 | `football-kick-v0`：任务坐标原点在球门线、IFAB 进球判定（整球越线）、球门口 (y,z) 放置平面、`football/kick-v0` 固定集（滚动球从纯滚动开始）、足球 benchmark 场景用 PGS 求解器（修复 Newton 的方向相关伪影）、`FootballKick-v0` 通过 `check_env`、noop+scripted 基线。机体版仍依赖 #10b。见 [`LAUNCH_TASKS.md`](LAUNCH_TASKS.md) |
 | 14 | BadmintonServe | done | 11 | `badminton-serve-v0`：发射类任务框架 `LaunchJudge` + BWF 发球规则 Judge（1.15 m 击球高度、对角单打发球区、擦网好球）、0.5 ms 步长与插值 mocap 夹具、压心来流的羽毛球气动力、`badminton/serve-v0` 固定集（每级 test 100）、`BadmintonServe-v0` 通过 `check_env`、noop+scripted 基线。见 [`BADMINTON.md`](BADMINTON.md) |
-| 15 | BasketballShoot | todo | 11 | 新 Judge（出手、篮圈/篮板接触序列、空心与打板进球）、投篮器夹具、Shot Bank、环境注册、baseline |
-| 16 | 五项任务 baseline 与统一报告 | todo | 12–15 | 每项提供 random 与 scripted baseline，统一进入 CLI 与 JSON/Markdown 报告；跨任务指标汇总 |
+| 15 | BasketballShoot | done（mocap 夹具） | 11 | `basketball-shoot-v0`：原点在篮圈正下方、FIBA 入筐判定（从上方穿过圈内，从下方穿过判 `fault`）、篮圈平面 (x,y) 放置平面、`basketball/shoot-v0` 固定集、推板夹具与出手延迟模型、`BasketballShoot-v0` 通过 `check_env`、noop+scripted 基线。见 [`LAUNCH_TASKS.md`](LAUNCH_TASKS.md) |
+| 16 | 五项任务 baseline 与统一报告 | done | 12–15 | 每项任务都有 floor 与 scripted/control 基线；`scripts/cross_task_report.py`（`make cross-task`）汇总全部任务 × 全部级别，`make baselines-all` 一条命令重跑全部输入。见 [`reports/cross-task-summary.md`](../reports/cross-task-summary.md) |
 
 ---
 
@@ -132,3 +132,5 @@
 三项的模板**：`BenchmarkEffector` 表加一项、`MujocoSportProfile` 加一项、`generate_shot_bank.py` 的
 `BANKS` 加一个 `BankPlan`、`SCRIPTED_DEFAULTS` 加一组参数、`TaskEntry` 加一条。足球与篮球还需要新的
 Judge（射门/投篮的接触序列不同），羽毛球可以复用 `NetReturnJudge`。
+
+| 21 | ~~L3 目标从未告知策略~~（已修复） | 观测、`info`、`reset` 参数里都没有目标，只有读 `ShotSpec` 的参考夹具能完成 L3 | 学习策略在 L3 上只能瞎猜 | 2026-09-28：`info["target"]`、`wrappers.TargetObservation`、`PolicyController` 向接受 `target` 的 `reset` 传目标。见 [`POLICY_INTERFACE.md`](POLICY_INTERFACE.md) |

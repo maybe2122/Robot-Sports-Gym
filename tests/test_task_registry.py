@@ -105,7 +105,7 @@ def test_mujoco_profile_names_follow_the_scene_convention() -> None:
 
 def test_unprofiled_sport_is_rejected_with_a_clear_error() -> None:
     with pytest.raises(ValueError, match="no MuJoCo benchmark profile"):
-        MujocoShotBackend(sport=Sport.BASKETBALL)
+        MujocoShotBackend(sport=Sport.SQUASH)
 
 
 def test_net_return_judge_scores_any_surface_not_only_a_table() -> None:

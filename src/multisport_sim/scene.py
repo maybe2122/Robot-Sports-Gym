@@ -335,6 +335,31 @@ BENCHMARK_EFFECTORS: dict[Sport, BenchmarkEffector] = {
         contact_solimp=(0.95, 0.99, 0.001),
         shape="box",
     ),
+    # A boot-sized striking face.  The task frame's origin is the east goal
+    # line (x = 52.5 m); the boot parks at the halfway line, out of play.
+    Sport.FOOTBALL: BenchmarkEffector(
+        sport=Sport.FOOTBALL,
+        parked_at=(28.0, -30.0, 0.3),
+        half_extents=(0.060, 0.030, 0.050),
+        rgba="0.05 0.05 0.06 1",
+        friction="0.80 0.01 0.001",
+        contact_solref=(0.004, 0.40),
+        contact_solimp=(0.95, 0.99, 0.001),
+        shape="box",
+    ),
+    # A flat launcher plate that strikes the ball upward and forward.  It is a
+    # fixture, not a hand: it measures whether the judge and the flight model
+    # score a shot correctly, and says nothing about how a robot would throw.
+    Sport.BASKETBALL: BenchmarkEffector(
+        sport=Sport.BASKETBALL,
+        parked_at=(4.0, 6.0, 1.0),
+        half_extents=(0.140, 0.030, 0.140),
+        rgba="0.20 0.20 0.24 1",
+        friction="0.80 0.01 0.001",
+        contact_solref=(0.004, 0.40),
+        contact_solimp=(0.95, 0.99, 0.001),
+        shape="box",
+    ),
 }
 
 BENCHMARK_TIMESTEPS: dict[Sport, float] = {
@@ -342,6 +367,16 @@ BENCHMARK_TIMESTEPS: dict[Sport, float] = {
     # than the shuttle's cork is wide.  Only the benchmark scene uses it, so the
     # regulation drop tests keep their calibrated 1 ms step.
     Sport.BADMINTON: 0.0005,
+}
+
+BENCHMARK_SOLVERS: dict[Sport, str] = {
+    # A boot striking a ball that rests on the pitch loads two soft contacts
+    # at once.  MuJoCo's Newton solver resolves that pair non-uniquely: kicked
+    # across the world axes it returned kilonewton normal and friction forces
+    # that cancel, launching the ball 4-7 degrees off the boot's normal with
+    # 20-30 rad/s of spurious spin (0.2 degrees and none along the x axis).
+    # PGS gives 0.15 degrees and no spin in every direction.
+    Sport.FOOTBALL: "PGS",
 }
 
 
@@ -677,32 +712,38 @@ def _table_tennis(x: float, y: float) -> list[str]:
 
 
 def _goal(prefix: str, x: float, y: float, facing: float) -> list[str]:
+    """IFAB goal: 7.32 m between the posts' inner edges, 2.44 m to the bar's underside."""
     depth = 2.0 * facing
+    post = 0.06
+    half_width = 3.66 + post
+    bar = 2.44 + post
     return [
         _geom(
             f"{prefix}_left_post",
             "cylinder",
-            pos=f"{x} {y - 3.66} 1.22",
-            size="0.06 1.22",
+            pos=f"{x} {y - half_width} {bar / 2}",
+            size=f"{post} {bar / 2}",
             rgba=WHITE,
         ),
         _geom(
             f"{prefix}_right_post",
             "cylinder",
-            pos=f"{x} {y + 3.66} 1.22",
-            size="0.06 1.22",
+            pos=f"{x} {y + half_width} {bar / 2}",
+            size=f"{post} {bar / 2}",
             rgba=WHITE,
         ),
         _geom(
             f"{prefix}_crossbar",
             "capsule",
-            fromto=f"{x} {y - 3.66} 2.44 {x} {y + 3.66} 2.44",
-            size="0.06",
+            fromto=f"{x} {y - half_width} {bar} {x} {y + half_width} {bar}",
+            size=f"{post}",
             rgba=WHITE,
         ),
+        # The net starts behind the goal line so that a ball can cross the
+        # line completely -- which is what a goal is -- before it is caught.
         _geom(
             f"{prefix}_goal_net",
-            pos=f"{x + depth / 2} {y} 1.22",
+            pos=f"{x + depth / 2 + facing * 0.30} {y} 1.22",
             size=f"{abs(depth) / 2} 3.66 1.22",
             rgba="0.9 0.9 0.9 0.12",
             friction="0.2 0.001 0.0001",
@@ -1049,11 +1090,15 @@ def build_xml(scene: str = "campus", *, benchmark_paddle: bool = False) -> str:
         )
 
     timestep = 0.001
+    solver = ""
     if benchmark_paddle:
         timestep = BENCHMARK_TIMESTEPS.get(Sport(scene), timestep)
+        if Sport(scene) in BENCHMARK_SOLVERS:
+            solver = f' solver="{BENCHMARK_SOLVERS[Sport(scene)]}"'
+
     return f"""<mujoco model="multisport_{scene}">
   <compiler angle="degree" autolimits="true"/>
-  <option timestep="{timestep}" gravity="0 0 -9.81" integrator="implicitfast" cone="elliptic" iterations="80"/>
+  <option timestep="{timestep}" gravity="0 0 -9.81" integrator="implicitfast" cone="elliptic" iterations="80"{solver}/>
   <visual>
     <headlight ambient="0.22 0.22 0.25" diffuse="0.70 0.70 0.68" specular="0.25 0.25 0.25"/>
     <rgba haze="0.12 0.15 0.19 1"/>

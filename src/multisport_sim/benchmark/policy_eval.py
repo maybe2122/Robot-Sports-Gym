@@ -24,6 +24,7 @@ and an object exposing ``act`` is accepted in place of a bare callable.
 from __future__ import annotations
 
 import argparse
+import inspect
 from collections.abc import Mapping, Sequence
 from dataclasses import replace
 from importlib import import_module
@@ -32,7 +33,7 @@ from typing import Any
 
 import numpy as np
 
-from .envs import robot_observation_vector
+from .envs import robot_observation_vector, target_info
 from .metrics import robustness_gap
 from .perturbations import PerturbedBackend, for_level
 from .reporting import report_markdown, write_report
@@ -70,7 +71,20 @@ class PolicyController:
 
     def reset(self, shot, *, seed: int | None = None) -> None:
         reset = getattr(self._policy, "reset", None)
-        if callable(reset):
+        if not callable(reset):
+            return
+        # The L3 target is task information; a policy that asks for it gets it.
+        # Policies written before it was offered keep their ``reset(seed=...)``.
+        try:
+            parameters = inspect.signature(reset).parameters
+        except (TypeError, ValueError):  # pragma: no cover - builtins
+            parameters = {}
+        accepts_target = "target" in parameters or any(
+            parameter.kind is inspect.Parameter.VAR_KEYWORD for parameter in parameters.values()
+        )
+        if accepts_target:
+            reset(seed=seed, target=target_info(shot))
+        else:
             reset(seed=seed)
 
     def act(self, observation: Any) -> JointCommand:

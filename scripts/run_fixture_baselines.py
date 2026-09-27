@@ -44,6 +44,27 @@ SPORTS = {
             "what a robot could.  There is no embodied badminton task yet."
         ),
     },
+    "football": {
+        "title": "Football kick baselines",
+        "stem": "football-baselines",
+        "setting": "at the IFAB goal",
+        "scripted": (
+            "`scripted` reads the privileged ball state and the shot's target, solves the "
+            "launch against the drag model and inverts the boot's measured contact law; it "
+            "bounds what the fixture can do, not what a robot could.  There is no embodied "
+            "football task yet (the biped asset is not in)."
+        ),
+    },
+    "basketball": {
+        "title": "Basketball shoot baselines",
+        "stem": "basketball-baselines",
+        "setting": "at the FIBA basket",
+        "scripted": (
+            "`scripted` reads the privileged ball state and the shot's target, solves an arc "
+            "through the rim against the drag model and inverts the launcher plate's measured "
+            "contact law; it bounds what the fixture can do, not what a robot could."
+        ),
+    },
 }
 
 CONTROLLERS = ("noop", "scripted")

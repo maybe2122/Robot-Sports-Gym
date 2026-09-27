@@ -1,0 +1,1135 @@
+{
+  "generated_at": "2026-09-27T17:04:10+00:00",
+  "schema": "multisport-cross-task-summary-v0",
+  "split": "test",
+  "tasks": [
+    {
+      "controllers": {
+        "hold": {
+          "levels": {
+            "L0": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "incoming_valid_rate",
+              "passed": true,
+              "threshold": 1.0,
+              "value": 1.0
+            },
+            "L1": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "hit_rate",
+              "passed": false,
+              "threshold": 0.9,
+              "value": 0.0
+            },
+            "L2": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "valid_return_rate",
+              "passed": false,
+              "threshold": 0.8,
+              "value": 0.0
+            },
+            "L3": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "target_rate",
+              "passed": false,
+              "threshold": 0.7,
+              "value": 0.0
+            },
+            "L4": {
+              "episodes": 100,
+              "interval_95": [
+                0.0,
+                0.03926207629154474
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.6,
+              "value": 0.0
+            },
+            "L5": {
+              "episodes": 100,
+              "interval_95": [
+                0.0,
+                0.04008138928562172
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.5,
+              "value": 0.0
+            }
+          },
+          "levels_passed": 1,
+          "robustness_gap": 0.0
+        },
+        "intercept": {
+          "levels": {
+            "L0": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "incoming_valid_rate",
+              "passed": true,
+              "threshold": 1.0,
+              "value": 1.0
+            },
+            "L1": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "hit_rate",
+              "passed": true,
+              "threshold": 0.9,
+              "value": 1.0
+            },
+            "L2": {
+              "episodes": 100,
+              "interval_95": [
+                0.10095288488804782,
+                0.24420269389270244
+              ],
+              "metric": "valid_return_rate",
+              "passed": false,
+              "threshold": 0.8,
+              "value": 0.16
+            },
+            "L3": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "target_rate",
+              "passed": false,
+              "threshold": 0.7,
+              "value": 0.0
+            },
+            "L4": {
+              "episodes": 100,
+              "interval_95": [
+                1.3877787807814457e-17,
+                0.12064330476584563
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.6,
+              "value": 0.0
+            },
+            "L5": {
+              "episodes": 100,
+              "interval_95": [
+                0.06809134808816239,
+                0.20153579593350626
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.5,
+              "value": 0.11956521739130435
+            }
+          },
+          "levels_passed": 2,
+          "robustness_gap": -0.03999999999999998
+        },
+        "random": {
+          "levels": {
+            "L0": {
+              "episodes": 100,
+              "interval_95": [
+                0.837737871472837,
+                0.9519274599974348
+              ],
+              "metric": "incoming_valid_rate",
+              "passed": false,
+              "threshold": 1.0,
+              "value": 0.91
+            },
+            "L1": {
+              "episodes": 100,
+              "interval_95": [
+                0.00550196755016235,
+                0.07001179072854388
+              ],
+              "metric": "hit_rate",
+              "passed": false,
+              "threshold": 0.9,
+              "value": 0.02
+            },
+            "L2": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "valid_return_rate",
+              "passed": false,
+              "threshold": 0.8,
+              "value": 0.0
+            },
+            "L3": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "target_rate",
+              "passed": false,
+              "threshold": 0.7,
+              "value": 0.0
+            },
+            "L4": {
+              "episodes": 100,
+              "interval_95": [
+                0.0,
+                0.03926207629154474
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.6,
+              "value": 0.0
+            },
+            "L5": {
+              "episodes": 100,
+              "interval_95": [
+                1.3877787807814457e-17,
+                0.2153108027376358
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.5,
+              "value": 0.0
+            }
+          },
+          "levels_passed": 0,
+          "robustness_gap": -0.005
+        },
+        "vision": {
+          "levels": {
+            "L0": {
+              "episodes": 100,
+              "interval_95": [
+                0.9455138038212946,
+                0.9982325679358593
+              ],
+              "metric": "incoming_valid_rate",
+              "passed": false,
+              "threshold": 1.0,
+              "value": 0.99
+            },
+            "L1": {
+              "episodes": 100,
+              "interval_95": [
+                0.8136870349691969,
+                0.9374580364293543
+              ],
+              "metric": "hit_rate",
+              "passed": false,
+              "threshold": 0.9,
+              "value": 0.89
+            },
+            "L2": {
+              "episodes": 100,
+              "interval_95": [
+                0.02154367915436796,
+                0.11175046923191913
+              ],
+              "metric": "valid_return_rate",
+              "passed": false,
+              "threshold": 0.8,
+              "value": 0.05
+            },
+            "L3": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "target_rate",
+              "passed": false,
+              "threshold": 0.7,
+              "value": 0.0
+            },
+            "L4": {
+              "episodes": 100,
+              "interval_95": [
+                1.3877787807814457e-17,
+                0.12064330476584563
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.6,
+              "value": 0.0
+            },
+            "L5": {
+              "episodes": 100,
+              "interval_95": [
+                0.044721188963793644,
+                0.16230256740258947
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.5,
+              "value": 0.08695652173913043
+            }
+          },
+          "levels_passed": 0,
+          "robustness_gap": -0.05499999999999999
+        }
+      },
+      "embodiment": "Franka Panda (joint space)",
+      "label": "Table tennis return",
+      "report": "table-tennis-panda-baselines.json",
+      "task": "table-tennis-return-panda-v1"
+    },
+    {
+      "controllers": {
+        "hold": {
+          "levels": {
+            "L0": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "incoming_valid_rate",
+              "passed": true,
+              "threshold": 1.0,
+              "value": 1.0
+            },
+            "L1": {
+              "episodes": 100,
+              "interval_95": [
+                0.26364248243097527,
+                0.44745556703112027
+              ],
+              "metric": "hit_rate",
+              "passed": false,
+              "threshold": 0.9,
+              "value": 0.35
+            },
+            "L2": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "valid_return_rate",
+              "passed": false,
+              "threshold": 0.8,
+              "value": 0.0
+            },
+            "L3": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "target_rate",
+              "passed": false,
+              "threshold": 0.7,
+              "value": 0.0
+            },
+            "L4": {
+              "episodes": 100,
+              "interval_95": [
+                0.0,
+                0.03926207629154474
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.6,
+              "value": 0.0
+            },
+            "L5": {
+              "episodes": 100,
+              "interval_95": [
+                0.0,
+                0.04008138928562172
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.5,
+              "value": 0.0
+            }
+          },
+          "levels_passed": 1,
+          "robustness_gap": 0.0
+        },
+        "intercept": {
+          "levels": {
+            "L0": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "incoming_valid_rate",
+              "passed": true,
+              "threshold": 1.0,
+              "value": 1.0
+            },
+            "L1": {
+              "episodes": 100,
+              "interval_95": [
+                0.7671644040916763,
+                0.9069401471634337
+              ],
+              "metric": "hit_rate",
+              "passed": false,
+              "threshold": 0.9,
+              "value": 0.85
+            },
+            "L2": {
+              "episodes": 100,
+              "interval_95": [
+                0.02154367915436796,
+                0.11175046923191913
+              ],
+              "metric": "valid_return_rate",
+              "passed": false,
+              "threshold": 0.8,
+              "value": 0.05
+            },
+            "L3": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "target_rate",
+              "passed": false,
+              "threshold": 0.7,
+              "value": 0.0
+            },
+            "L4": {
+              "episodes": 100,
+              "interval_95": [
+                1.3877787807814457e-17,
+                0.12064330476584563
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.6,
+              "value": 0.0
+            },
+            "L5": {
+              "episodes": 100,
+              "interval_95": [
+                0.01566330399154762,
+                0.0983707143588792
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.5,
+              "value": 0.04
+            }
+          },
+          "levels_passed": 1,
+          "robustness_gap": -0.015
+        },
+        "random": {
+          "levels": {
+            "L0": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "incoming_valid_rate",
+              "passed": false,
+              "threshold": 1.0,
+              "value": 0.0
+            },
+            "L1": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "hit_rate",
+              "passed": false,
+              "threshold": 0.9,
+              "value": 0.0
+            },
+            "L2": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "valid_return_rate",
+              "passed": false,
+              "threshold": 0.8,
+              "value": 0.0
+            },
+            "L3": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "target_rate",
+              "passed": false,
+              "threshold": 0.7,
+              "value": 0.0
+            },
+            "L4": {
+              "episodes": 100,
+              "interval_95": [
+                0.0,
+                0.03926207629154474
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.6,
+              "value": 0.0
+            },
+            "L5": {
+              "episodes": 100,
+              "interval_95": [
+                0.0,
+                0.04008138928562172
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.5,
+              "value": 0.0
+            }
+          },
+          "levels_passed": 0,
+          "robustness_gap": 0.0
+        }
+      },
+      "embodiment": "Unitree G1, fixed base",
+      "label": "Table tennis return",
+      "report": "table-tennis-g1-baselines.json",
+      "task": "table-tennis-return-g1-v1"
+    },
+    {
+      "controllers": {
+        "noop": {
+          "levels": {
+            "L0": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "incoming_valid_rate",
+              "passed": true,
+              "threshold": 1.0,
+              "value": 1.0
+            },
+            "L1": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "hit_rate",
+              "passed": false,
+              "threshold": 0.9,
+              "value": 0.0
+            },
+            "L2": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "valid_return_rate",
+              "passed": false,
+              "threshold": 0.8,
+              "value": 0.0
+            },
+            "L3": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "target_rate",
+              "passed": false,
+              "threshold": 0.7,
+              "value": 0.0
+            },
+            "L4": {
+              "episodes": 100,
+              "interval_95": [
+                0.0,
+                0.08566757018443186
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.6,
+              "value": 0.0
+            },
+            "L5": {
+              "episodes": 100,
+              "interval_95": [
+                0.0,
+                0.048113585065137326
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.5,
+              "value": 0.0
+            }
+          },
+          "levels_passed": 1,
+          "robustness_gap": 0.0
+        },
+        "scripted": {
+          "levels": {
+            "L0": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "incoming_valid_rate",
+              "passed": true,
+              "threshold": 1.0,
+              "value": 1.0
+            },
+            "L1": {
+              "episodes": 100,
+              "interval_95": [
+                0.9455138038212946,
+                0.9982325679358593
+              ],
+              "metric": "hit_rate",
+              "passed": true,
+              "threshold": 0.9,
+              "value": 0.99
+            },
+            "L2": {
+              "episodes": 100,
+              "interval_95": [
+                0.4920143005341078,
+                0.6813268697886348
+              ],
+              "metric": "valid_return_rate",
+              "passed": false,
+              "threshold": 0.8,
+              "value": 0.59
+            },
+            "L3": {
+              "episodes": 100,
+              "interval_95": [
+                0.0017674320641406505,
+                0.054486196178705315
+              ],
+              "metric": "target_rate",
+              "passed": false,
+              "threshold": 0.7,
+              "value": 0.01
+            },
+            "L4": {
+              "episodes": 100,
+              "interval_95": [
+                0.12003174778217568,
+                0.3670500598822617
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.6,
+              "value": 0.21951219512195122
+            },
+            "L5": {
+              "episodes": 100,
+              "interval_95": [
+                1.3877787807814457e-17,
+                0.2153108027376358
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.5,
+              "value": 0.0
+            }
+          },
+          "levels_passed": 2,
+          "robustness_gap": 0.31
+        }
+      },
+      "embodiment": "mocap racket fixture",
+      "label": "Tennis return",
+      "report": "tennis-baselines.json",
+      "task": "tennis-return-v0"
+    },
+    {
+      "controllers": {
+        "noop": {
+          "levels": {
+            "L0": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "incoming_valid_rate",
+              "passed": true,
+              "threshold": 1.0,
+              "value": 1.0
+            },
+            "L1": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "hit_rate",
+              "passed": false,
+              "threshold": 0.9,
+              "value": 0.0
+            },
+            "L2": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "valid_return_rate",
+              "passed": false,
+              "threshold": 0.8,
+              "value": 0.0
+            },
+            "L3": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "target_rate",
+              "passed": false,
+              "threshold": 0.7,
+              "value": 0.0
+            },
+            "L4": {
+              "episodes": 100,
+              "interval_95": [
+                1.3877787807814457e-17,
+                0.13319225093904846
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.6,
+              "value": 0.0
+            },
+            "L5": {
+              "episodes": 100,
+              "interval_95": [
+                0.0,
+                0.10151455415332376
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.5,
+              "value": 0.0
+            }
+          },
+          "levels_passed": 1,
+          "robustness_gap": 0.0
+        },
+        "scripted": {
+          "levels": {
+            "L0": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "incoming_valid_rate",
+              "passed": true,
+              "threshold": 1.0,
+              "value": 1.0
+            },
+            "L1": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "hit_rate",
+              "passed": true,
+              "threshold": 0.9,
+              "value": 1.0
+            },
+            "L2": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "valid_return_rate",
+              "passed": true,
+              "threshold": 0.8,
+              "value": 1.0
+            },
+            "L3": {
+              "episodes": 100,
+              "interval_95": [
+                0.6892964648501421,
+                0.8499871761539459
+              ],
+              "metric": "target_rate",
+              "passed": true,
+              "threshold": 0.7,
+              "value": 0.78
+            },
+            "L4": {
+              "episodes": 100,
+              "interval_95": [
+                0.8668077490609515,
+                0.9999999999999999
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": true,
+              "threshold": 0.6,
+              "value": 1.0
+            },
+            "L5": {
+              "episodes": 100,
+              "interval_95": [
+                0.632016119488364,
+                0.8965047310096808
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": true,
+              "threshold": 0.5,
+              "value": 0.7941176470588235
+            }
+          },
+          "levels_passed": 6,
+          "robustness_gap": 0.06499999999999995
+        }
+      },
+      "embodiment": "mocap racket fixture",
+      "label": "Badminton serve",
+      "report": "badminton-baselines.json",
+      "task": "badminton-serve-v0"
+    },
+    {
+      "controllers": {
+        "noop": {
+          "levels": {
+            "L0": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "incoming_valid_rate",
+              "passed": true,
+              "threshold": 1.0,
+              "value": 1.0
+            },
+            "L1": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "hit_rate",
+              "passed": false,
+              "threshold": 0.9,
+              "value": 0.0
+            },
+            "L2": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "valid_return_rate",
+              "passed": false,
+              "threshold": 0.8,
+              "value": 0.0
+            },
+            "L3": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "target_rate",
+              "passed": false,
+              "threshold": 0.7,
+              "value": 0.0
+            },
+            "L4": {
+              "episodes": 100,
+              "interval_95": [
+                1.3877787807814457e-17,
+                0.13319225093904846
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.6,
+              "value": 0.0
+            },
+            "L5": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.5,
+              "value": 0.0
+            }
+          },
+          "levels_passed": 1,
+          "robustness_gap": 0.0
+        },
+        "scripted": {
+          "levels": {
+            "L0": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "incoming_valid_rate",
+              "passed": true,
+              "threshold": 1.0,
+              "value": 1.0
+            },
+            "L1": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "hit_rate",
+              "passed": true,
+              "threshold": 0.9,
+              "value": 1.0
+            },
+            "L2": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "valid_return_rate",
+              "passed": true,
+              "threshold": 0.8,
+              "value": 1.0
+            },
+            "L3": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "target_rate",
+              "passed": true,
+              "threshold": 0.7,
+              "value": 1.0
+            },
+            "L4": {
+              "episodes": 100,
+              "interval_95": [
+                0.8668077490609515,
+                0.9999999999999999
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": true,
+              "threshold": 0.6,
+              "value": 1.0
+            },
+            "L5": {
+              "episodes": 100,
+              "interval_95": [
+                0.08610768208940667,
+                0.3438823163466992
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.5,
+              "value": 0.18181818181818182
+            }
+          },
+          "levels_passed": 5,
+          "robustness_gap": 0.37
+        }
+      },
+      "embodiment": "mocap boot fixture",
+      "label": "Football kick",
+      "report": "football-baselines.json",
+      "task": "football-kick-v0"
+    },
+    {
+      "controllers": {
+        "noop": {
+          "levels": {
+            "L0": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "incoming_valid_rate",
+              "passed": true,
+              "threshold": 1.0,
+              "value": 1.0
+            },
+            "L1": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "hit_rate",
+              "passed": false,
+              "threshold": 0.9,
+              "value": 0.0
+            },
+            "L2": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "valid_return_rate",
+              "passed": false,
+              "threshold": 0.8,
+              "value": 0.0
+            },
+            "L3": {
+              "episodes": 100,
+              "interval_95": [
+                3.469446951953614e-18,
+                0.03699349820698568
+              ],
+              "metric": "target_rate",
+              "passed": false,
+              "threshold": 0.7,
+              "value": 0.0
+            },
+            "L4": {
+              "episodes": 100,
+              "interval_95": [
+                1.3877787807814457e-17,
+                0.13319225093904846
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.6,
+              "value": 0.0
+            },
+            "L5": {
+              "episodes": 100,
+              "interval_95": [
+                0.0,
+                0.10426999754245206
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.5,
+              "value": 0.0
+            }
+          },
+          "levels_passed": 1,
+          "robustness_gap": 0.0
+        },
+        "scripted": {
+          "levels": {
+            "L0": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "incoming_valid_rate",
+              "passed": true,
+              "threshold": 1.0,
+              "value": 1.0
+            },
+            "L1": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "hit_rate",
+              "passed": true,
+              "threshold": 0.9,
+              "value": 1.0
+            },
+            "L2": {
+              "episodes": 100,
+              "interval_95": [
+                0.9630065017930143,
+                1.0
+              ],
+              "metric": "valid_return_rate",
+              "passed": true,
+              "threshold": 0.8,
+              "value": 1.0
+            },
+            "L3": {
+              "episodes": 100,
+              "interval_95": [
+                0.5525444329688796,
+                0.7363575175690247
+              ],
+              "metric": "target_rate",
+              "passed": false,
+              "threshold": 0.7,
+              "value": 0.65
+            },
+            "L4": {
+              "episodes": 100,
+              "interval_95": [
+                0.20247880774458224,
+                0.5548150225183514
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.6,
+              "value": 0.36
+            },
+            "L5": {
+              "episodes": 100,
+              "interval_95": [
+                0.04671446664882335,
+                0.26620842770371833
+              ],
+              "metric": "worst_bucket_valid_return_rate",
+              "passed": false,
+              "threshold": 0.5,
+              "value": 0.11764705882352941
+            }
+          },
+          "levels_passed": 3,
+          "robustness_gap": 0.515
+        }
+      },
+      "embodiment": "mocap launcher fixture",
+      "label": "Basketball shoot",
+      "report": "basketball-baselines.json",
+      "task": "basketball-shoot-v0"
+    }
+  ]
+}

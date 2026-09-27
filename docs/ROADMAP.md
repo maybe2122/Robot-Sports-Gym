@@ -42,9 +42,9 @@
 
 - [x] TennisReturn
 - [ ] TableTennisReturn
-- [ ] FootballKickToTarget
+- [x] FootballKickToTarget（mocap 夹具；机体版需双足资产，见 [`LAUNCH_TASKS.md`](LAUNCH_TASKS.md)）
 - [x] BadmintonServe（mocap 夹具，见 [`BADMINTON.md`](BADMINTON.md)）
-- [ ] BasketballShoot
+- [x] BasketballShoot（mocap 夹具，见 [`LAUNCH_TASKS.md`](LAUNCH_TASKS.md)）
 - [ ] 每项任务提供 scripted/control baseline、random baseline 和至少一个学习基线
 
 ## M4 — Fidelity and sim-to-real（P1）

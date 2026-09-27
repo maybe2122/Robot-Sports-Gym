@@ -108,3 +108,18 @@ it publishes ['ball.position', ..., 'effector.linear_velocity']
 5. 注册 `TaskEntry`，环境 id 带机体名。
 
 不需要动的：Judge、固定集、指标、阈值、报告 schema。这正是"同一张表"能成立的原因。
+
+## L3 目标：任务信息，不是特权信息
+
+L3 要求把球放进一个目标圆里。**目标和球场一样是任务的一部分**，策略有权知道。2026-09-28 之前没有任何
+渠道把它交给策略——观测、`info`、`reset` 参数里都没有——于是只有读 `ShotSpec` 的参考夹具能拿 L3 分，
+学习策略在 L3 上只能瞎猜。现在有三条渠道，内容相同：
+
+| 渠道 | 形式 |
+|---|---|
+| Gymnasium `info["target"]` | `{"center": [u, v], "radius_m": r}`，无目标的级别为 `None`；`reset` 与每个 `step` 都给 |
+| `multisport_sim.benchmark.wrappers.TargetObservation` | 在扁平观测后追加 `[present, u, v, r]` 四个数（无目标时全 0），给不读 `info` 的 RL 库用 |
+| 离线评测 `PolicyController` | 策略的 `reset` 若接受 `target` 参数（或 `**kwargs`），会收到同一个字典；老策略的 `reset(seed=...)` 不受影响 |
+
+`(u, v)` 在任务的放置平面里：回球任务与羽毛球发球是场地 `(x, y)`，足球射门是球门口 `(y, z)`，篮球投篮是
+篮圈平面 `(x, y)`；每份固定集的 `manifest.targets` 写明了它是哪个平面。

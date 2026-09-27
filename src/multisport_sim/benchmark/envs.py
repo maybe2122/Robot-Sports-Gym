@@ -20,19 +20,25 @@ from .backends.mujoco_standing import MujocoStandingG1TableTennisBackend
 from .controllers import PaddleCommand
 from .robot import ControlMode, JointCommand, SafetyViolation, WorkspaceBox
 from .rules.badminton import BadmintonServeJudge
+from .rules.basketball import BasketballShootJudge
+from .rules.football import FootballKickJudge
 from .rules.net_return import NetReturnJudge
 from .rules.table_tennis import TableTennisReturnJudge
 from .rules.tennis import TennisReturnJudge
 from .shot_bank import ShotBank
 from .task_config import (
     BADMINTON_SERVE_V0,
+    BASKETBALL_SHOOT_V0,
+    FOOTBALL_KICK_V0,
     TABLE_TENNIS_RETURN_G1_V1,
     TABLE_TENNIS_RETURN_PANDA_V1,
     TABLE_TENNIS_RETURN_STANDING_G1_V2,
     TABLE_TENNIS_RETURN_V0,
     TENNIS_RETURN_V0,
     BadmintonServeTaskConfig,
+    BasketballShootTaskConfig,
     EmbodiedTableTennisReturnTaskConfig,
+    FootballKickTaskConfig,
     TableTennisReturnG1TaskConfig,
     TableTennisReturnStandingG1TaskConfig,
     TableTennisReturnTaskConfig,
@@ -66,6 +72,22 @@ def robot_observation_vector(
 def panda_observation_vector(state: Any) -> np.ndarray:
     """The Panda's 33-vector.  Retained under its released name."""
     return robot_observation_vector(state, TABLE_TENNIS_RETURN_PANDA_V1)
+
+
+def target_info(shot: ShotSpec) -> dict[str, Any] | None:
+    """The shot's placement target as task information, or ``None``.
+
+    An L3 target is part of the *task*, like the court: a policy cannot be asked
+    to land a ball in a circle it is never told about.  It was, until
+    2026-09-28 -- no observation, info field or reset argument carried it, so
+    only the privileged reference fixtures could score L3.  The coordinates are
+    in the task's placement plane (``manifest.targets``): court (x, y) for the
+    net sports and the serve, goal mouth (y, z) for the kick, rim plane (x, y)
+    for the shot.
+    """
+    if shot.target is None:
+        return None
+    return {"center": list(shot.target.center_xy), "radius_m": shot.target.radius_m}
 
 
 class TableTennisReturnEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -162,6 +184,7 @@ class TableTennisReturnEnv(gym.Env[np.ndarray, np.ndarray]):
             "shot_bank_digest": self.shot_bank.digest,
             "physics_dt": self.backend.timestep,
             "control_dt": self._control_decimation * self.backend.timestep,
+            "target": target_info(self._shot),
         }
 
     def reset(
@@ -284,6 +307,38 @@ class BadmintonServeEnv(TableTennisReturnEnv):
         return {"court_spec": self.config.court}
 
 
+class FootballKickEnv(TableTennisReturnEnv):
+    """Single-shot MuJoCo football kick at the IFAB goal.
+
+    The task frame's origin is the centre of the goal line; the ball rests or
+    rolls on the pitch at x < 0 and the episode ends when the whole ball crosses
+    the line, leaves the pitch, or times out.
+    """
+
+    config_type: ClassVar[type] = FootballKickTaskConfig
+    default_config: ClassVar[Any] = FOOTBALL_KICK_V0
+    judge_type: ClassVar[type] = FootballKickJudge
+
+    def judge_surface_kwarg(self) -> dict[str, Any]:
+        return {"goal_spec": self.config.goal}
+
+
+class BasketballShootEnv(TableTennisReturnEnv):
+    """Single-shot MuJoCo basketball shot at the FIBA basket.
+
+    The task frame's origin is the floor below the rim's centre; the ball is
+    released at x < 0 and the episode ends when it comes down through the ring,
+    reaches the floor, or times out.
+    """
+
+    config_type: ClassVar[type] = BasketballShootTaskConfig
+    default_config: ClassVar[Any] = BASKETBALL_SHOOT_V0
+    judge_type: ClassVar[type] = BasketballShootJudge
+
+    def judge_surface_kwarg(self) -> dict[str, Any]:
+        return {"basket_spec": self.config.basket}
+
+
 class TableTennisReturnPandaEnv(gym.Env[np.ndarray, np.ndarray]):
     """Single-shot MuJoCo table-tennis return performed by a Franka Panda.
 
@@ -376,6 +431,7 @@ class TableTennisReturnPandaEnv(gym.Env[np.ndarray, np.ndarray]):
             "physics_dt": self.backend.timestep,
             "control_dt": self._control_decimation * self.backend.timestep,
             "safety_violations": self.backend.safety_violation_count,
+            "target": target_info(self._shot),
         }
 
     def reset(

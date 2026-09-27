@@ -11,6 +11,11 @@ ROBOT_RACKET = "robot_racket"
 TABLE = "table"
 NET = "net"
 FLOOR = "floor"
+# Launch-task furniture: a goal's frame and net, a basket's rim and board.
+POST = "post"
+GOAL_NET = "goal_net"
+RIM = "rim"
+BACKBOARD = "backboard"
 
 
 def contact_between(first: str, second: str) -> SemanticContact:

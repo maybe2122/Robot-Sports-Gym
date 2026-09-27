@@ -10,12 +10,16 @@ from .registry import TaskEntry, register_task
 from .rules.base import ShotJudge
 from .task_config import (
     BADMINTON_SERVE_V0,
+    BASKETBALL_SHOOT_V0,
+    FOOTBALL_KICK_V0,
     TABLE_TENNIS_RETURN_G1_V1,
     TABLE_TENNIS_RETURN_PANDA_V1,
     TABLE_TENNIS_RETURN_STANDING_G1_V2,
     TABLE_TENNIS_RETURN_V0,
     TENNIS_RETURN_V0,
     BadmintonServeTaskConfig,
+    BasketballShootTaskConfig,
+    FootballKickTaskConfig,
     ShotTaskConfig,
     TableTennisReturnTaskConfig,
     TennisReturnTaskConfig,
@@ -122,6 +126,36 @@ BADMINTON_SERVE = TaskEntry(
 )
 
 
+def _football_judge(config: ShotTaskConfig) -> ShotJudge:
+    from .rules.football import FOOTBALL_GOAL, FootballKickJudge
+
+    goal = config.goal if isinstance(config, FootballKickTaskConfig) else FOOTBALL_GOAL
+    return FootballKickJudge(timeout_s=config.timeout_s, goal_spec=goal)
+
+
+FOOTBALL_KICK = TaskEntry(
+    config=FOOTBALL_KICK_V0,
+    judge_factory=_football_judge,
+    backend_factory=_mocap_backend,
+    env_entry_point="multisport_sim.benchmark.envs:FootballKickEnv",
+)
+
+
+def _basketball_judge(config: ShotTaskConfig) -> ShotJudge:
+    from .rules.basketball import BASKET, BasketballShootJudge
+
+    basket = config.basket if isinstance(config, BasketballShootTaskConfig) else BASKET
+    return BasketballShootJudge(timeout_s=config.timeout_s, basket_spec=basket)
+
+
+BASKETBALL_SHOOT = TaskEntry(
+    config=BASKETBALL_SHOOT_V0,
+    judge_factory=_basketball_judge,
+    backend_factory=_mocap_backend,
+    env_entry_point="multisport_sim.benchmark.envs:BasketballShootEnv",
+)
+
+
 def _standing_g1_backend(config):
     from .backends.mujoco_standing import MujocoStandingG1TableTennisBackend
     from .robot import WorkspaceBox
@@ -147,6 +181,8 @@ def register_builtin_tasks() -> None:
     register_task(TABLE_TENNIS_RETURN_STANDING_G1, replace=True)
     register_task(TENNIS_RETURN, replace=True)
     register_task(BADMINTON_SERVE, replace=True)
+    register_task(FOOTBALL_KICK, replace=True)
+    register_task(BASKETBALL_SHOOT, replace=True)
 
 
 register_builtin_tasks()

@@ -284,6 +284,19 @@ python scripts/run_fixture_baselines.py --sport badminton
 为让 5 g 的羽毛球在 20–30 m/s 的击球下物理可信，羽毛球 benchmark 场景使用 0.5 ms 物理步长、
 按物理步插值的 mocap 拍面，以及在压心处计算来流的气动力。详见 [`docs/BADMINTON.md`](docs/BADMINTON.md)。
 
+### 足球射门与篮球投篮
+
+第四、五项运动 `football-kick-v0`、`basketball-shoot-v0`，与羽毛球发球共用发射类任务框架：任务坐标原点
+放在球门线/篮圈正下方，机器人在 x<0 一侧出手；按 IFAB（整球越线）和 FIBA（从上方穿过篮圈）判定。
+
+```bash
+multisport-benchmark --sport football --level L3 --split test --controller scripted
+multisport-benchmark --sport basketball --level L2 --split test --controller scripted
+make cross-task   # 全部任务 × 全部级别的汇总表
+```
+
+详见 [`docs/LAUNCH_TASKS.md`](docs/LAUNCH_TASKS.md) 与 [`reports/cross-task-summary.md`](reports/cross-task-summary.md)。
+
 ### 网球任务与统计充分的固定集
 
 第二项运动 `tennis-return-v0` 已可运行：**同一个 Judge、同一套 L0–L5 门槛、同一份报告 schema**，

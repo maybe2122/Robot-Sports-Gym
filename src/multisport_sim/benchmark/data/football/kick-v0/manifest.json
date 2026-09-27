@@ -1,0 +1,330 @@
+{
+  "schema_version": 1,
+  "benchmark": "multisport-shot-skill-v0",
+  "task": "football-kick-v0",
+  "sport": "football",
+  "status": "experimental",
+  "leaderboard_eligible": false,
+  "warning": "Statistically sufficient per level (100 test episodes) but still an experimental bank: per-bucket counts remain below 100, and no leaderboard has been opened.",
+  "notes": "Kick task: the ball rests or rolls on the pitch in front of the goal and is kicked once.  Task frame origin is the centre of the goal line.  valid_return means a goal; placement is measured in the goal mouth (y, z).",
+  "units": "SI",
+  "coordinate_system": {
+    "origin": "goal_line_center_at_ground",
+    "x_axis": "robot_side_to_opponent_side",
+    "y_axis": "court_lateral",
+    "z_axis": "up",
+    "net_plane_x_m": 0.0,
+    "robot_side": "x < 0",
+    "opponent_side": "x > 0",
+    "shot_origin": "robot_side",
+    "initial_motion": "stationary_or_toward_robot",
+    "table_top_z_m": 0.0,
+    "table_bounds_m": {
+      "x": [
+        -105.0,
+        0.0
+      ],
+      "y": [
+        -34.0,
+        34.0
+      ]
+    }
+  },
+  "episode": {
+    "timeout_s": 3.0,
+    "success_sequence": [
+      "robot_boot_contact",
+      "whole_ball_over_the_goal_line_between_the_posts_and_under_the_crossbar"
+    ],
+    "timeout_is_truncation": true
+  },
+  "levels": {
+    "L0": {
+      "name": "Physics",
+      "distribution": "stationary balls inside the penalty area without robot action; the ball must stay put on the pitch",
+      "primary_metric": "incoming_valid_rate",
+      "pass_threshold": 1.0
+    },
+    "L1": {
+      "name": "Contact",
+      "distribution": "stationary balls inside the penalty area",
+      "primary_metric": "hit_rate",
+      "pass_threshold": 0.9
+    },
+    "L2": {
+      "name": "Goal",
+      "distribution": "stationary balls around the penalty area and its arc",
+      "primary_metric": "valid_return_rate",
+      "pass_threshold": 0.8
+    },
+    "L3": {
+      "name": "Placement",
+      "distribution": "L2 balls with top-corner and low-corner targets in the goal mouth",
+      "primary_metric": "target_rate",
+      "pass_threshold": 0.7
+    },
+    "L4": {
+      "name": "Robustness",
+      "distribution": "fixed combinations of long range, tight angle, a ball rolling back to the kicker and a ball rolling across",
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "pass_threshold": 0.6,
+      "pass_buckets": [
+        "long-range",
+        "tight-angle",
+        "rolling",
+        "cross"
+      ]
+    },
+    "L5": {
+      "name": "Generalization",
+      "distribution": "held-out combinations under observation noise, latency and domain randomization",
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "pass_threshold": 0.5,
+      "aggregate_metric": "valid_return_rate",
+      "aggregate_threshold": 0.6,
+      "pass_buckets": [
+        "long-range",
+        "tight-angle",
+        "held-out"
+      ]
+    }
+  },
+  "difficulty_ranges": {
+    "L0": {
+      "lateral_y_m": [
+        -3.0,
+        3.0
+      ],
+      "height_z_m": [
+        0.11,
+        0.11
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.0
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    },
+    "L1": {
+      "lateral_y_m": [
+        -3.0,
+        3.0
+      ],
+      "height_z_m": [
+        0.11,
+        0.11
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.0
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    },
+    "L2": {
+      "lateral_y_m": [
+        -12.0,
+        12.0
+      ],
+      "height_z_m": [
+        0.11,
+        0.11
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.0
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    },
+    "L3": {
+      "lateral_y_m": [
+        -12.0,
+        12.0
+      ],
+      "height_z_m": [
+        0.11,
+        0.11
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.0
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    },
+    "L4": {
+      "lateral_y_m": [
+        -18.0,
+        18.0
+      ],
+      "height_z_m": [
+        0.11,
+        0.11
+      ],
+      "speed_x_mps": [
+        -4.0,
+        0.0
+      ],
+      "spin_y_radps": [
+        -36.36363636363637,
+        0.0
+      ]
+    },
+    "L5": {
+      "lateral_y_m": [
+        -16.0,
+        16.0
+      ],
+      "height_z_m": [
+        0.11,
+        0.11
+      ],
+      "speed_x_mps": [
+        -3.0,
+        0.0
+      ],
+      "spin_y_radps": [
+        -27.272727272727273,
+        0.0
+      ]
+    }
+  },
+  "targets": {
+    "representation": "circle",
+    "center_field": "target.center_xy",
+    "radius_field": "target.radius_m",
+    "landing_error": "euclidean distance from target center in the goal mouth (y, z)",
+    "placement_plane": {
+      "axes": [
+        "y",
+        "z"
+      ],
+      "bounds_m": {
+        "y": [
+          -3.66,
+          3.66
+        ],
+        "z": [
+          0.0,
+          2.44
+        ]
+      }
+    }
+  },
+  "bucket_groups": {},
+  "l5_conditions": {
+    "domain_randomization": "ball mass 410-450 g (IFAB), air density +/-10%, camera mount sigma 20 mm",
+    "observation_noise": "ball position sigma 30 mm, velocity sigma 0.3 m/s",
+    "latency": "2 control steps on observations, 1 on actions (10 ms and 5 ms at 200 Hz)"
+  },
+  "failure_reasons": [
+    "miss",
+    "net",
+    "own_side",
+    "out",
+    "floor",
+    "timeout",
+    "safety",
+    "numerical",
+    "fault"
+  ],
+  "ordering": "shot_id_lexicographic",
+  "digest": {
+    "algorithm": "sha256",
+    "scope": "exact UTF-8 JSONL file bytes including the final newline"
+  },
+  "splits": {
+    "train": {
+      "file": "train.jsonl",
+      "count": 1200,
+      "level_counts": {
+        "L0": 200,
+        "L1": 200,
+        "L2": 200,
+        "L3": 200,
+        "L4": 200,
+        "L5": 200
+      },
+      "sha256": "50c51c995a53dbc916f65f81e346e3816a7819b6b607c8c4aba7dea63e8c33dc"
+    },
+    "dev": {
+      "file": "dev.jsonl",
+      "count": 300,
+      "level_counts": {
+        "L0": 50,
+        "L1": 50,
+        "L2": 50,
+        "L3": 50,
+        "L4": 50,
+        "L5": 50
+      },
+      "sha256": "7ea16b62a03a6aa25638314b23bb4540f1aa8b2e7519d76cdbed2e1cb623ee9b"
+    },
+    "test": {
+      "file": "test.jsonl",
+      "count": 600,
+      "level_counts": {
+        "L0": 100,
+        "L1": 100,
+        "L2": 100,
+        "L3": 100,
+        "L4": 100,
+        "L5": 100
+      },
+      "sha256": "dbf7ed16a8a3907d8ba2156cc170c3ae3a92bd4b37fc5e48c2395baee7b5048c"
+    }
+  },
+  "generation": {
+    "script": "scripts/generate_launch_banks.py",
+    "seed_namespace": "multisport-launch-bank-v1",
+    "split_seeds": {
+      "train": 6642439662714287844,
+      "dev": 4357025903355103619,
+      "test": 2554378067434755535
+    },
+    "acceptance": "simulated in MuJoCo without robot action; kept only when the judge's L0 verdict is incoming_valid",
+    "tag_source": "court side and release condition from the sampled shot"
+  },
+  "perturbations": {
+    "L0": {},
+    "L1": {},
+    "L2": {},
+    "L3": {},
+    "L4": {},
+    "L5": {
+      "observation_noise": {
+        "ball_position_m": 0.03,
+        "ball_velocity_mps": 0.3,
+        "ball_spin_radps": 2.0,
+        "joint_position_rad": 0.002,
+        "joint_velocity_radps": 0.02,
+        "camera_pixel": 4.0
+      },
+      "latency": {
+        "observation_steps": 2,
+        "action_steps": 1
+      },
+      "domain_randomization": {
+        "ball_mass_scale": [
+          0.95,
+          1.05
+        ],
+        "drag_scale": [
+          0.9,
+          1.1
+        ],
+        "camera_position_m": 0.02
+      }
+    }
+  }
+}

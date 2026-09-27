@@ -197,7 +197,23 @@ def _validate_record(
     target = record.get("target")
     if level == "L3" and target is None:
         raise ShotBankError(f"L3 shot {shot_id!r} must define a target")
-    if target is not None:
+    placement = manifest.get("targets", {}).get("placement_plane")
+    if target is not None and isinstance(placement, Mapping):
+        # A launch task measures placement where its goal is -- the goal mouth
+        # (y, z), the rim's plane (x, y) -- not on the playing surface, so its
+        # manifest declares that plane and its bounds explicitly.
+        _validate_target(target, shot_id=shot_id)
+        bounds = placement.get("bounds_m", {})
+        axes = placement.get("axes", [])
+        if not isinstance(bounds, Mapping) or len(axes) != 2:
+            raise ShotBankError("targets.placement_plane needs two axes and their bounds_m")
+        for axis, value in zip(axes, target["center_xy"]):
+            low, high = bounds[axis]
+            if not low <= float(value) <= high:
+                raise ShotBankError(
+                    f"shot {shot_id!r} target {axis}={value} is outside the placement plane"
+                )
+    elif target is not None:
         _validate_target(target, shot_id=shot_id)
         bounds = manifest.get("coordinate_system", {}).get("table_bounds_m", {})
         if isinstance(bounds, Mapping) and "x" in bounds and "y" in bounds:

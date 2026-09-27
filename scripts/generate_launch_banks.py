@@ -54,6 +54,10 @@ class Condition:
     # Sample y from +/- this range, so both service courts (or both flanks)
     # appear in every condition.
     mirror_y: bool = True
+    # A ball moving on the ground starts rolling, not sliding: with only a
+    # linear velocity, friction takes about 40% of it away in the first few
+    # tenths of a second, and a "rolling" ball would really be a braking one.
+    rolling_radius_m: float | None = None
 
 
 @dataclass(frozen=True)
@@ -77,9 +81,10 @@ class LaunchBankPlan:
     bank: str
     timeout_s: float
     levels: dict[str, LevelPlan]
-    # (tag, centre (x, |y|) with y mirrored to the receiving side, radius)
+    # (tag, centre, radius); ``target_transform`` maps a centre to this shot,
+    # given the shot's starting y -- badminton mirrors it to the receiving court.
     targets: tuple[tuple[str, tuple[float, float], float], ...]
-    target_side: Callable[[float], float]
+    target_transform: Callable[[float, tuple[float, float]], tuple[float, float]]
     surface_bounds_x: tuple[float, float]
     surface_bounds_y: tuple[float, float]
     surface_top_z_m: float
@@ -88,6 +93,10 @@ class LaunchBankPlan:
     lateral_tags: Callable[[float], tuple[str, ...]]
     judge_factory: Callable[[float], object]
     bucket_groups: dict[str, list[str]] = field(default_factory=dict)
+    initial_motion: str = "stationary_or_toward_opponent"
+    origin_label: str = "court_center_at_floor"
+    # Where placement is measured, when it is not the playing surface.
+    placement_plane: dict[str, object] | None = None
     l5_observation_noise: dict[str, float] = field(default_factory=dict)
     l5_domain_randomization: dict[str, object] = field(default_factory=dict)
     l5_latency: dict[str, int] = field(
@@ -179,6 +188,167 @@ BADMINTON_LEVELS: dict[str, LevelPlan] = {
     ),
 }
 
+def _football_judge(timeout_s: float):
+    from multisport_sim.benchmark.rules.football import FootballKickJudge
+
+    return FootballKickJudge(timeout_s=timeout_s)
+
+
+def _basketball_judge(timeout_s: float):
+    from multisport_sim.benchmark.rules.basketball import BasketballShootJudge
+
+    return BasketballShootJudge(timeout_s=timeout_s)
+
+
+def _flank_tags(y: float) -> tuple[str, ...]:
+    # Facing +x the kicker's or shooter's left hand is +y.
+    if abs(y) < 1.0:
+        return ("central",)
+    return ("left-side",) if y > 0.0 else ("right-side",)
+
+
+FOOTBALL_BALL_Z = 0.11
+"""A ball resting on the pitch: its centre is one radius up."""
+
+
+def _on_ground(name, x, y, *, vx=(0.0, 0.0), vy=(0.0, 0.0), tags=()) -> Condition:
+    return Condition(
+        name, x=x, y=y, z=(FOOTBALL_BALL_Z, FOOTBALL_BALL_Z), vx=vx, vy=vy, tags=tags,
+        rolling_radius_m=FOOTBALL_BALL_Z,
+    )
+
+
+# The task frame's origin is the centre of the goal line; the penalty mark is
+# at x = -11 and the edge of the penalty area at x = -16.5.
+FOOTBALL_LEVELS: dict[str, LevelPlan] = {
+    "L0": LevelPlan(
+        name="Physics",
+        distribution="stationary balls inside the penalty area without robot action; the ball must stay put on the pitch",
+        primary_metric="incoming_valid_rate",
+        pass_threshold=1.0,
+        conditions=(_on_ground("box", x=(-16.0, -11.0), y=(0.0, 3.0)),),
+    ),
+    "L1": LevelPlan(
+        name="Contact",
+        distribution="stationary balls inside the penalty area",
+        primary_metric="hit_rate",
+        pass_threshold=0.9,
+        conditions=(_on_ground("box", x=(-16.0, -11.0), y=(0.0, 3.0)),),
+    ),
+    "L2": LevelPlan(
+        name="Goal",
+        distribution="stationary balls around the penalty area and its arc",
+        primary_metric="valid_return_rate",
+        pass_threshold=0.8,
+        conditions=(_on_ground("around-box", x=(-22.0, -11.0), y=(0.0, 12.0)),),
+    ),
+    "L3": LevelPlan(
+        name="Placement",
+        distribution="L2 balls with top-corner and low-corner targets in the goal mouth",
+        primary_metric="target_rate",
+        pass_threshold=0.7,
+        conditions=(_on_ground("around-box", x=(-22.0, -11.0), y=(0.0, 12.0)),),
+        targets=True,
+    ),
+    "L4": LevelPlan(
+        name="Robustness",
+        distribution="fixed combinations of long range, tight angle, a ball rolling back to the kicker and a ball rolling across",
+        primary_metric="worst_bucket_valid_return_rate",
+        pass_threshold=0.6,
+        conditions=(
+            _on_ground("far", x=(-30.0, -24.0), y=(0.0, 8.0), tags=("long-range",)),
+            _on_ground("angle", x=(-14.0, -8.0), y=(14.0, 18.0), tags=("tight-angle",)),
+            _on_ground("rolling", x=(-20.0, -12.0), y=(0.0, 8.0), vx=(-4.0, -1.0), tags=("rolling",)),
+            _on_ground("across", x=(-20.0, -12.0), y=(0.0, 8.0), vy=(2.0, 4.0), tags=("cross",)),
+        ),
+        pass_buckets=("long-range", "tight-angle", "rolling", "cross"),
+    ),
+    "L5": LevelPlan(
+        name="Generalization",
+        distribution="held-out combinations under observation noise, latency and domain randomization",
+        primary_metric="worst_bucket_valid_return_rate",
+        pass_threshold=0.5,
+        aggregate_metric="valid_return_rate",
+        aggregate_threshold=0.6,
+        conditions=(
+            _on_ground("far-rolling", x=(-28.0, -20.0), y=(0.0, 10.0), vx=(-3.0, -0.5),
+                       tags=("long-range", "rolling")),
+            _on_ground("angle-cross", x=(-16.0, -9.0), y=(10.0, 16.0), vy=(1.0, 3.0),
+                       tags=("cross", "tight-angle")),
+            _on_ground("box", x=(-18.0, -11.0), y=(0.0, 6.0), tags=("box",)),
+        ),
+        held_out=True,
+        pass_buckets=("long-range", "tight-angle", "held-out"),
+    ),
+}
+
+
+BASKETBALL_LEVELS: dict[str, LevelPlan] = {
+    # The task frame's origin is the floor below the rim's centre; the free
+    # throw line is 4.225 m in front of it and the three-point arc 6.75 m out.
+    "L0": LevelPlan(
+        name="Physics",
+        distribution="releases at the free-throw line without robot action; the ball must fall in front of the basket",
+        primary_metric="incoming_valid_rate",
+        pass_threshold=1.0,
+        conditions=(Condition("free-throw", x=(-4.5, -3.95), y=(0.0, 0.3), z=(2.0, 2.2)),),
+    ),
+    "L1": LevelPlan(
+        name="Contact",
+        distribution="releases at the free-throw line",
+        primary_metric="hit_rate",
+        pass_threshold=0.9,
+        conditions=(Condition("free-throw", x=(-4.5, -3.95), y=(0.0, 0.3), z=(2.0, 2.2)),),
+    ),
+    "L2": LevelPlan(
+        name="Basket",
+        distribution="mid-range releases, 2.5-5.5 m in front of the rim",
+        primary_metric="valid_return_rate",
+        pass_threshold=0.8,
+        conditions=(Condition("mid-range", x=(-5.5, -2.5), y=(0.0, 3.0), z=(1.9, 2.3)),),
+    ),
+    "L3": LevelPlan(
+        name="Placement",
+        distribution="L2 releases with a clean-entry target at the rim's centre or offset entries",
+        primary_metric="target_rate",
+        pass_threshold=0.7,
+        conditions=(Condition("mid-range", x=(-5.5, -2.5), y=(0.0, 3.0), z=(1.9, 2.3)),),
+        targets=True,
+    ),
+    "L4": LevelPlan(
+        name="Robustness",
+        distribution="fixed combinations of three-point range, the corners, a low release and a tossed ball",
+        primary_metric="worst_bucket_valid_return_rate",
+        pass_threshold=0.6,
+        conditions=(
+            Condition("three", x=(-7.3, -6.8), y=(0.0, 1.5), z=(2.0, 2.3), tags=("three-point",)),
+            Condition("corner", x=(-1.0, -0.5), y=(5.6, 6.4), z=(2.0, 2.3), tags=("corner",)),
+            Condition("low", x=(-5.0, -3.0), y=(0.0, 2.5), z=(1.55, 1.75), tags=("low-release",)),
+            Condition("tossed", x=(-5.0, -3.0), y=(0.0, 2.5), z=(1.9, 2.2),
+                      vx=(0.0, 0.8), vz=(0.5, 1.5), tags=("tossed",)),
+        ),
+        pass_buckets=("three-point", "corner", "low-release", "tossed"),
+    ),
+    "L5": LevelPlan(
+        name="Generalization",
+        distribution="held-out combinations under observation noise, latency and domain randomization",
+        primary_metric="worst_bucket_valid_return_rate",
+        pass_threshold=0.5,
+        aggregate_metric="valid_return_rate",
+        aggregate_threshold=0.6,
+        conditions=(
+            Condition("three-tossed", x=(-7.4, -6.8), y=(0.0, 2.5), z=(1.9, 2.2),
+                      vx=(0.0, 0.6), vz=(0.3, 1.2), tags=("three-point", "tossed")),
+            Condition("wing", x=(-4.0, -2.0), y=(3.0, 5.0), z=(1.8, 2.3), tags=("wing",)),
+            Condition("low-corner", x=(-1.2, -0.6), y=(5.0, 6.2), z=(1.6, 1.8),
+                      tags=("corner", "low-release")),
+        ),
+        held_out=True,
+        pass_buckets=("three-point", "corner", "held-out"),
+    ),
+}
+
+
 BANKS: dict[str, LaunchBankPlan] = {
     "badminton": LaunchBankPlan(
         sport="badminton",
@@ -193,7 +363,10 @@ BANKS: dict[str, LaunchBankPlan] = {
             ("wide-target", (4.6, 2.1), 0.5),
         ),
         # Diagonal: the receiving court is across the centre line.
-        target_side=lambda server_y: -1.0 if server_y > 0.0 else 1.0,
+        target_transform=lambda server_y, centre: (
+            centre[0],
+            (-1.0 if server_y > 0.0 else 1.0) * centre[1],
+        ),
         surface_bounds_x=(-6.70, 6.70),
         surface_bounds_y=(-2.59, 2.59),
         surface_top_z_m=0.0,
@@ -234,6 +407,112 @@ BANKS: dict[str, LaunchBankPlan] = {
             "the release is legal and valid_return means a legal serve."
         ),
     ),
+    "football": LaunchBankPlan(
+        sport="football",
+        task="football-kick-v0",
+        bank="kick-v0",
+        timeout_s=3.0,
+        levels=FOOTBALL_LEVELS,
+        targets=(
+            ("top-left-target", (2.8, 1.8), 0.5),
+            ("top-right-target", (-2.8, 1.8), 0.5),
+            ("low-left-target", (2.8, 0.4), 0.5),
+            ("low-right-target", (-2.8, 0.4), 0.5),
+        ),
+        target_transform=lambda start_y, centre: centre,
+        surface_bounds_x=(-105.0, 0.0),
+        surface_bounds_y=(-34.0, 34.0),
+        surface_top_z_m=0.0,
+        success_sequence=(
+            "robot_boot_contact",
+            "whole_ball_over_the_goal_line_between_the_posts_and_under_the_crossbar",
+        ),
+        landing_error="euclidean distance from target center in the goal mouth (y, z)",
+        lateral_tags=_flank_tags,
+        judge_factory=_football_judge,
+        initial_motion="stationary_or_toward_robot",
+        origin_label="goal_line_center_at_ground",
+        placement_plane={
+            "axes": ["y", "z"],
+            "bounds_m": {"y": [-3.66, 3.66], "z": [0.0, 2.44]},
+        },
+        l5_observation_noise={
+            "ball_position_m": 0.030,
+            "ball_velocity_mps": 0.30,
+            "ball_spin_radps": 2.0,
+            "joint_position_rad": 0.002,
+            "joint_velocity_radps": 0.02,
+            "camera_pixel": 4.0,
+        },
+        l5_domain_randomization={
+            # IFAB size 5: 410-450 g against the model's 430 g.
+            "ball_mass_scale": [0.95, 1.05],
+            "drag_scale": [0.90, 1.10],
+            "camera_position_m": 0.02,
+        },
+        l5_summary={
+            "domain_randomization": "ball mass 410-450 g (IFAB), air density +/-10%, camera mount sigma 20 mm",
+            "observation_noise": "ball position sigma 30 mm, velocity sigma 0.3 m/s",
+            "latency": "2 control steps on observations, 1 on actions (10 ms and 5 ms at 200 Hz)",
+        },
+        notes=(
+            "Kick task: the ball rests or rolls on the pitch in front of the goal and is "
+            "kicked once.  Task frame origin is the centre of the goal line.  valid_return "
+            "means a goal; placement is measured in the goal mouth (y, z)."
+        ),
+    ),
+    "basketball": LaunchBankPlan(
+        sport="basketball",
+        task="basketball-shoot-v0",
+        bank="shoot-v0",
+        timeout_s=4.0,
+        levels=BASKETBALL_LEVELS,
+        targets=(
+            ("clean-target", (0.0, 0.0), 0.06),
+            ("front-target", (-0.06, 0.0), 0.05),
+            ("back-target", (0.06, 0.0), 0.05),
+        ),
+        target_transform=lambda start_y, centre: centre,
+        surface_bounds_x=(-12.425, 1.575),
+        surface_bounds_y=(-7.5, 7.5),
+        surface_top_z_m=0.0,
+        success_sequence=(
+            "robot_plate_contact",
+            "ball_centre_descends_through_the_ring",
+        ),
+        landing_error="euclidean distance from target center in the rim plane (x, y)",
+        lateral_tags=_flank_tags,
+        judge_factory=_basketball_judge,
+        origin_label="floor_below_rim_center",
+        placement_plane={
+            "axes": ["x", "y"],
+            "bounds_m": {"x": [-0.225, 0.225], "y": [-0.225, 0.225]},
+        },
+        l5_observation_noise={
+            "ball_position_m": 0.015,
+            "ball_velocity_mps": 0.15,
+            "ball_spin_radps": 1.0,
+            "joint_position_rad": 0.002,
+            "joint_velocity_radps": 0.02,
+            "camera_pixel": 4.0,
+        },
+        l5_domain_randomization={
+            # FIBA size 7: 567-650 g against the model's 600 g.
+            "ball_mass_scale": [0.95, 1.08],
+            "drag_scale": [0.90, 1.10],
+            "camera_position_m": 0.01,
+        },
+        l5_summary={
+            "domain_randomization": "ball mass 567-650 g (FIBA), air density +/-10%, camera mount sigma 10 mm",
+            "observation_noise": "ball position sigma 15 mm, velocity sigma 0.15 m/s",
+            "latency": "2 control steps on observations, 1 on actions (10 ms and 5 ms at 200 Hz)",
+        },
+        notes=(
+            "Shoot task: the ball is released in front of the basket and struck once by a "
+            "launcher plate.  Task frame origin is the floor below the rim's centre.  "
+            "valid_return means a made basket; placement is measured in the rim plane (x, y)."
+        ),
+    ),
 }
 
 
@@ -259,29 +538,37 @@ def _candidate(
 ) -> tuple[ShotSpec, dict]:
     x = _uniform(rng, condition.x)
     y = _uniform(rng, condition.y)
-    if condition.mirror_y and rng.random() < 0.5:
+    mirrored = condition.mirror_y and rng.random() < 0.5
+    if mirrored:
         y = -y
+    # Draw order is part of the frozen banks: x, y, mirror, z, vx, vy, vz.
+    z = round(_uniform(rng, condition.z), 4)
+    vx = round(_uniform(rng, condition.vx), 4)
+    vy = round(_uniform(rng, condition.vy), 4)
+    if mirrored:
+        # A ball rolling across keeps rolling toward the same touchline side
+        # relative to where it starts.
+        vy = -vy if vy else vy
+    vz = round(_uniform(rng, condition.vz), 4)
+    spin = [0.0, 0.0, 0.0]
+    if condition.rolling_radius_m is not None:
+        radius = condition.rolling_radius_m
+        spin = [round(-vy / radius, 4), round(vx / radius, 4), 0.0]
     record = {
         "shot_id": shot_id,
         "sport": bank.sport,
         "level": level,
-        "position": [round(x, 4), round(y, 4), round(_uniform(rng, condition.z), 4)],
-        "linear_velocity": [
-            round(_uniform(rng, condition.vx), 4),
-            round(_uniform(rng, condition.vy), 4),
-            round(_uniform(rng, condition.vz), 4),
-        ],
-        "angular_velocity": [0.0, 0.0, 0.0],
+        "position": [round(x, 4), round(y, 4), z],
+        "linear_velocity": [vx, vy, vz],
+        "angular_velocity": spin,
     }
     tags = {*bank.lateral_tags(y), *condition.tags}
     if plan.held_out:
         tags.add("held-out")
     if plan.targets:
-        name, (tx, ty), radius = bank.targets[index % len(bank.targets)]
-        record["target"] = {
-            "center_xy": [tx, round(bank.target_side(y) * ty, 4)],
-            "radius_m": radius,
-        }
+        name, centre, radius = bank.targets[index % len(bank.targets)]
+        u, v = bank.target_transform(y, centre)
+        record["target"] = {"center_xy": [round(u, 4), round(v, 4)], "radius_m": radius}
         tags.add(name)
     record["tags"] = sorted(tags)
     shot = ShotSpec.from_mapping(record)
@@ -336,7 +623,14 @@ def _ranges(conditions: tuple[Condition, ...]) -> dict[str, list[float]]:
         "lateral_y_m": span(ys),
         "height_z_m": span([c.z for c in conditions]),
         "speed_x_mps": span([c.vx for c in conditions]),
-        "spin_y_radps": [0.0, 0.0],
+        "spin_y_radps": span(
+            [
+                (c.vx[0] / c.rolling_radius_m, c.vx[1] / c.rolling_radius_m)
+                if c.rolling_radius_m
+                else (0.0, 0.0)
+                for c in conditions
+            ]
+        ),
     }
 
 
@@ -370,7 +664,7 @@ def _manifest(bank: LaunchBankPlan, digests, counts) -> dict:
         "notes": bank.notes,
         "units": "SI",
         "coordinate_system": {
-            "origin": "court_center_at_floor",
+            "origin": bank.origin_label,
             "x_axis": "robot_side_to_opponent_side",
             "y_axis": "court_lateral",
             "z_axis": "up",
@@ -378,7 +672,7 @@ def _manifest(bank: LaunchBankPlan, digests, counts) -> dict:
             "robot_side": "x < 0",
             "opponent_side": "x > 0",
             "shot_origin": "robot_side",
-            "initial_motion": "stationary_or_toward_opponent",
+            "initial_motion": bank.initial_motion,
             "table_top_z_m": bank.surface_top_z_m,
             "table_bounds_m": {
                 "x": list(bank.surface_bounds_x),
@@ -399,6 +693,7 @@ def _manifest(bank: LaunchBankPlan, digests, counts) -> dict:
             "center_field": "target.center_xy",
             "radius_field": "target.radius_m",
             "landing_error": bank.landing_error,
+            **({"placement_plane": bank.placement_plane} if bank.placement_plane else {}),
         },
         "bucket_groups": bank.bucket_groups,
         "l5_conditions": dict(bank.l5_summary),

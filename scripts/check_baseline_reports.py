@@ -61,6 +61,20 @@ REPORTS = (
         splits=("test",),
         controllers=("noop", "scripted"),
     ),
+    ReportSpec(
+        path=Path("reports/football-baselines.json"),
+        task="football-kick-v0",
+        bank="football/kick-v0",
+        splits=("test",),
+        controllers=("noop", "scripted"),
+    ),
+    ReportSpec(
+        path=Path("reports/basketball-baselines.json"),
+        task="basketball-shoot-v0",
+        bank="basketball/shoot-v0",
+        splits=("test",),
+        controllers=("noop", "scripted"),
+    ),
 )
 
 

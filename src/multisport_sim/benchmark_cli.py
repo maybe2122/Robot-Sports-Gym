@@ -18,7 +18,6 @@ from . import __version__
 from .benchmark.backends.mujoco import MujocoShotBackend
 from .benchmark.controllers import (
     NoOpController,
-    ScriptedPaddleController,
     ScriptedServeController,
     scripted_controller_for,
 )
@@ -29,6 +28,8 @@ from .benchmark.runner import RunConfig, run_shots
 from .benchmark.shot_bank import VALID_LEVELS, ShotBank, ShotBankError
 from .benchmark.task_config import (
     BADMINTON_SERVE_V0,
+    BASKETBALL_SHOOT_V0,
+    FOOTBALL_KICK_V0,
     TABLE_TENNIS_RETURN_G1_V1,
     TABLE_TENNIS_RETURN_PANDA_V1,
     TABLE_TENNIS_RETURN_STANDING_G1_V2,
@@ -41,11 +42,15 @@ MOCAP_TASKS = {
     "table_tennis": TABLE_TENNIS_RETURN_V0,
     "tennis": TENNIS_RETURN_V0,
     "badminton": BADMINTON_SERVE_V0,
+    "football": FOOTBALL_KICK_V0,
+    "basketball": BASKETBALL_SHOOT_V0,
 }
 DEFAULT_BANKS = {
     "table_tennis": "table_tennis/return-v0",
     "tennis": "tennis/return-v0",
     "badminton": "badminton/serve-v0",
+    "football": "football/kick-v0",
+    "basketball": "basketball/shoot-v0",
 }
 MOCAP_CONTROLLERS = ("scripted", "noop")
 ROBOT_CONTROLLERS = ("intercept", "random", "hold")
@@ -103,15 +108,15 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--perception", choices=("stereo", "rgbd", "depth"), default="stereo")
     result.add_argument(
         "--sport",
-        choices=("table-tennis", "table_tennis", "tennis", "badminton"),
+        choices=("table-tennis", "table_tennis", "tennis", "badminton", "football", "basketball"),
         default="table-tennis",
         help="the sport to score; the robot task exists for table tennis only",
     )
     result.add_argument(
         "--task",
-        choices=("return", "serve"),
+        choices=("return", "serve", "kick", "shoot"),
         default=None,
-        help="informational; each sport has exactly one task (badminton: serve)",
+        help="informational; each sport has exactly one fixture task",
     )
     result.add_argument("--backend", choices=("mujoco",), default="mujoco")
     result.add_argument("--level", choices=VALID_LEVELS, default="L1")
@@ -221,13 +226,19 @@ def _bank_for(args: argparse.Namespace) -> str:
     return DEFAULT_BANKS[_sport(args)]
 
 
-def _controller(
-    name: str, sport: str
-) -> NoOpController | ScriptedPaddleController | ScriptedServeController:
+def _controller(name: str, sport: str) -> object:
     if name == "noop":
         return NoOpController()
     if sport == "badminton":
         return ScriptedServeController()
+    if sport == "football":
+        from .benchmark.launch_controllers import ScriptedKickController
+
+        return ScriptedKickController()
+    if sport == "basketball":
+        from .benchmark.launch_controllers import ScriptedShootController
+
+        return ScriptedShootController()
     return scripted_controller_for(sport)
 
 

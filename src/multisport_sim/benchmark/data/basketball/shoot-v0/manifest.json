@@ -1,0 +1,330 @@
+{
+  "schema_version": 1,
+  "benchmark": "multisport-shot-skill-v0",
+  "task": "basketball-shoot-v0",
+  "sport": "basketball",
+  "status": "experimental",
+  "leaderboard_eligible": false,
+  "warning": "Statistically sufficient per level (100 test episodes) but still an experimental bank: per-bucket counts remain below 100, and no leaderboard has been opened.",
+  "notes": "Shoot task: the ball is released in front of the basket and struck once by a launcher plate.  Task frame origin is the floor below the rim's centre.  valid_return means a made basket; placement is measured in the rim plane (x, y).",
+  "units": "SI",
+  "coordinate_system": {
+    "origin": "floor_below_rim_center",
+    "x_axis": "robot_side_to_opponent_side",
+    "y_axis": "court_lateral",
+    "z_axis": "up",
+    "net_plane_x_m": 0.0,
+    "robot_side": "x < 0",
+    "opponent_side": "x > 0",
+    "shot_origin": "robot_side",
+    "initial_motion": "stationary_or_toward_opponent",
+    "table_top_z_m": 0.0,
+    "table_bounds_m": {
+      "x": [
+        -12.425,
+        1.575
+      ],
+      "y": [
+        -7.5,
+        7.5
+      ]
+    }
+  },
+  "episode": {
+    "timeout_s": 4.0,
+    "success_sequence": [
+      "robot_plate_contact",
+      "ball_centre_descends_through_the_ring"
+    ],
+    "timeout_is_truncation": true
+  },
+  "levels": {
+    "L0": {
+      "name": "Physics",
+      "distribution": "releases at the free-throw line without robot action; the ball must fall in front of the basket",
+      "primary_metric": "incoming_valid_rate",
+      "pass_threshold": 1.0
+    },
+    "L1": {
+      "name": "Contact",
+      "distribution": "releases at the free-throw line",
+      "primary_metric": "hit_rate",
+      "pass_threshold": 0.9
+    },
+    "L2": {
+      "name": "Basket",
+      "distribution": "mid-range releases, 2.5-5.5 m in front of the rim",
+      "primary_metric": "valid_return_rate",
+      "pass_threshold": 0.8
+    },
+    "L3": {
+      "name": "Placement",
+      "distribution": "L2 releases with a clean-entry target at the rim's centre or offset entries",
+      "primary_metric": "target_rate",
+      "pass_threshold": 0.7
+    },
+    "L4": {
+      "name": "Robustness",
+      "distribution": "fixed combinations of three-point range, the corners, a low release and a tossed ball",
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "pass_threshold": 0.6,
+      "pass_buckets": [
+        "three-point",
+        "corner",
+        "low-release",
+        "tossed"
+      ]
+    },
+    "L5": {
+      "name": "Generalization",
+      "distribution": "held-out combinations under observation noise, latency and domain randomization",
+      "primary_metric": "worst_bucket_valid_return_rate",
+      "pass_threshold": 0.5,
+      "aggregate_metric": "valid_return_rate",
+      "aggregate_threshold": 0.6,
+      "pass_buckets": [
+        "three-point",
+        "corner",
+        "held-out"
+      ]
+    }
+  },
+  "difficulty_ranges": {
+    "L0": {
+      "lateral_y_m": [
+        -0.3,
+        0.3
+      ],
+      "height_z_m": [
+        2.0,
+        2.2
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.0
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    },
+    "L1": {
+      "lateral_y_m": [
+        -0.3,
+        0.3
+      ],
+      "height_z_m": [
+        2.0,
+        2.2
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.0
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    },
+    "L2": {
+      "lateral_y_m": [
+        -3.0,
+        3.0
+      ],
+      "height_z_m": [
+        1.9,
+        2.3
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.0
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    },
+    "L3": {
+      "lateral_y_m": [
+        -3.0,
+        3.0
+      ],
+      "height_z_m": [
+        1.9,
+        2.3
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.0
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    },
+    "L4": {
+      "lateral_y_m": [
+        -6.4,
+        6.4
+      ],
+      "height_z_m": [
+        1.55,
+        2.3
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.8
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    },
+    "L5": {
+      "lateral_y_m": [
+        -6.2,
+        6.2
+      ],
+      "height_z_m": [
+        1.6,
+        2.3
+      ],
+      "speed_x_mps": [
+        0.0,
+        0.6
+      ],
+      "spin_y_radps": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "targets": {
+    "representation": "circle",
+    "center_field": "target.center_xy",
+    "radius_field": "target.radius_m",
+    "landing_error": "euclidean distance from target center in the rim plane (x, y)",
+    "placement_plane": {
+      "axes": [
+        "x",
+        "y"
+      ],
+      "bounds_m": {
+        "x": [
+          -0.225,
+          0.225
+        ],
+        "y": [
+          -0.225,
+          0.225
+        ]
+      }
+    }
+  },
+  "bucket_groups": {},
+  "l5_conditions": {
+    "domain_randomization": "ball mass 567-650 g (FIBA), air density +/-10%, camera mount sigma 10 mm",
+    "observation_noise": "ball position sigma 15 mm, velocity sigma 0.15 m/s",
+    "latency": "2 control steps on observations, 1 on actions (10 ms and 5 ms at 200 Hz)"
+  },
+  "failure_reasons": [
+    "miss",
+    "net",
+    "own_side",
+    "out",
+    "floor",
+    "timeout",
+    "safety",
+    "numerical",
+    "fault"
+  ],
+  "ordering": "shot_id_lexicographic",
+  "digest": {
+    "algorithm": "sha256",
+    "scope": "exact UTF-8 JSONL file bytes including the final newline"
+  },
+  "splits": {
+    "train": {
+      "file": "train.jsonl",
+      "count": 1200,
+      "level_counts": {
+        "L0": 200,
+        "L1": 200,
+        "L2": 200,
+        "L3": 200,
+        "L4": 200,
+        "L5": 200
+      },
+      "sha256": "b99835be241598a14c518687b7197d1e55dad7ad9b3ab2fe9ae8c9d87cda1e07"
+    },
+    "dev": {
+      "file": "dev.jsonl",
+      "count": 300,
+      "level_counts": {
+        "L0": 50,
+        "L1": 50,
+        "L2": 50,
+        "L3": 50,
+        "L4": 50,
+        "L5": 50
+      },
+      "sha256": "c869d995fc2999d112b99b2f528be2168e836888b82b059c54db723149cc20cd"
+    },
+    "test": {
+      "file": "test.jsonl",
+      "count": 600,
+      "level_counts": {
+        "L0": 100,
+        "L1": 100,
+        "L2": 100,
+        "L3": 100,
+        "L4": 100,
+        "L5": 100
+      },
+      "sha256": "d4fedb70ba89c1758878f449ac804af7c056573f86ee0f799291fd0ad2c870c9"
+    }
+  },
+  "generation": {
+    "script": "scripts/generate_launch_banks.py",
+    "seed_namespace": "multisport-launch-bank-v1",
+    "split_seeds": {
+      "train": 4396520186297200141,
+      "dev": 658674771956600604,
+      "test": 3312335101926181211
+    },
+    "acceptance": "simulated in MuJoCo without robot action; kept only when the judge's L0 verdict is incoming_valid",
+    "tag_source": "court side and release condition from the sampled shot"
+  },
+  "perturbations": {
+    "L0": {},
+    "L1": {},
+    "L2": {},
+    "L3": {},
+    "L4": {},
+    "L5": {
+      "observation_noise": {
+        "ball_position_m": 0.015,
+        "ball_velocity_mps": 0.15,
+        "ball_spin_radps": 1.0,
+        "joint_position_rad": 0.002,
+        "joint_velocity_radps": 0.02,
+        "camera_pixel": 4.0
+      },
+      "latency": {
+        "observation_steps": 2,
+        "action_steps": 1
+      },
+      "domain_randomization": {
+        "ball_mass_scale": [
+          0.95,
+          1.08
+        ],
+        "drag_scale": [
+          0.9,
+          1.1
+        ],
+        "camera_position_m": 0.01
+      }
+    }
+  }
+}

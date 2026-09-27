@@ -392,16 +392,20 @@ def _table_tennis(x: float, y: float) -> tuple[list[IsaacPrimitive], IsaacBall]:
 
 
 def _goal(prefix: str, x: float, y: float, direction: float) -> list[IsaacPrimitive]:
+    """IFAB goal: 7.32 m between the posts' inner edges, 2.44 m to the bar's underside."""
     depth = 2.0 * direction
+    post = 0.06
+    half_width = 3.66 + post
+    bar = 2.44 + post
     return [
-        _cylinder(f"{prefix}_post_a", (x, y - 3.66, 1.22), 0.06, 2.44, WHITE),
-        _cylinder(f"{prefix}_post_b", (x, y + 3.66, 1.22), 0.06, 2.44, WHITE),
+        _cylinder(f"{prefix}_post_a", (x, y - half_width, bar / 2), post, bar, WHITE),
+        _cylinder(f"{prefix}_post_b", (x, y + half_width, bar / 2), post, bar, WHITE),
         _capsule_between(
-            f"{prefix}_crossbar", (x, y - 3.66, 2.44), (x, y + 3.66, 2.44), 0.06, WHITE
+            f"{prefix}_crossbar", (x, y - half_width, bar), (x, y + half_width, bar), post, WHITE
         ),
         _box(
             f"{prefix}_net",
-            (x + depth / 2, y, 1.22),
+            (x + depth / 2 + direction * 0.30, y, 1.22),
             (abs(depth), 7.32, 2.44),
             (0.88, 0.88, 0.88),
             opacity=0.12,

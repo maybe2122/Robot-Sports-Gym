@@ -12,6 +12,16 @@
   由新的 `scripts/generate_launch_banks.py` 生成（每级 train 200 / dev 50 / test 100）；
   `MultiSportRobot/BadmintonServe-v0` 通过 `check_env`；CLI `--sport badminton`；
   `scripts/run_fixture_baselines.py --sport badminton` 产出 noop+scripted 基线。见 `docs/BADMINTON.md`。
+- **足球射门 `football-kick-v0` 与篮球投篮 `basketball-shoot-v0`**（M3 第四、五项）：发射类任务框架的
+  第二、三个实例。任务坐标原点放在目标处（`MujocoSportProfile.task_origin`，后端边界换算）；IFAB/FIBA
+  判定；固定集的放置目标可声明在球门口 (y,z) 或篮圈平面 (x,y)（`manifest.targets.placement_plane`）；
+  `launch_controllers.py` 的脚本夹具用实测冲量律反解拍面速度。见 `docs/LAUNCH_TASKS.md`。
+- **跨任务汇总** `scripts/cross_task_report.py`（`make cross-task`，`make baselines-all` 重跑全部），
+  输出 `reports/cross-task-summary.md`。
+- **L3 目标交给策略**：Gymnasium `info["target"]`、`wrappers.TargetObservation`、`PolicyController`
+  向接受 `target` 的策略 `reset` 传目标。此前任何非特权策略都无法完成 L3。
+- `BallFlightModel.fly_until`：按事件积分自由飞行，供发射类任务规划。
+
 - **Isaac Lab 环境首次实跑**与 `scripts/backend_parity.py`（`make parity`）：同一批球在 MuJoCo 与
   Isaac Lab 上逐步对比，报告 `reports/table-tennis-backend-parity.md`。
 
@@ -25,6 +35,9 @@
 - `robustness_gap` 的分布内分子不再包含 L1（L1 击球即结束，回球率恒为 0）；已发布报告按逐级明细重算。
 - IK 求解在够不到的目标上跑满迭代预算：加停滞退出，拦截基线控制延迟均值 0.94→0.35 ms。
 - `StrikeZone` 声明值更新为 `return-v1` 实测穿越范围。
+- 足球门柱内沿间距改为规则的 7.32 m、横梁下沿 2.44 m（原来 7.20 m / 2.38 m），MuJoCo 与 Isaac 场景一致。
+- 足球 benchmark 场景改用 PGS 求解器：Newton 在球同时接触地面与鞋面时给出与世界坐标方向相关的伪解
+  （偏离 4–7°、20–30 rad/s 伪旋转）。
 
 ### Added
 

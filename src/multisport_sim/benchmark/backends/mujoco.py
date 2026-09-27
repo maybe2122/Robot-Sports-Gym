@@ -39,6 +39,10 @@ class MujocoSportProfile:
     # ball is smaller than the distance the face covers in one control period
     # needs it, or the face jumps straight past the ball.
     effector_interpolation_s: float = 0.0
+    # Where the task frame's origin sits in the scene.  Net sports put it at
+    # the centre of the court; a launch task at a goal puts it under the goal,
+    # so the robot is at x < 0 and shoots toward +x like every other task.
+    task_origin: tuple[float, float, float] = (0.0, 0.0, 0.0)
 
     @property
     def ball_joint(self) -> str:
@@ -110,10 +114,40 @@ BADMINTON_PROFILE = MujocoSportProfile(
     effector_interpolation_s=0.005,
 )
 
+FOOTBALL_PROFILE = MujocoSportProfile(
+    sport=Sport.FOOTBALL,
+    effector_body="football_benchmark_paddle",
+    effector_geom="football_benchmark_paddle_blade",
+    extra_geoms={
+        "football_goal_e_left_post": "post",
+        "football_goal_e_right_post": "post",
+        "football_goal_e_crossbar": "post",
+        "football_goal_e_goal_net": "goal_net",
+    },
+    effector_interpolation_s=0.005,
+    # The east goal line, so the kicker is at x < 0 shooting toward +x.
+    task_origin=(52.5, 0.0, 0.0),
+)
+
+BASKETBALL_PROFILE = MujocoSportProfile(
+    sport=Sport.BASKETBALL,
+    effector_body="basketball_benchmark_paddle",
+    effector_geom="basketball_benchmark_paddle_blade",
+    extra_geoms={
+        **{f"basketball_e_rim_{index}": "rim" for index in range(32)},
+        "basketball_e_backboard": "backboard",
+    },
+    effector_interpolation_s=0.005,
+    # The floor below the east rim's centre: the rim is at (0, 0, 3.05).
+    task_origin=(12.425, 0.0, 0.0),
+)
+
 PROFILES: dict[Sport, MujocoSportProfile] = {
     Sport.TABLE_TENNIS: TABLE_TENNIS_PROFILE,
     Sport.TENNIS: TENNIS_PROFILE,
     Sport.BADMINTON: BADMINTON_PROFILE,
+    Sport.FOOTBALL: FOOTBALL_PROFILE,
+    Sport.BASKETBALL: BASKETBALL_PROFILE,
 }
 
 
@@ -140,6 +174,8 @@ class MujocoShotBackend:
                 f"no MuJoCo benchmark profile is defined for sport {selected.value!r}"
             ) from None
         self.sport = selected
+        self._frame = TaskFrame(origin_xyz=self.profile.task_origin)
+        self._origin = np.asarray(self.profile.task_origin, dtype=float)
         self.model = build_model(selected.value, benchmark_paddle=True)
         self.data = mujoco.MjData(self.model)
         validated_wind = self._finite_values(wind, size=3, field="wind")
@@ -175,8 +211,14 @@ class MujocoShotBackend:
 
     @property
     def task_frame(self) -> TaskFrame:
-        """Identity: the single-sport MuJoCo scene builds the table at the origin."""
-        return TaskFrame()
+        """The sport's task frame; identity for the net sports.
+
+        Everything this backend hands out -- ball state, contact points,
+        observations -- is in this frame, and everything it takes in -- shot
+        states, effector poses -- is read in it, so a judge never sees a
+        scene coordinate.
+        """
+        return self._frame
 
     def _require_id(self, object_type: mujoco.mjtObj, name: str) -> int:
         object_id = int(mujoco.mj_name2id(self.model, object_type, name))
@@ -209,7 +251,7 @@ class MujocoShotBackend:
 
         qpos = self._ball_qpos_address
         dof = self._ball_dof_address
-        self.data.qpos[qpos : qpos + 3] = shot.position
+        self.data.qpos[qpos : qpos + 3] = np.asarray(shot.position) + self._origin
         # MuJoCo free-joint quaternion order is (w, x, y, z).
         self.data.qpos[qpos + 3 : qpos + 7] = (1.0, 0.0, 0.0, 0.0)
         self.data.qvel[dof : dof + 3] = shot.linear_velocity
@@ -222,7 +264,9 @@ class MujocoShotBackend:
         qpos = self._ball_qpos_address
         dof = self._ball_dof_address
         return BallState(
-            position=tuple(float(value) for value in self.data.qpos[qpos : qpos + 3]),
+            position=tuple(
+                float(value) for value in self.data.qpos[qpos : qpos + 3] - self._origin
+            ),
             linear_velocity=tuple(
                 float(value) for value in self.data.qvel[dof : dof + 3]
             ),
@@ -256,7 +300,7 @@ class MujocoShotBackend:
             # from being interpreted as a physical racket strike.
             if category is None or float(contact.dist) > 0.0:
                 continue
-            position = tuple(float(value) for value in contact.pos)
+            position = tuple(float(value) for value in contact.pos - self._origin)
             normal = tuple(normal_sign * float(value) for value in contact.frame[:3])
             contacts.append(
                 SemanticContact.between(
@@ -273,7 +317,8 @@ class MujocoShotBackend:
             time_s=self.time,
             ball=self.get_ball_state(),
             paddle_position=tuple(
-                float(value) for value in self.data.mocap_pos[self._paddle_mocap_id]
+                float(value)
+                for value in self.data.mocap_pos[self._paddle_mocap_id] - self._origin
             ),
             paddle_quaternion=tuple(
                 float(value) for value in self.data.mocap_quat[self._paddle_mocap_id]
@@ -309,7 +354,7 @@ class MujocoShotBackend:
             raise ValueError("paddle quaternion must have non-zero norm")
 
         target = (
-            np.asarray(position, dtype=float),
+            np.asarray(position, dtype=float) + self._origin,
             np.asarray(quaternion, dtype=float) / quaternion_norm,
         )
         if self._interpolation_steps == 0:

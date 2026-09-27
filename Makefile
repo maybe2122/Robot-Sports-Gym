@@ -9,6 +9,7 @@ SPORT ?= table_tennis
 
 .PHONY: test lint verify check-reports test-isaac verify-all evaluate evaluate-isaac benchmark \
 	parity benchmark-robot benchmark-g1 baselines baselines-g1 tennis tennis-baselines \
+	fixture-baselines baselines-all cross-task \
 	shot-bank calibrate submission \
 	demo-squash verify-squash-demo \
 	watch-squash-demo run run-isaac
@@ -104,6 +105,21 @@ tennis:
 # Both tennis baselines over every level of the test split.
 tennis-baselines:
 	PYTHONPATH=src $(PYTHON) scripts/run_tennis_baselines.py --out reports
+
+# The launch-task fixtures, one sport at a time: make fixture-baselines SPORT=football
+fixture-baselines:
+	cd scripts && PYTHONPATH=../src $(PYTHON) run_fixture_baselines.py --sport $(SPORT) --out ../reports
+
+# Every baseline table, then the cross-task summary.  Slow: the embodied
+# tables alone take over an hour on a workstation CPU.
+baselines-all: baselines baselines-g1 tennis-baselines
+	for sport in badminton football basketball; do \
+		$(MAKE) fixture-baselines SPORT=$$sport; \
+	done
+	PYTHONPATH=src $(PYTHON) scripts/cross_task_report.py --reports reports
+
+cross-task:
+	PYTHONPATH=src $(PYTHON) scripts/cross_task_report.py --reports reports
 
 # Regenerate a statistically sufficient shot bank.  This REPLACES the bank's
 # files and digests, so never run it against a bank that has published scores.
