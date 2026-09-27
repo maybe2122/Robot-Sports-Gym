@@ -263,17 +263,22 @@ class TestTheScalarInnerLoop:
 
         model = BallFlightModel()
         bounce = TableBounce.from_surface(TABLE_TENNIS)
-        start = time.perf_counter()
-        repeats = 50
-        for _ in range(repeats):
-            model.predict_plane_crossing(
-                (1.30, 0.0, 0.95),
-                (-4.0, 0.1, 1.0),
-                plane_x=PLANE_X,
-                angular_velocity=(0.0, 60.0, 0.0),
-                bounce=bounce,
-            )
-        per_call_ms = (time.perf_counter() - start) / repeats * 1000.0
+        # The fastest of several batches: a shared CI runner can be descheduled
+        # mid-batch, and that measures the runner, not the predictor.
+        repeats = 20
+        batches = []
+        for _ in range(5):
+            start = time.perf_counter()
+            for _ in range(repeats):
+                model.predict_plane_crossing(
+                    (1.30, 0.0, 0.95),
+                    (-4.0, 0.1, 1.0),
+                    plane_x=PLANE_X,
+                    angular_velocity=(0.0, 60.0, 0.0),
+                    bounce=bounce,
+                )
+            batches.append((time.perf_counter() - start) / repeats * 1000.0)
+        per_call_ms = min(batches)
         # The task runs at 200 Hz, so the budget is 5 ms; leave a wide margin so
         # this is a regression guard and not a benchmark of the test machine.
         assert per_call_ms < 2.5, f"{per_call_ms:.2f} ms per prediction"
