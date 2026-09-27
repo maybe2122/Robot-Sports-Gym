@@ -274,7 +274,47 @@ class TestAdapter:
 class TestReachability:
     """The properties the frozen constants were calibrated to hold."""
 
-    def test_the_solver_covers_the_measured_strike_plane(self, model) -> None:
+    @pytest.fixture(scope="class")
+    def dev_crossings(self) -> list[tuple[float, float]]:
+        """Where a sample of dev shots actually pass the strike plane."""
+        from multisport_sim.benchmark.backends.mujoco import MujocoShotBackend
+        from multisport_sim.benchmark.shot_bank import ShotBank
+        from multisport_sim.benchmark.task_config import TABLE_TENNIS_RETURN_PANDA_V1
+
+        config = TABLE_TENNIS_RETURN_PANDA_V1
+        plane_x = config.strike_zone.plane_x_m
+        backend = MujocoShotBackend()
+        crossings: list[tuple[float, float]] = []
+        shots = list(ShotBank.from_resource(split="dev", task=config.bank_resource))
+        for shot in shots[::10]:
+            backend.reset()
+            backend.launch_ball(shot)
+            previous_x = None
+            for _ in range(4000):
+                backend.step()
+                x, y, z = backend.get_ball_state().position
+                if previous_x is not None and previous_x >= plane_x > x and z > 0.55:
+                    crossings.append((float(y), float(z)))
+                    break
+                previous_x = x
+                if z < 0.2:
+                    break
+        assert len(crossings) >= 25
+        return crossings
+
+    def test_the_declared_zone_contains_the_measured_crossings(self, dev_crossings) -> None:
+        from multisport_sim.benchmark.task_config import TABLE_TENNIS_RETURN_PANDA_V1
+
+        zone = TABLE_TENNIS_RETURN_PANDA_V1.strike_zone
+        outside = [
+            (y, z)
+            for y, z in dev_crossings
+            if not (zone.y_low <= y <= zone.y_high and zone.z_low <= z <= zone.z_high)
+        ]
+        assert not outside
+
+    def test_the_solver_covers_the_measured_crossings(self, model, dev_crossings) -> None:
+        """IK reaches the balls themselves, not the corners of their bounding box."""
         from multisport_sim.benchmark.robots.kinematics import IKSolver
         from multisport_sim.benchmark.robots.panda import (
             IK_SETTINGS,
@@ -284,21 +324,18 @@ class TestReachability:
         )
         from multisport_sim.benchmark.task_config import TABLE_TENNIS_RETURN_PANDA_V1
 
-        zone = TABLE_TENNIS_RETURN_PANDA_V1.strike_zone
+        plane_x = TABLE_TENNIS_RETURN_PANDA_V1.strike_zone.plane_x_m
         solver = IKSolver(
             model, site_name=PADDLE_SITE, joint_names=JOINT_NAMES, **IK_SETTINGS
         )
         ready = np.asarray(PANDA_READY_QPOS)
-        targets = [
-            (zone.plane_x_m, float(y), float(z))
-            for y in np.linspace(zone.y_low, zone.y_high, 5)
-            for z in np.linspace(zone.z_low, zone.z_high, 5)
-        ]
         converged = sum(
-            solver.solve(target, target_axis=(1.0, 0.0, 0.0), initial_qpos=ready).converged
-            for target in targets
+            solver.solve(
+                (plane_x, y, z), target_axis=(1.0, 0.0, 0.0), initial_qpos=ready
+            ).converged
+            for y, z in dev_crossings
         )
-        assert converged == len(targets)
+        assert converged == len(dev_crossings)
 
     def test_axis_only_aiming_costs_less_travel_than_a_full_pose(self, model) -> None:
         """Constraining the spin about the blade normal wastes the redundancy."""

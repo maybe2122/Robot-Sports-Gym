@@ -553,13 +553,17 @@ class StrikeZone:
     and records where the ball passes the strike plane.  A robot mount is judged
     against it, and a task that no embodiment can cover is a task that needs a
     new bank -- not a robot that needs excusing.
+
+    The defaults are the ``table_tennis/return-v1`` train-split crossings
+    (``reports/table-tennis-*-reachability.json``), rounded outward to 1 cm.
+    The rectangle bounds the crossings; its corners are not visited by any shot.
     """
 
     plane_x_m: float = -1.55
-    y_low: float = -0.45
-    y_high: float = 0.40
-    z_low: float = 0.88
-    z_high: float = 1.36
+    y_low: float = -0.72
+    y_high: float = 0.71
+    z_low: float = 0.70
+    z_high: float = 1.42
 
     def __post_init__(self) -> None:
         for name in ("plane_x_m", "y_low", "y_high", "z_low", "z_high"):
