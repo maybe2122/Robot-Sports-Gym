@@ -4,7 +4,7 @@
 
 Robot Sports Gym (RSG) is an in-development, cross-embodiment platform for training and evaluating robot perception, planning, control, robustness, and sim-to-real performance across tennis, table tennis, football, badminton, basketball, and squash under shared tasks, physics specifications, and metrics. The current repository provides the asset-free **MuJoCo + Isaac Sim/PhysX** physics foundation with regulation-scale scenes and sport-specific dynamics.
 
-> **Status: Alpha.** The scenes, ball dynamics, rebound-fidelity reports, an experimental table-tennis Shot Skill harness, and a MuJoCo Gymnasium fixture are operational. Real robot adapters, Isaac Lab RL environments, the remaining canonical tasks, and reference policies are planned. Do not describe the current release as a completed robot ball-sports benchmark.
+> **Status: Alpha (v0.3.0).** All five canonical single-shot tasks run in MuJoCo with fixed shot banks (100 test episodes per level), versioned Gymnasium environments, frozen L0–L5 criteria, reference baselines and — for the three launch tasks — learned PPO baselines over 5 seeds. Table tennis additionally runs on an actuated Franka Panda and a Unitree G1 with state and vision tracks, and its Isaac Lab environment has been run and compared episode by episode with MuJoCo. Every shot bank is still `experimental` and no leaderboard is open: this is a benchmark candidate, not a certified benchmark. What is missing is listed in [docs/TODO.md](docs/TODO.md).
 
 ## Humanoid vision-driven table tennis
 
@@ -21,6 +21,9 @@ See [setup, camera configuration, policy interfaces, and limitations](docs/HUMAN
 
 ## Documentation
 
+- [API reference](docs/API.md) · [Policy interface](docs/POLICY_INTERFACE.md) · [License manifest](THIRD_PARTY_LICENSES.md)
+- Tasks: [table tennis](docs/TABLE_TENNIS_SHOT_SKILL.md) · [tennis](docs/TENNIS.md) · [badminton serve](docs/BADMINTON.md) · [football kick & basketball shoot](docs/LAUNCH_TASKS.md)
+- [Cross-task baseline summary](reports/cross-task-summary.md) · [Submission packages](docs/SUBMISSION.md) · [Leaderboard audit process](docs/LEADERBOARD.md)
 - [Draft robot benchmark specification](docs/BENCHMARK_SPEC.md)
 - [Table-tennis Shot Skill harness](docs/TABLE_TENNIS_SHOT_SKILL.md)
 - [Roadmap](docs/ROADMAP.md)
@@ -58,9 +61,8 @@ These images are rendered directly from the current repository code using each s
 ## MuJoCo quick start
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e ".[test]"
+uv sync --extra test          # reproduces the locked development environment (uv.lock)
+source .venv/bin/activate     # or: uv venv && uv pip install -e ".[test]"
 
 multisport-sim --scene campus
 multisport-sim --scene badminton --headless --duration 3 --wind 2 0 0
@@ -171,7 +173,7 @@ See [`docs/VISION_TRACK.md`](docs/VISION_TRACK.md).
 
 ### Full metrics and result packages
 
-Reports now carry all eight raw metrics from `BENCHMARK_SPEC` section 7. The three that were missing are `contact_error` (how far off the blade's centre the strike landed, plus blade speed at contact), `robustness_gap` (L1-L3 minus L4-L5), and `inference_latency_ms` (the policy's own `act` call, nothing else).
+Reports now carry all eight raw metrics from `BENCHMARK_SPEC` section 7. The three that were missing are `contact_error` (how far off the blade's centre the strike landed, plus blade speed at contact), `robustness_gap` (`valid_return_rate` on L2-L3 minus L4-L5; L1 ends at the strike by construction and is reported per level only), and `inference_latency_ms` (the policy's own `act` call, nothing else).
 
 ```bash
 # A reproducible package: manifest / config / metrics / policy / videos / environment
@@ -202,6 +204,32 @@ See [`docs/TENNIS.md`](docs/TENNIS.md) and [`docs/SHOT_BANKS.md`](docs/SHOT_BANK
 
 Baseline scores are in [`reports/table-tennis-panda-baselines.md`](reports/table-tennis-panda-baselines.md); the calibration, reachability findings, and safety envelope are in [`docs/ROBOT_LAYER.md`](docs/ROBOT_LAYER.md). The Panda table uses `table_tennis/return-v1`: 50 dev and 100 test shots per level, with per-bucket Wilson intervals. The smallest L4/L5 bucket still has only 14 shots, so a worst-bucket point estimate must not be cited without its interval.
 
+## The five canonical tasks
+
+| Task | Gymnasium id | Family | Success | Baseline docs |
+|---|---|---|---|---|
+| `table-tennis-return-v0` / `-panda-v1` / `-g1-v1` | `MultiSportRobot/TableTennisReturn-*` | return | legal return onto the opponent's half | [table tennis](docs/TABLE_TENNIS_SHOT_SKILL.md) |
+| `tennis-return-v0` | `MultiSportRobot/TennisReturn-v0` | return | legal return into the singles court | [tennis](docs/TENNIS.md) |
+| `badminton-serve-v0` | `MultiSportRobot/BadmintonServe-v0` | launch | BWF-legal serve into the diagonal service court | [badminton](docs/BADMINTON.md) |
+| `football-kick-v0` | `MultiSportRobot/FootballKick-v0` | launch | the whole ball over the goal line (IFAB) | [launch tasks](docs/LAUNCH_TASKS.md) |
+| `basketball-shoot-v0` | `MultiSportRobot/BasketballShoot-v0` | launch | down through the ring (FIBA) | [launch tasks](docs/LAUNCH_TASKS.md) |
+
+```bash
+multisport-benchmark --sport badminton --level L2 --split test --controller scripted
+multisport-benchmark --sport football  --level L3 --split test --controller scripted
+multisport-benchmark --sport basketball --level L2 --split test \
+    --learned-policy baselines/learned/basketball/seed0.zip
+make cross-task        # one table: every task x level x controller
+```
+
+Launch tasks start with the object on the robot's side (released, resting or rolling) and put the task frame's origin at the goal, so the robot is always at x < 0 launching toward +x. L3 placement targets are task information and reach the policy through `info["target"]`, the `TargetObservation` wrapper, and `reset(target=...)`.
+
+**Learned baselines.** `scripts/train_launch_policies.py` trains a PPO policy (Stable-Baselines3) over a single swing primitive — face speed, elevation and yaw offset — from observable geometry only, 5 seeds per task on the train split, scored on the test split through the same report path as every other baseline, with a random-primitive floor alongside. Weights, training curves, wall time and hardware are committed under `baselines/learned/`; results in `reports/learned-*-baselines.md`.
+
+**Backend parity.** The Isaac Lab table-tennis environment was run on Isaac Sim 5.0 / Isaac Lab 0.46.2 (CPU PhysX) and compared shot by shot with MuJoCo on the 300-shot dev split: ball flight agrees to 3.5 mm (median), judge verdicts to 99%, while the post-bounce apex differs by ~50 mm (contact models; M4 calibration). The run found and fixed a doubled aerodynamic force in the Isaac environment. See [the parity report](reports/table-tennis-backend-parity.md).
+
+**Auditable results.** `scripts/audit_submission.py` recomputes every verdict and metric of a result package from its raw episodes, checks that each level contains exactly the bank's shots, verifies bank digests and weight hashes, and can replay the package. See [docs/LEADERBOARD.md](docs/LEADERBOARD.md). Every published file format has a versioned JSON Schema in `multisport_sim.benchmark.schemas`.
+
 ## Quantitative fidelity
 
 The `multisport-fidelity-v1` suite runs real drop simulations and records measured rebound, reference intervals, absolute/relative error, tolerance utilization, effective restitution, pass/fail, and a continuous score.
@@ -213,11 +241,12 @@ make evaluate-isaac ISAAC_PYTHON=/path/to/isaac/python PYTHON=/path/to/python
 
 Committed baselines are available for [MuJoCo](reports/mujoco-fidelity.md) and [Isaac Sim](reports/isaac-fidelity.md). These scores cover first-rebound contact dynamics only; they are not a claim of total simulator realism.
 
-## Toward a robot benchmark
+## What this release is not
 
-The experimental table-tennis Shot Skill validates fixed launches, physical racket contact, judging, and reporting. Embodied Panda and G1 environments now include vision input; the free-pelvis G1 also has an ankle standing controller. These reference baselines are not a certified submission track. The proposed first public release contains five single-episode tasks: tennis return, table-tennis return, football kick-to-target, badminton serve, and basketball shooting. The draft protocol defines state, vision, robustness, and sim-to-real tracks; raw metrics; seeding; robot adapters; and reproducible submission artifacts.
-
-The repository remains a physics foundation until at least one versioned Gymnasium environment, one vectorized Isaac Lab environment, licensed robot assets, fixed evaluation splits, and reproducible reference policies are available.
+- **Not a leaderboard.** Every shot bank is `experimental`; the audit tooling exists, the table does not.
+- **Not embodied for every sport.** Tennis, badminton, football and basketball use mocap fixtures; only table tennis has robot arms/humanoids. The biped asset football needs is not in (M2).
+- **Not validated on GPU PhysX or for robots on Isaac.** The Isaac environment covers the table-tennis fixture on CPU PhysX.
+- **Not calibrated against the real world.** Fidelity covers first-rebound tests; there is no measured trajectory, impact or robot data yet (M4), and no external reproduction (M6).
 
 ## Development
 

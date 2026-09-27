@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/maybe2122/Robot-Sports-Gym/schemas/submission.v0.json",
+  "title": "Result package manifest (v0)",
+  "type": "object",
+  "required": [
+    "schema",
+    "task",
+    "benchmark",
+    "track",
+    "policy",
+    "robot",
+    "backend",
+    "shot_bank",
+    "software",
+    "repository",
+    "hardware",
+    "videos",
+    "leaderboard_eligible",
+    "reproduce_command"
+  ],
+  "properties": {
+    "schema": {
+      "const": "multisport-submission-v0"
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "spec",
+        "files",
+        "sha256",
+        "complete"
+      ]
+    },
+    "repository": {
+      "type": "object",
+      "required": [
+        "commit",
+        "dirty"
+      ]
+    },
+    "leaderboard_eligible": {
+      "type": "boolean"
+    },
+    "reproduce_command": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/maybe2122/Robot-Sports-Gym/schemas/backend-parity.v0.json",
+  "title": "Backend parity report (v0)",
+  "type": "object",
+  "required": [
+    "schema",
+    "bank",
+    "split",
+    "reference",
+    "candidate",
+    "summary",
+    "episodes"
+  ],
+  "properties": {
+    "schema": {
+      "const": "multisport-backend-parity-v0"
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "shots_compared",
+        "incoming_valid_agreement"
+      ]
+    }
+  }
+}

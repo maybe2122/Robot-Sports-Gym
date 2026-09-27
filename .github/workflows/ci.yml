@@ -32,6 +32,11 @@ jobs:
         run: |
           PYTHONPATH=src python -m multisport_sim.benchmark_cli --level L1 --episodes 1 --controller scripted
           PYTHONPATH=src python -m multisport_sim.benchmark_cli --sport tennis --level L1 --episodes 1 --controller scripted
+          for sport in badminton football basketball; do
+            PYTHONPATH=src python -m multisport_sim.benchmark_cli --sport $sport --level L2 --episodes 2 --controller scripted
+          done
+      - name: Cross-task summary is reproducible from committed tables
+        run: PYTHONPATH=src python scripts/cross_task_report.py --reports reports
       - name: Headless smoke test
         run: PYTHONPATH=src python -m multisport_sim --scene campus --headless --duration 0.1
       - name: Fidelity smoke test

@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/maybe2122/Robot-Sports-Gym/schemas/shot-bank-manifest.v1.json",
+  "title": "Shot bank manifest (schema_version 1)",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "benchmark",
+    "task",
+    "sport",
+    "status",
+    "leaderboard_eligible",
+    "coordinate_system",
+    "episode",
+    "levels",
+    "ordering",
+    "digest",
+    "splits"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "benchmark": {
+      "const": "multisport-shot-skill-v0"
+    },
+    "task": {
+      "type": "string"
+    },
+    "sport": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "experimental",
+        "frozen",
+        "released"
+      ]
+    },
+    "leaderboard_eligible": {
+      "type": "boolean"
+    },
+    "coordinate_system": {
+      "type": "object",
+      "required": [
+        "net_plane_x_m"
+      ]
+    },
+    "episode": {
+      "type": "object",
+      "required": [
+        "timeout_s"
+      ],
+      "properties": {
+        "timeout_s": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "levels": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^L[0-5]$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "name",
+          "primary_metric",
+          "pass_threshold"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "distribution": {
+            "type": "string"
+          },
+          "primary_metric": {
+            "enum": [
+              "incoming_valid_rate",
+              "hit_rate",
+              "valid_return_rate",
+              "target_rate",
+              "worst_bucket_valid_return_rate"
+            ]
+          },
+          "pass_threshold": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "pass_buckets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "aggregate_metric": {
+            "type": "string"
+          },
+          "aggregate_threshold": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "ordering": {
+      "const": "shot_id_lexicographic"
+    },
+    "digest": {
+      "type": "object",
+      "required": [
+        "algorithm"
+      ],
+      "properties": {
+        "algorithm": {
+          "const": "sha256"
+        }
+      }
+    },
+    "splits": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "file",
+          "count",
+          "sha256"
+        ],
+        "properties": {
+          "file": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "failure_reasons": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "miss",
+          "net",
+          "own_side",
+          "out",
+          "floor",
+          "timeout",
+          "safety",
+          "numerical",
+          "fault"
+        ]
+      }
+    }
+  }
+}

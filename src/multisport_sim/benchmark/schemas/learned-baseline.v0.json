@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/maybe2122/Robot-Sports-Gym/schemas/learned-baseline.v0.json",
+  "title": "Learned baseline (v0)",
+  "type": "object",
+  "required": [
+    "schema",
+    "sport",
+    "seeds",
+    "training",
+    "per_seed",
+    "random_primitive",
+    "aggregate"
+  ],
+  "properties": {
+    "schema": {
+      "const": "multisport-learned-baseline-v0"
+    },
+    "training": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "seed",
+          "episodes",
+          "hyperparameters",
+          "wall_time_s",
+          "hardware",
+          "weights"
+        ]
+      }
+    }
+  }
+}

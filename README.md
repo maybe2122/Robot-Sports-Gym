@@ -4,7 +4,7 @@
 
 Robot Sports Gym（RSG）是面向多种机器人形态的球类运动训练与评测平台，目标是在统一任务、物理规范和指标下，通过网球、乒乓球、足球、羽毛球、篮球和壁球训练并评测机器人在感知、规划、控制、鲁棒性与 sim-to-real 方面的能力。当前仓库提供无外部美术资产依赖的 **MuJoCo + Isaac Sim/PhysX 双后端** 物理基础层，并按国际比赛尺寸程序化构建场地、球体和运动器材。
 
-> **项目状态：Alpha。** 场景、球体物理和回弹量化已可运行，并提供实验性的乒乓球 Shot Skill 测试系统及 MuJoCo Gymnasium 测试夹具；真实机器人适配、Isaac Lab RL 环境、其他标准任务和参考策略仍在路线图中。当前版本不应宣传为已完成的机器人球类 benchmark。
+> **项目状态：Alpha（v0.3.0）。** 五项标准单回合任务均可在 MuJoCo 上运行：固定集（每级 test 100 条）、版本化 Gymnasium 环境、冻结的 L0–L5 判定、参考基线，三项发射类任务还有 5 种子的 PPO 学习基线。乒乓球另有 Franka Panda 与 Unitree G1 机体任务（状态与视觉两条轨道），其 Isaac Lab 环境已实跑并与 MuJoCo 逐条对比。所有固定集仍是 `experimental`、排行榜未开放：这是 benchmark 候选版，不是认证版。缺什么见 [docs/TODO.md](docs/TODO.md)。
 
 ## 人形机器人视觉打球：直接运行
 
@@ -22,6 +22,9 @@ MUJOCO_GL=glfw .venv/bin/python -m multisport_sim.benchmark_cli \
 
 ## 文档导航
 
+- [API 参考（英文）](docs/API.md) · [策略接口](docs/POLICY_INTERFACE.md) · [许可证清单](THIRD_PARTY_LICENSES.md)
+- 任务：[乒乓球](docs/TABLE_TENNIS_SHOT_SKILL.md) · [网球](docs/TENNIS.md) · [羽毛球发球](docs/BADMINTON.md) · [足球射门与篮球投篮](docs/LAUNCH_TASKS.md)
+- [跨任务基线汇总](reports/cross-task-summary.md) · [结果包](docs/SUBMISSION.md) · [排行榜审计流程（英文）](docs/LEADERBOARD.md)
 - [机器人 benchmark 协议草案](docs/BENCHMARK_SPEC.md)
 - [乒乓球 Shot Skill 测试系统](docs/TABLE_TENNIS_SHOT_SKILL.md)
 - [开源 benchmark 路线图](docs/ROADMAP.md)
@@ -63,7 +66,7 @@ MUJOCO_GL=glfw .venv/bin/python -m multisport_sim.benchmark_cli \
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install -e ".[test]"
+uv sync --extra test   # 按 uv.lock 复现开发环境
 
 # 全部场地总览
 multisport-sim --scene campus
@@ -93,7 +96,7 @@ Isaac 后端已在 Isaac Sim 5.0.0 + Isaac Lab 0.46.2 上验证。先进入已�
 
 ```bash
 # 示例：使用当前工作区已有的 Isaac 环境
-/home/maybe/code/rl/env_isaaclab/bin/python -m pip install -e . --no-deps
+/path/to/isaac/python -m pip install -e . --no-deps
 
 # GUI：加载全部场地，自动发球
 multisport-isaac --scene campus
@@ -108,7 +111,7 @@ multisport-isaac --scene squash --squash-demo --duration 9 \
   --demo-report reports/isaac/squash-demo.json
 
 # 用同一条真实 PhysX 回合重建 JSON 报告和下方 GIF
-make demo-squash ISAAC_PYTHON=/home/maybe/code/rl/env_isaaclab/bin/python
+make demo-squash ISAAC_PYTHON=/path/to/isaac/python
 
 # 不启动 Isaac，独立复核已有 JSON 与 GIF 是否构成完整得分证据
 make verify-squash-demo PYTHON=.venv/bin/python
@@ -134,7 +137,7 @@ multisport-isaac --headless --device cpu --scene basketball --drop-test
 没有执行 editable install 时，也可直接运行：
 
 ```bash
-PYTHONPATH=src /home/maybe/code/rl/env_isaaclab/bin/python \
+PYTHONPATH=src /path/to/isaac/python \
   -m multisport_sim.isaac_cli --headless --device cpu --scene campus --duration 1
 ```
 
@@ -270,6 +273,16 @@ make submission POLICY=my_pkg:load_policy POLICY_ID=my-sac-v3
 
 manifest 会**如实记录工作区是否是脏的**，录像按 shot_id 排序取前 N 个成功**和**失败（不允许只挑成功），
 权重按 sha256 内容哈希，没带权重的包会明说自己不完整。详见 [`docs/SUBMISSION.md`](docs/SUBMISSION.md)。
+
+### 学习基线、后端一致性与可审计结果
+
+- **学习基线**：`scripts/train_launch_policies.py` 用 PPO（Stable-Baselines3）在一个挥拍原语（面速、仰角、偏航修正）上
+  学习，只看可观测几何量，不使用任何标定知识；三项发射类任务各 5 个种子，train split 训练、test split 评测，
+  与"随机原语"下限并列报告。权重、训练曲线、墙钟时间与硬件都在 `baselines/learned/`，结果见 `reports/learned-*-baselines.md`。
+- **Isaac Lab 实跑与一致性**：乒乓球 Isaac Lab 环境在 CPU PhysX 上实跑，与 MuJoCo 同批球逐条对比（`make parity`）：
+  飞行段中位差 3.5 mm、判定一致 99%，反弹后高度差约 5 cm（M4 待标定）。见 [一致性报告](reports/table-tennis-backend-parity.md)。
+- **可审计结果**：`scripts/audit_submission.py` 从结果包的原始回合重算全部判定与指标、核对每级 shot 集完整、
+  固定集 digest 与权重哈希，并可重跑复核。所有发布的文件格式都有带版本号的 JSON Schema（`multisport_sim.benchmark.schemas`）。
 
 ### 羽毛球发球任务 `badminton-serve-v0`
 

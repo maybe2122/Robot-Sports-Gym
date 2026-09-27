@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/maybe2122/Robot-Sports-Gym/schemas/cross-task-summary.v0.json",
+  "title": "Cross-task summary (v0)",
+  "type": "object",
+  "required": [
+    "schema",
+    "split",
+    "tasks"
+  ],
+  "properties": {
+    "schema": {
+      "const": "multisport-cross-task-summary-v0"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "label",
+          "report"
+        ]
+      }
+    }
+  }
+}

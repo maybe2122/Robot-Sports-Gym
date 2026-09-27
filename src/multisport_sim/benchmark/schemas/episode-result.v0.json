@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/maybe2122/Robot-Sports-Gym/schemas/episode-result.v0.json",
+  "title": "EpisodeResult (v0)",
+  "description": "One judged episode, as written in every report's results array.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "shot_id",
+    "level",
+    "tags",
+    "incoming_valid",
+    "hit",
+    "valid_return",
+    "target_hit",
+    "crossed_net",
+    "net_touch",
+    "contact_time_s",
+    "landing_xy",
+    "target_error_m",
+    "incoming_speed_mps",
+    "outgoing_speed_mps",
+    "incoming_spin_radps",
+    "episode_time_s",
+    "failure_reason"
+  ],
+  "properties": {
+    "shot_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "level": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^L[0-5]$"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "incoming_valid": {
+      "type": "boolean"
+    },
+    "hit": {
+      "type": "boolean"
+    },
+    "valid_return": {
+      "type": "boolean"
+    },
+    "target_hit": {
+      "type": "boolean"
+    },
+    "crossed_net": {
+      "type": "boolean"
+    },
+    "net_touch": {
+      "type": "boolean"
+    },
+    "contact_time_s": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "target_error_m": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "incoming_speed_mps": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "outgoing_speed_mps": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "episode_time_s": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "landing_xy": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "incoming_spin_radps": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "failure_reason": {
+      "enum": [
+        "miss",
+        "net",
+        "own_side",
+        "out",
+        "floor",
+        "timeout",
+        "safety",
+        "numerical",
+        "fault",
+        null
+      ]
+    }
+  }
+}

@@ -1,17 +1,29 @@
 cff-version: 1.2.0
-message: "If you use this project in research, please cite this repository and the archived release DOI when one becomes available."
+message: "If you use this project in research, please cite this repository at the release you used, and the archived release DOI once one is available."
 title: "Robot Sports Gym"
 type: software
-version: 0.2.0
-date-released: 2026-08-08
+version: 0.3.0
+date-released: 2026-09-28
 license: MIT
+repository-code: "https://github.com/maybe2122/Robot-Sports-Gym"
 authors:
   - name: "Robot Sports Gym contributors"
-abstract: "An in-development cross-embodiment robot ball-sports training and evaluation platform; this release provides its programmatic MuJoCo and Isaac Sim/PhysX physics foundation plus an experimental MuJoCo table-tennis Shot Skill harness."
+abstract: >-
+  A cross-embodiment robot ball-sports training and evaluation platform on
+  MuJoCo and Isaac Sim/PhysX. Release 0.3.0 provides five single-shot tasks
+  (table-tennis and tennis returns, badminton serve, football kick, basketball
+  shoot) with fixed, simulation-verified shot banks, versioned Gymnasium
+  environments, frozen L0-L5 criteria, reference and learned baselines, an
+  embodied Franka Panda / Unitree G1 table-tennis track with state and vision
+  observations, an Isaac Lab environment compared shot by shot with MuJoCo,
+  versioned JSON Schemas and an auditable result-package format. All shot banks
+  are experimental; no leaderboard is open.
 keywords:
   - robotics
   - reinforcement learning
   - MuJoCo
   - Isaac Sim
+  - Isaac Lab
   - robot benchmark
   - sports simulation
+  - Gymnasium

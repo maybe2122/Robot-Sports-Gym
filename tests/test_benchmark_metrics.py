@@ -9,6 +9,7 @@ from multisport_sim.benchmark.metrics import (
     aggregate_results,
     assess_level,
     build_benchmark_report,
+    portable_source,
     robustness_gap,
     wilson_interval,
 )
@@ -149,7 +150,7 @@ def test_report_records_bank_identity_and_raw_results() -> None:
         "split": "dev",
         "digest": bank.digest,
         "manifest_digest": bank.manifest_digest,
-        "source": bank.source,
+        "source": portable_source(bank.source),
         "status": "experimental",
         "leaderboard_eligible": False,
     }

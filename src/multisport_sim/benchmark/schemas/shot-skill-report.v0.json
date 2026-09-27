@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/maybe2122/Robot-Sports-Gym/schemas/shot-skill-report.v0.json",
+  "title": "Shot Skill report (v0)",
+  "description": "The complete report of one level run, as written by multisport-benchmark --report.",
+  "type": "object",
+  "required": [
+    "schema",
+    "schema_version",
+    "benchmark",
+    "task",
+    "level",
+    "split",
+    "episodes",
+    "seed",
+    "shot_bank",
+    "backend",
+    "robot",
+    "policy",
+    "metrics",
+    "confidence_intervals_95",
+    "failures",
+    "results",
+    "assessment",
+    "leaderboard_eligible",
+    "task_config",
+    "software"
+  ],
+  "properties": {
+    "schema": {
+      "const": "multisport-shot-skill-report-v0"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "benchmark": {
+      "const": "multisport-shot-skill-v0"
+    },
+    "task": {
+      "type": "string"
+    },
+    "level": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "split": {
+      "type": "string"
+    },
+    "episodes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "seed": {
+      "type": "integer"
+    },
+    "shot_bank": {
+      "type": "object",
+      "required": [
+        "digest",
+        "manifest_digest",
+        "split"
+      ]
+    },
+    "metrics": {
+      "type": "object",
+      "required": [
+        "incoming_valid_rate",
+        "hit_rate",
+        "valid_return_rate",
+        "target_rate"
+      ],
+      "additionalProperties": {
+        "type": [
+          "number",
+          "null"
+        ]
+      }
+    },
+    "failures": {
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "miss",
+          "net",
+          "own_side",
+          "out",
+          "floor",
+          "timeout",
+          "safety",
+          "numerical",
+          "fault"
+        ]
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "$ref": "episode-result.v0.json"
+      }
+    },
+    "assessment": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "level",
+            "primary_metric",
+            "primary_value",
+            "pass_threshold",
+            "passed"
+          ]
+        }
+      ]
+    },
+    "leaderboard_eligible": {
+      "type": "boolean"
+    },
+    "robustness_gap": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "gap",
+            "in_distribution",
+            "perturbed",
+            "level_breakdown"
+          ]
+        }
+      ]
+    }
+  }
+}

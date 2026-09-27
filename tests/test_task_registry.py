@@ -64,6 +64,9 @@ def test_entry_factories_build_a_matching_judge_and_backend() -> None:
     entry = registry.get_task("table-tennis-return-v0")
 
     judge = entry.make_judge()
+    # Python 3.10's runtime protocol check reads every member, and ``result``
+    # refuses to be read before a reset; 3.12+ looks the members up statically.
+    judge.reset("protocol-check")
     assert isinstance(judge, ShotJudge)
     assert isinstance(judge, TableTennisReturnJudge)
 

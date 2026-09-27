@@ -98,6 +98,11 @@ def parser() -> argparse.ArgumentParser:
         ),
     )
     result.add_argument("--policy", help="custom module:policy or module:factory")
+    result.add_argument(
+        "--learned-policy",
+        type=Path,
+        help="a launch-task PPO primitive policy (.zip) from scripts/train_launch_policies.py",
+    )
     result.add_argument("--rate-margin", type=_positive_float, help="joint setpoint speed fraction")
     result.add_argument("--blade-tilt-deg", type=float, help="paddle tilt in degrees")
     result.add_argument("--swing-lead-s", type=_positive_float, help="begin forward swing this early")
@@ -431,7 +436,9 @@ def _observation_label(controller: str, vision_track: bool) -> str:
     return "privileged-ball-state"
 
 
-def run_from_args(args: argparse.Namespace) -> dict[str, object]:
+def run_from_args(
+    args: argparse.Namespace, *, controller: object | None = None
+) -> dict[str, object]:
     """Run a parsed request and return its complete report."""
     if args.controller is None:
         args.controller = _default_controller(args.robot, getattr(args, "track", "state"))
@@ -502,7 +509,19 @@ def run_from_args(args: argparse.Namespace) -> dict[str, object]:
         )
 
     sport = _sport(args)
-    controller = _controller(args.controller, sport)
+    learned = getattr(args, "learned_policy", None)
+    if controller is not None:
+        # A caller-built controller (a training script evaluating its own
+        # policy) runs through exactly the path a named one does.
+        learned = learned or getattr(controller, "controller_id", "custom")
+    elif learned is not None:
+        from .benchmark.learning import SPECS, load_learned_controller
+
+        if sport not in SPECS:
+            raise ValueError(f"--learned-policy is available for {sorted(SPECS)}, not {sport!r}")
+        controller = load_learned_controller(sport, str(learned))
+    else:
+        controller = _controller(args.controller, sport)
     backend = MujocoShotBackend(sport=sport)
     # The frozen shot bank owns the episode timeout; everything else the judge
     # and a future Isaac run must agree on comes from the shared task config.
@@ -526,7 +545,11 @@ def run_from_args(args: argparse.Namespace) -> dict[str, object]:
         config=RunConfig.from_task_config(task, seed=args.seed),
     )
 
-    fixture = args.controller == "scripted"
+    fixture = args.controller == "scripted" or learned is not None
+    if learned is not None:
+        observation = "ball-state-features-and-task-target"
+    else:
+        observation = "privileged-ball-state" if fixture else "none"
     return _assemble_report(
         args,
         source_bank,
@@ -542,7 +565,7 @@ def run_from_args(args: argparse.Namespace) -> dict[str, object]:
         },
         {
             "id": controller.controller_id,
-            "observation": "privileged-ball-state" if fixture else "none",
+            "observation": observation,
             "benchmark_eligible": False,
         },
         timeout_s,

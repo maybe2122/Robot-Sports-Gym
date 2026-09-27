@@ -6,6 +6,7 @@ import json
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from math import isfinite, sqrt
+from pathlib import Path
 from typing import Any
 
 from .shot_bank import ShotBank
@@ -372,6 +373,21 @@ def robustness_gap(
     }
 
 
+def portable_source(source: str) -> str:
+    """Name a bank file without the machine it was read on.
+
+    A packaged bank is ``package:<sport>/<bank>/<split>.jsonl``; a bank loaded
+    from elsewhere keeps the path it was given.  Reports are shared and
+    committed, and an absolute home-directory path in one says where somebody's
+    checkout lives, not which bank was scored -- the digest says that.
+    """
+    data = Path(__file__).resolve().parent / "data"
+    try:
+        return "package:" + Path(source).resolve().relative_to(data).as_posix()
+    except (ValueError, OSError):
+        return source
+
+
 def build_benchmark_report(
     results: Sequence[EpisodeResult],
     *,
@@ -417,14 +433,14 @@ def build_benchmark_report(
             "split": bank.split,
             "digest": bank.digest,
             "manifest_digest": bank.manifest_digest,
-            "source": bank.source,
+            "source": portable_source(bank.source),
             "status": manifest["status"],
             "leaderboard_eligible": manifest["leaderboard_eligible"],
         },
         "split": bank.split,
         "shot_bank_digest": bank.digest,
         "shot_bank_manifest_digest": bank.manifest_digest,
-        "shot_bank_source": bank.source,
+        "shot_bank_source": portable_source(bank.source),
         "episodes": aggregate["episodes"],
         "counts": aggregate["counts"],
         "metrics": aggregate["metrics"],

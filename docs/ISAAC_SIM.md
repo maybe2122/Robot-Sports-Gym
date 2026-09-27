@@ -144,11 +144,11 @@ Judge 判定一致率：`incoming_valid` 98.7%、`failure_reason` 99.3%。4 个�
 上不支持 CCD，需要单独确认高速球是否穿透）；机体（Panda/G1）在 Isaac 侧的 adapter；网球等其他运动的
 Isaac 环境。
 
-本机的 Isaac 环境需要额外把 Isaac Lab 源码目录放到 `PYTHONPATH` 上（其可编辑安装指向的目录已被移走）：
+如果 Isaac 环境里 Isaac Lab 的可编辑安装指向的源码目录已被移动，可以把源码目录临时放到 `PYTHONPATH` 上：
 
 ```bash
-make parity ISAAC_PYTHON=~/code/rl/env_isaaclab/bin/python \
-  ISAAC_PYTHONPATH=~/Downloads/0915/IsaacLab-main/source/isaaclab
+make parity ISAAC_PYTHON=/path/to/isaac/python \
+  ISAAC_PYTHONPATH=/path/to/IsaacLab/source/isaaclab
 ```
 
 ## 无头快速退出

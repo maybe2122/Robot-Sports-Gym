@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from collections.abc import Sequence
 from pathlib import Path
@@ -43,7 +44,7 @@ if __package__ is None and __name__ == "__main__":  # pragma: no cover - script 
 # no dexterous fingers.  The with-hands USD in the Isaac Lab asset layout has 43
 # joints and would put fourteen finger joints on a robot that, in this task,
 # has a paddle bolted to its wrist.  Overridable: the asset is not vendored.
-DEFAULT_G1_USD = "/home/maybe/code/rl/projects/amp/humanoid_amp/usd/g1_29dof_rev_1_0.usd"
+DEFAULT_G1_USD = os.environ.get("MULTISPORT_G1_USD")
 WRIST_LINK = "right_wrist_yaw_link"
 # Where the blade sits in the USD's wrist frame.  FITTED, not copied.
 #
@@ -632,7 +633,12 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     player = sub.add_parser("play", help="draw a trace in the Isaac Sim GUI")
     player.add_argument("--trace", required=True)
-    player.add_argument("--usd", default=DEFAULT_G1_USD)
+    player.add_argument(
+        "--usd",
+        default=DEFAULT_G1_USD,
+        required=DEFAULT_G1_USD is None,
+        help="the 29-DoF G1 USD (or set MULTISPORT_G1_USD); the asset is not vendored",
+    )
     player.add_argument("--device", default="cpu")
     player.add_argument("--headless", action="store_true")
     player.add_argument("--loops", type=int, default=20)

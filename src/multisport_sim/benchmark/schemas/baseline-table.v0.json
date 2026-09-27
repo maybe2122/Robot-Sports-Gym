@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/maybe2122/Robot-Sports-Gym/schemas/baseline-table.v0.json",
+  "title": "Baseline table (v0)",
+  "type": "object",
+  "required": [
+    "schema",
+    "task",
+    "generated_at",
+    "seed",
+    "rows",
+    "robustness_gap"
+  ],
+  "properties": {
+    "schema": {
+      "const": "multisport-baseline-table-v0"
+    },
+    "task": {
+      "type": "string"
+    },
+    "seed": {
+      "type": "integer"
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "level",
+          "controller",
+          "episodes",
+          "primary_metric",
+          "primary_value",
+          "pass_threshold",
+          "passed",
+          "hit_rate",
+          "valid_return_rate",
+          "target_rate"
+        ]
+      }
+    },
+    "robustness_gap": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "controller"
+        ]
+      }
+    }
+  }
+}

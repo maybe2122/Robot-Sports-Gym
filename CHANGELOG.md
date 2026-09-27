@@ -4,8 +4,28 @@
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-28
+
+五项标准单回合任务全部可运行（其中四项为 mocap 夹具），首批学习基线、Isaac Lab 实跑与跨后端一致性报告、
+可审计的结果包与带版本号的 schema。所有固定集仍为 `experimental`，排行榜未开放。
+
+All five canonical single-shot tasks now run (four on mocap fixtures), with the first learned baselines, a real
+Isaac Lab run with a MuJoCo parity report, auditable result packages and versioned schemas. Every shot bank is
+still `experimental`; no leaderboard is open.
+
 ### Added
 
+- **M5 学习基线**：`multisport_sim.benchmark.learning`（挥拍原语、单决策环境 `PrimitiveLaunchEnv`、
+  `LearnedLaunchController`）与 `scripts/train_launch_policies.py`：PPO（Stable-Baselines3）只看可观测几何量，
+  三项发射类任务各 5 个种子，train 训练、test 评测，与随机原语下限并列；权重、训练曲线、墙钟时间与硬件在
+  `baselines/learned/`，报告 `reports/learned-*-baselines.md`。CLI `--learned-policy PATH`；新 `train` extra。
+- **可审计提交**：`scripts/audit_submission.py` 从结果包原始回合重算全部判定与指标、核对每级 shot 集完整性、
+  固定集 digest、权重哈希，可 `--rerun` 重放；流程见 `docs/LEADERBOARD.md`。
+- **版本化 JSON Schema**：`multisport_sim.benchmark.schemas`（episode result、shot record、bank manifest、
+  report、baseline table、submission、cross-task summary、backend parity、learned baseline），测试对仓库内全部
+  真实文件逐一校验。
+- **发布文档**：英文 API 参考 `docs/API.md`、逐项许可证清单 `THIRD_PARTY_LICENSES.md`、`CITATION.cff` 0.3.0。
+- 公共 API 导出全部新任务配置、Judge、`robustness_gap` 与 `TargetObservation`。
 - **羽毛球发球 `badminton-serve-v0`**（M3 第三项运动，第一个发射类任务）：`rules/launch.py` 的
   `LaunchJudge` 是发射类任务（发球/射门/投篮）的共用生命周期；`BadmintonServeJudge` 按 BWF 第 9 条判
   1.15 m 击球高度（新失败原因 `fault`）、对角单打发球区与擦网好球。固定集 `badminton/serve-v0`
@@ -24,23 +44,6 @@
 
 - **Isaac Lab 环境首次实跑**与 `scripts/backend_parity.py`（`make parity`）：同一批球在 MuJoCo 与
   Isaac Lab 上逐步对比，报告 `reports/table-tennis-backend-parity.md`。
-
-### Fixed
-
-- Isaac Lab 环境的气动力每个物理步被施加两次（阻力翻倍，0.3 s 轨迹差 32 cm）；环境加载固定集时忽略
-  `task.bank_resource`。
-- 羽毛球气动力改在压心处按当前状态计算：原实现没有俯仰阻尼、且读的是滞后一步的状态，翻滚的羽毛球会数值发散。
-- mocap 夹具路径从未施加 manifest 声明的 L5 扰动；现在与机体路径一致。网球 `scripted` 的 L5 因此从
-  32% 变为 0%（L1–L4 不变）。
-- `robustness_gap` 的分布内分子不再包含 L1（L1 击球即结束，回球率恒为 0）；已发布报告按逐级明细重算。
-- IK 求解在够不到的目标上跑满迭代预算：加停滞退出，拦截基线控制延迟均值 0.94→0.35 ms。
-- `StrikeZone` 声明值更新为 `return-v1` 实测穿越范围。
-- 足球门柱内沿间距改为规则的 7.32 m、横梁下沿 2.44 m（原来 7.20 m / 2.38 m），MuJoCo 与 Isaac 场景一致。
-- 足球 benchmark 场景改用 PGS 求解器：Newton 在球同时接触地面与鞋面时给出与世界坐标方向相关的伪解
-  （偏离 4–7°、20–30 rad/s 伪旋转）。
-
-### Added
-
 - **自由站立人形任务 `table-tennis-return-g1-standing-v2`**：保留 G1 骨盆自由关节，站在 0.1 m 平台上，
   四个踝关节由理想骨盆 IMU 反馈局部维持平衡，腰部 + 右臂 10 个关节由策略控制；无机身外力、无 mocap 约束，
   跌倒显式判负。环境 `TableTennisReturn-G1-Standing-v2` 与 `-Vision-v2`，CLI `--robot g1-standing`。
@@ -161,6 +164,9 @@
 
 ### Changed
 
+- 版本 0.3.0；`test` extra 增加 `jsonschema`；`uv.lock` 刷新，从零 `uv sync --frozen --extra test` 复现后全部测试通过。
+- 报告里的固定集来源记为 `package:<sport>/<bank>/<split>.jsonl`，不再写机器相关的绝对路径（已提交报告同步改写）；
+  `scripts/replay_isaac.py` 的 G1 USD 路径改由 `--usd` 或 `MULTISPORT_G1_USD` 提供。
 - `TableTennisReturnPandaTaskConfig.OBSERVATION_DIM` / `ACTION_DIM` 由 layout 与 `joint_action.dof`
   派生，不再是写死的 33 与 7。Panda 上的数值和扁平边界逐位不变，已发布的分数含义不受影响。
 - `envs.panda_observation_vector()` 保留原名，实现改为 `robot_observation_vector(state, config)`
@@ -177,6 +183,17 @@
 
 ### Fixed
 
+- Isaac Lab 环境的气动力每个物理步被施加两次（阻力翻倍，0.3 s 轨迹差 32 cm）；环境加载固定集时忽略
+  `task.bank_resource`。
+- 羽毛球气动力改在压心处按当前状态计算：原实现没有俯仰阻尼、且读的是滞后一步的状态，翻滚的羽毛球会数值发散。
+- mocap 夹具路径从未施加 manifest 声明的 L5 扰动；现在与机体路径一致。网球 `scripted` 的 L5 因此从
+  32% 变为 0%（L1–L4 不变）。
+- `robustness_gap` 的分布内分子不再包含 L1（L1 击球即结束，回球率恒为 0）；已发布报告按逐级明细重算。
+- IK 求解在够不到的目标上跑满迭代预算：加停滞退出，拦截基线控制延迟均值 0.94→0.35 ms。
+- `StrikeZone` 声明值更新为 `return-v1` 实测穿越范围。
+- 足球门柱内沿间距改为规则的 7.32 m、横梁下沿 2.44 m（原来 7.20 m / 2.38 m），MuJoCo 与 Isaac 场景一致。
+- 足球 benchmark 场景改用 PGS 求解器：Newton 在球同时接触地面与鞋面时给出与世界坐标方向相关的伪解
+  （偏离 4–7°、20–30 rad/s 伪旋转）。
 - **`applied_torque` 报的是执行器输出而不是关节实际受到的力矩。** G1 的资产把力矩上限声明在
   *关节* 上（`actuatorfrcrange`），MuJoCo 在 `qfrc_actuator` 上执行钳位而 `actuator_force` 不钳位。
   于是安全监视器看到手腕 250 N·m 对着 5 N·m 的限值，**每个 episode 都因为一次物理上从未发生的

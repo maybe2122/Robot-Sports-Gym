@@ -1045,14 +1045,14 @@
       "tt-return-v1-dev-l2-0004",
       "tt-return-v1-dev-l2-0005"
     ],
-    "source": "/home/maybe/code/rl/projects/multisport-physics-sim/src/multisport_sim/benchmark/data/table_tennis/return-v1/dev.jsonl",
+    "source": "package:table_tennis/return-v1/dev.jsonl",
     "source_digest": "f17c0241aec24d6740c065993c084ec4ef21c0d47db22eec4f2dd16cca272ba0",
     "split": "dev",
     "status": "experimental"
   },
   "shot_bank_digest": "f17c0241aec24d6740c065993c084ec4ef21c0d47db22eec4f2dd16cca272ba0",
   "shot_bank_manifest_digest": "a7908f5003257b0b32e80a767b510e708de1d90e832a315a5a2807863f863210",
-  "shot_bank_source": "/home/maybe/code/rl/projects/multisport-physics-sim/src/multisport_sim/benchmark/data/table_tennis/return-v1/dev.jsonl (filtered)",
+  "shot_bank_source": "package:table_tennis/return-v1/dev.jsonl (filtered)",
   "shot_bank_task": "tt-return-v1",
   "software": {
     "machine": "x86_64",
