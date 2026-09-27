@@ -1,7 +1,7 @@
 {
   "schema": "multisport-robot-kinematic-parity-v0",
   "robot": "franka-panda",
-  "reference": "mujoco_menagerie/franka_emika_panda (body 'hand')",
+  "reference": "mujoco_menagerie/franka_emika_panda/panda_nohand.xml (body 'attachment')",
   "candidate": "Isaac Lab articulation from franka.usd (body 'panda_hand')",
   "configurations": 50,
   "seed": 0,

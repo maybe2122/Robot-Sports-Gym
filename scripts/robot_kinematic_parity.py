@@ -95,7 +95,11 @@ def compare(args: argparse.Namespace) -> int:
     isaac = json.loads(args.isaac.read_text())
     model = mujoco.MjModel.from_xml_path(str(require_asset(FRANKA_PANDA)))
     data = mujoco.MjData(model)
-    hand = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "hand")
+    # The task's asset is panda_nohand.xml: the flange frame is 'attachment',
+    # where the paddle is mounted; Isaac's USD calls the same frame 'panda_hand'.
+    hand = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "attachment")
+    if hand < 0:
+        raise SystemExit("the Menagerie Panda has no 'attachment' body")
     position_error, offsets = [], []
     for q, pose in zip(configurations(isaac["count"], isaac["seed"]), isaac["hand_poses"]):
         data.qpos[:7] = q
@@ -115,7 +119,7 @@ def compare(args: argparse.Namespace) -> int:
     report = {
         "schema": "multisport-robot-kinematic-parity-v0",
         "robot": "franka-panda",
-        "reference": "mujoco_menagerie/franka_emika_panda (body 'hand')",
+        "reference": "mujoco_menagerie/franka_emika_panda/panda_nohand.xml (body 'attachment')",
         "candidate": f"Isaac Lab articulation from {isaac['usd']} (body 'panda_hand')",
         "configurations": isaac["count"],
         "seed": isaac["seed"],

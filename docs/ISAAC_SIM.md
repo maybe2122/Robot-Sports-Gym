@@ -149,7 +149,7 @@ CCD（启动时会提示忽略该设置），在这批球上没有出现穿透�
 ### 机体：Franka Panda 的运动学一致性（2026-09-28）
 
 Isaac 侧加载 Franka 官方 USD（`franka.usd`，由 `MULTISPORT_FRANKA_USD` 指定，不随仓库分发），与 MuJoCo 侧
-Menagerie 的 Panda 在 50 组随机关节角下比较手部坐标系（`scripts/robot_kinematic_parity.py`，报告
+Menagerie 的 Panda（任务用的 `panda_nohand.xml`，法兰坐标系 `attachment`，即拍面安装处；Isaac 侧对应 `panda_hand`）在 50 组随机关节角下比较法兰坐标系（`scripts/robot_kinematic_parity.py`，报告
 [`reports/panda-kinematic-parity.json`](../reports/panda-kinematic-parity.json)）：
 
 - 手部位置差最大 0.46 µm，7 个关节限位最大差 5.7e-8 rad——**两边是同一条运动学链**；
