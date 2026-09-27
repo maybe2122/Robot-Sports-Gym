@@ -104,15 +104,23 @@ STAND_QPOS = (
     + (0.2, -0.2, 0.0, 1.28, 0.0, 0.0, 0.0)
 )
 
-# Joint speed envelope.  Unlike the Panda's, this is NOT a datasheet figure:
-# the G1 MJCF declares per-joint ``actuatorfrcrange`` but no speed limit, and
-# Unitree does not publish a per-joint maximum this benchmark could cite.  So
-# the benchmark declares one uniform conservative value, enforces it like any
-# other limit, and marks it unverified in ``describe()`` and therefore in every
-# report.  A guessed number that is labelled a guess is usable; a guessed number
-# that reads as a datasheet is not.
+# Joint speed envelope.  The G1 MJCF declares per-joint ``actuatorfrcrange``
+# but no speed limit.  Unitree's own URDF (unitree_ros,
+# robots/g1_description/g1_29dof.urdf) does: 37 rad/s for the shoulder, elbow
+# and wrist-roll joints, 22 rad/s for wrist pitch and yaw, 32 rad/s for waist
+# yaw and 30 rad/s for waist roll and pitch (checked 2026-09-28).
+#
+# The task enforces a *uniform 10 rad/s* -- below every one of those -- as its
+# safety envelope, exactly as it has since table-tennis-return-g1-v1 was
+# published.  Raising it to the hardware maximum would change what a safety
+# violation means and invalidate every published G1 score, which is a new task
+# version, not an edit.  So the envelope stays, and its source now says what it
+# is: a task limit under a cited hardware maximum, not an unverified guess.
 G1_VELOCITY_LIMIT_RAD_S = 10.0
-G1_VELOCITY_LIMIT_SOURCE = "unverified_placeholder"
+G1_VELOCITY_LIMIT_SOURCE = "task_envelope_below_unitree_urdf_maximum"
+G1_HARDWARE_VELOCITY_LIMIT_RAD_S = (32.0, 30.0, 30.0, 37.0, 37.0, 37.0, 37.0, 37.0, 22.0, 22.0)
+"""Unitree URDF ``<limit velocity>`` per joint, in ``TASK_JOINTS`` order."""
+G1_HARDWARE_VELOCITY_SOURCE = "unitree_ros/robots/g1_description/g1_29dof.urdf"
 
 # Ready pose for the ten commanded joints, in ``TASK_JOINTS`` order.  Frozen by
 # ``scripts/calibrate_reachability.py --robot g1``, by the same Chebyshev-centre
@@ -648,6 +656,8 @@ class G1TableTennisAdapter:
             "effector_pose_solver": "damped-least-squares-ik",
             "velocity_limit_rad_s": G1_VELOCITY_LIMIT_RAD_S,
             "velocity_limit_source": G1_VELOCITY_LIMIT_SOURCE,
+            "hardware_velocity_limit_rad_s": list(G1_HARDWARE_VELOCITY_LIMIT_RAD_S),
+            "hardware_velocity_limit_source": G1_HARDWARE_VELOCITY_SOURCE,
             "asset": self.source.to_dict(),
             "safety_limits": self._safety.to_dict(),
         }
@@ -710,6 +720,8 @@ def _model_joint_order(model: mujoco.MjModel) -> list[str]:
 __all__ = [
     "ACTUATOR_NAMES",
     "BLADE_HALF_EXTENTS",
+    "G1_HARDWARE_VELOCITY_LIMIT_RAD_S",
+    "G1_HARDWARE_VELOCITY_SOURCE",
     "G1_READY_QPOS",
     "G1_VELOCITY_LIMIT_RAD_S",
     "IK_SETTINGS",

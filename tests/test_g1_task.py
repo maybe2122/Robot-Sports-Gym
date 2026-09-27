@@ -147,7 +147,12 @@ class TestTheAdapterContract:
     def test_the_speed_envelope_is_labelled_as_unverified(self, adapter) -> None:
         """Unitree publishes torque but no per-joint speed; the report says so."""
         described = adapter.describe()
-        assert described["velocity_limit_source"] == "unverified_placeholder"
+        assert described["velocity_limit_source"] == "task_envelope_below_unitree_urdf_maximum"
+        # The enforced envelope sits under Unitree's own per-joint maximum.
+        assert all(
+            described["velocity_limit_rad_s"] <= limit
+            for limit in described["hardware_velocity_limit_rad_s"]
+        )
         assert set(adapter.joint_limits.velocity_limit) == {
             described["velocity_limit_rad_s"]
         }
