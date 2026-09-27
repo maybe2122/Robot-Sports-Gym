@@ -26,10 +26,10 @@ score bounds what this embodiment can do, it does not represent a policy.
 | L3 | `intercept` | state | 50 | `target_rate` | 0% | 0%–7% | 70% | FAIL | 98% | 0% | 0% | 0 | 25.1 |
 | L4 | `hold` | state | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–8% | 60% | FAIL | 10% | 0% | 0% | 0 | 0.7 |
 | L4 | `random` | state | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–8% | 60% | FAIL | 0% | 0% | 0% | 50 | 21.6 |
-| L4 | `intercept` | state | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–22% | 60% | FAIL | 66% | 4% | 0% | 0 | 24.0 |
+| L4 | `intercept` | state | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–22% | 60% | FAIL | 66% | 4% | 0% | 0 | 24.2 |
 | L5 | `hold` | state | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–8% | 50% | FAIL | 10% | 0% | 0% | 0 | 0.7 |
 | L5 | `random` | state | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–8% | 50% | FAIL | 0% | 0% | 0% | 50 | 24.3 |
-| L5 | `intercept` | state | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–35% | 50% | FAIL | 22% | 8% | 0% | 1 | 21.9 |
+| L5 | `intercept` | state | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–35% | 50% | FAIL | 22% | 8% | 0% | 1 | 21.8 |
 
 ## split `test` (digest `146bf82e111b`)
 
@@ -49,10 +49,10 @@ score bounds what this embodiment can do, it does not represent a policy.
 | L3 | `intercept` | state | 100 | `target_rate` | 0% | 0%–4% | 70% | FAIL | 96% | 2% | 0% | 0 | 25.3 |
 | L4 | `hold` | state | 100 | `worst_bucket_valid_return_rate` | 0% | 0%–4% | 60% | FAIL | 15% | 0% | 0% | 0 | 0.7 |
 | L4 | `random` | state | 100 | `worst_bucket_valid_return_rate` | 0% | 0%–4% | 60% | FAIL | 0% | 0% | 0% | 100 | 25.2 |
-| L4 | `intercept` | state | 100 | `worst_bucket_valid_return_rate` | 0% | 0%–12% | 60% | FAIL | 61% | 6% | 0% | 0 | 23.7 |
+| L4 | `intercept` | state | 100 | `worst_bucket_valid_return_rate` | 0% | 0%–12% | 60% | FAIL | 62% | 6% | 0% | 0 | 23.8 |
 | L5 | `hold` | state | 100 | `worst_bucket_valid_return_rate` | 0% | 0%–4% | 50% | FAIL | 8% | 0% | 0% | 0 | 0.7 |
 | L5 | `random` | state | 100 | `worst_bucket_valid_return_rate` | 0% | 0%–4% | 50% | FAIL | 0% | 0% | 0% | 100 | 26.5 |
-| L5 | `intercept` | state | 100 | `worst_bucket_valid_return_rate` | 4% | 2%–10% | 50% | FAIL | 22% | 4% | 0% | 0 | 22.6 |
+| L5 | `intercept` | state | 100 | `worst_bucket_valid_return_rate` | 4% | 2%–10% | 50% | FAIL | 22% | 4% | 0% | 0 | 22.7 |
 
 ## Robustness gap
 

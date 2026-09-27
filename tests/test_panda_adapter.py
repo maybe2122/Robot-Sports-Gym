@@ -337,6 +337,34 @@ class TestReachability:
         )
         assert converged == len(dev_crossings)
 
+    def test_an_unreachable_target_stops_at_its_fixed_point(self, model) -> None:
+        """A stalled solve returns early with the configuration a full budget reaches."""
+        from multisport_sim.benchmark.robots.kinematics import IKSolver
+        from multisport_sim.benchmark.robots.panda import (
+            IK_SETTINGS,
+            JOINT_NAMES,
+            PADDLE_SITE,
+            PANDA_READY_QPOS,
+        )
+
+        target = (-0.80, 0.0, 1.10)  # past the table edge, out of the arm's reach
+        ready = np.asarray(PANDA_READY_QPOS)
+        kwargs = {"target_axis": (1.0, 0.0, 0.0), "initial_qpos": ready}
+        early = IKSolver(
+            model, site_name=PADDLE_SITE, joint_names=JOINT_NAMES, **IK_SETTINGS
+        ).solve(target, **kwargs)
+        full = IKSolver(
+            model,
+            site_name=PADDLE_SITE,
+            joint_names=JOINT_NAMES,
+            stall_step_rad=0.0,
+            **IK_SETTINGS,
+        ).solve(target, **kwargs)
+        assert not early.converged and not full.converged
+        assert full.iterations == IK_SETTINGS["max_iterations"]
+        assert early.iterations < full.iterations
+        assert np.max(np.abs(early.qpos - full.qpos)) < 1e-4
+
     def test_axis_only_aiming_costs_less_travel_than_a_full_pose(self, model) -> None:
         """Constraining the spin about the blade normal wastes the redundancy."""
         from multisport_sim.benchmark.robots.kinematics import IKSolver, blade_quaternion

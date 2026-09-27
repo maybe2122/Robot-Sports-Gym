@@ -1,5 +1,6 @@
 {
-  "generated_at": "2026-09-02T08:22:59.501640+00:00",
+  "generated_at": "2026-09-27T15:59:56.673321+00:00",
+  "robot": "franka-panda-tabletennis-v1",
   "robustness_gap": [
     {
       "controller": "hold",
@@ -541,7 +542,7 @@
       "episodes": 50,
       "hit_rate": 0.0,
       "level": "L0",
-      "mean_energy_joule": 31.110454111615066,
+      "mean_energy_joule": 31.177127868588332,
       "pass_threshold": 1.0,
       "passed": true,
       "primary_confidence_interval_95": [
@@ -563,7 +564,7 @@
       "episodes": 50,
       "hit_rate": 0.0,
       "level": "L0",
-      "mean_energy_joule": 51.09883424800598,
+      "mean_energy_joule": 51.09881588642283,
       "pass_threshold": 1.0,
       "passed": true,
       "primary_confidence_interval_95": [
@@ -585,7 +586,7 @@
       "episodes": 50,
       "hit_rate": 0.0,
       "level": "L1",
-      "mean_energy_joule": 0.17259550572216575,
+      "mean_energy_joule": 0.1725955057221655,
       "pass_threshold": 0.9,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -629,7 +630,7 @@
       "episodes": 50,
       "hit_rate": 1.0,
       "level": "L1",
-      "mean_energy_joule": 49.18383597763175,
+      "mean_energy_joule": 49.18389213551914,
       "pass_threshold": 0.9,
       "passed": true,
       "primary_confidence_interval_95": [
@@ -651,7 +652,7 @@
       "episodes": 50,
       "hit_rate": 0.82,
       "level": "L1",
-      "mean_energy_joule": 73.97016258364724,
+      "mean_energy_joule": 73.97811658650056,
       "pass_threshold": 0.9,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -673,7 +674,7 @@
       "episodes": 50,
       "hit_rate": 0.08,
       "level": "L2",
-      "mean_energy_joule": 0.1725961240916292,
+      "mean_energy_joule": 0.17259612409165992,
       "pass_threshold": 0.8,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -717,7 +718,7 @@
       "episodes": 50,
       "hit_rate": 0.94,
       "level": "L2",
-      "mean_energy_joule": 62.948205810042076,
+      "mean_energy_joule": 62.94820710781457,
       "pass_threshold": 0.8,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -739,7 +740,7 @@
       "episodes": 50,
       "hit_rate": 0.68,
       "level": "L2",
-      "mean_energy_joule": 90.86669818647682,
+      "mean_energy_joule": 91.19445680477193,
       "pass_threshold": 0.8,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -783,7 +784,7 @@
       "episodes": 50,
       "hit_rate": 0.04,
       "level": "L3",
-      "mean_energy_joule": 132.134771205718,
+      "mean_energy_joule": 132.1347712054326,
       "pass_threshold": 0.7,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -805,7 +806,7 @@
       "episodes": 50,
       "hit_rate": 1.0,
       "level": "L3",
-      "mean_energy_joule": 63.584665167479436,
+      "mean_energy_joule": 63.584673068434725,
       "pass_threshold": 0.7,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -827,7 +828,7 @@
       "episodes": 50,
       "hit_rate": 0.8,
       "level": "L3",
-      "mean_energy_joule": 95.23226068638469,
+      "mean_energy_joule": 96.10804140638267,
       "pass_threshold": 0.7,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -838,7 +839,7 @@
       "primary_value": 0.02,
       "split": "dev",
       "target_rate": 0.02,
-      "total_safety_violations": 2,
+      "total_safety_violations": 1,
       "track": "vision",
       "valid_return_rate": 0.1,
       "worst_bucket": null
@@ -849,7 +850,7 @@
       "episodes": 50,
       "hit_rate": 0.12,
       "level": "L4",
-      "mean_energy_joule": 0.17257553612933524,
+      "mean_energy_joule": 0.17257553615012142,
       "pass_threshold": 0.6,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -871,7 +872,7 @@
       "episodes": 50,
       "hit_rate": 0.12,
       "level": "L4",
-      "mean_energy_joule": 121.42388595992264,
+      "mean_energy_joule": 121.42388595991756,
       "pass_threshold": 0.6,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -893,7 +894,7 @@
       "episodes": 50,
       "hit_rate": 0.6,
       "level": "L4",
-      "mean_energy_joule": 79.06041334827925,
+      "mean_energy_joule": 79.0604174292426,
       "pass_threshold": 0.6,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -915,7 +916,7 @@
       "episodes": 50,
       "hit_rate": 0.42,
       "level": "L4",
-      "mean_energy_joule": 106.23858005005927,
+      "mean_energy_joule": 105.17824743032622,
       "pass_threshold": 0.6,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -937,7 +938,7 @@
       "episodes": 50,
       "hit_rate": 0.1,
       "level": "L5",
-      "mean_energy_joule": 0.1723363864702822,
+      "mean_energy_joule": 0.1723363864696371,
       "pass_threshold": 0.5,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -959,7 +960,7 @@
       "episodes": 50,
       "hit_rate": 0.04,
       "level": "L5",
-      "mean_energy_joule": 110.64624487324527,
+      "mean_energy_joule": 110.64624487324208,
       "pass_threshold": 0.5,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -981,7 +982,7 @@
       "episodes": 50,
       "hit_rate": 0.36,
       "level": "L5",
-      "mean_energy_joule": 78.72429222388752,
+      "mean_energy_joule": 78.71453482956595,
       "pass_threshold": 0.5,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1003,7 +1004,7 @@
       "episodes": 50,
       "hit_rate": 0.2,
       "level": "L5",
-      "mean_energy_joule": 81.71182057570793,
+      "mean_energy_joule": 81.76345864211943,
       "pass_threshold": 0.5,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1069,7 +1070,7 @@
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L0",
-      "mean_energy_joule": 30.710324086622432,
+      "mean_energy_joule": 30.714963776796484,
       "pass_threshold": 1.0,
       "passed": true,
       "primary_confidence_interval_95": [
@@ -1091,7 +1092,7 @@
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L0",
-      "mean_energy_joule": 51.173814807747895,
+      "mean_energy_joule": 51.1740149016131,
       "pass_threshold": 1.0,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1157,7 +1158,7 @@
       "episodes": 100,
       "hit_rate": 1.0,
       "level": "L1",
-      "mean_energy_joule": 48.440252610434655,
+      "mean_energy_joule": 48.460220160413165,
       "pass_threshold": 0.9,
       "passed": true,
       "primary_confidence_interval_95": [
@@ -1179,7 +1180,7 @@
       "episodes": 100,
       "hit_rate": 0.89,
       "level": "L1",
-      "mean_energy_joule": 73.13681966733769,
+      "mean_energy_joule": 73.14603066353867,
       "pass_threshold": 0.9,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1201,7 +1202,7 @@
       "episodes": 100,
       "hit_rate": 0.07,
       "level": "L2",
-      "mean_energy_joule": 0.1726096620594142,
+      "mean_energy_joule": 0.17260966205953468,
       "pass_threshold": 0.8,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1245,7 +1246,7 @@
       "episodes": 100,
       "hit_rate": 0.94,
       "level": "L2",
-      "mean_energy_joule": 64.94688451420323,
+      "mean_energy_joule": 64.94689084583919,
       "pass_threshold": 0.8,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1267,7 +1268,7 @@
       "episodes": 100,
       "hit_rate": 0.7,
       "level": "L2",
-      "mean_energy_joule": 88.62336365547236,
+      "mean_energy_joule": 88.51617368084855,
       "pass_threshold": 0.8,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1289,7 +1290,7 @@
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L3",
-      "mean_energy_joule": 0.17263672282330206,
+      "mean_energy_joule": 0.17263672282330197,
       "pass_threshold": 0.7,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1311,7 +1312,7 @@
       "episodes": 100,
       "hit_rate": 0.06,
       "level": "L3",
-      "mean_energy_joule": 133.0373616143931,
+      "mean_energy_joule": 133.0373616143945,
       "pass_threshold": 0.7,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1333,7 +1334,7 @@
       "episodes": 100,
       "hit_rate": 0.99,
       "level": "L3",
-      "mean_energy_joule": 61.443001728946705,
+      "mean_energy_joule": 61.443003352826196,
       "pass_threshold": 0.7,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1355,7 +1356,7 @@
       "episodes": 100,
       "hit_rate": 0.78,
       "level": "L3",
-      "mean_energy_joule": 85.72801930462205,
+      "mean_energy_joule": 85.71276279890985,
       "pass_threshold": 0.7,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1377,7 +1378,7 @@
       "episodes": 100,
       "hit_rate": 0.19,
       "level": "L4",
-      "mean_energy_joule": 0.17257938757543356,
+      "mean_energy_joule": 0.1725793876019139,
       "pass_threshold": 0.6,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1399,7 +1400,7 @@
       "episodes": 100,
       "hit_rate": 0.04,
       "level": "L4",
-      "mean_energy_joule": 125.81451367705876,
+      "mean_energy_joule": 125.81451367716551,
       "pass_threshold": 0.6,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1421,7 +1422,7 @@
       "episodes": 100,
       "hit_rate": 0.59,
       "level": "L4",
-      "mean_energy_joule": 87.93148171728716,
+      "mean_energy_joule": 87.9384772045921,
       "pass_threshold": 0.6,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1441,9 +1442,9 @@
       "controller": "vision",
       "controller_id": "vision-panda-intercept-v1",
       "episodes": 100,
-      "hit_rate": 0.45,
+      "hit_rate": 0.44,
       "level": "L4",
-      "mean_energy_joule": 87.18411246782942,
+      "mean_energy_joule": 87.79281279369312,
       "pass_threshold": 0.6,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1465,7 +1466,7 @@
       "episodes": 100,
       "hit_rate": 0.16,
       "level": "L5",
-      "mean_energy_joule": 0.17249016532635938,
+      "mean_energy_joule": 0.17249016532745828,
       "pass_threshold": 0.5,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1487,7 +1488,7 @@
       "episodes": 100,
       "hit_rate": 0.04,
       "level": "L5",
-      "mean_energy_joule": 110.76910331376256,
+      "mean_energy_joule": 110.76910331376992,
       "pass_threshold": 0.5,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1509,7 +1510,7 @@
       "episodes": 100,
       "hit_rate": 0.31,
       "level": "L5",
-      "mean_energy_joule": 83.6168699142616,
+      "mean_energy_joule": 83.7554143827225,
       "pass_threshold": 0.5,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1531,7 +1532,7 @@
       "episodes": 100,
       "hit_rate": 0.34,
       "level": "L5",
-      "mean_energy_joule": 88.22732827712285,
+      "mean_energy_joule": 90.30084415653768,
       "pass_threshold": 0.5,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1542,7 +1543,7 @@
       "primary_value": 0.08695652173913043,
       "split": "test",
       "target_rate": 0.0,
-      "total_safety_violations": 18,
+      "total_safety_violations": 16,
       "track": "vision",
       "valid_return_rate": 0.12,
       "worst_bucket": "edge_or_depth"

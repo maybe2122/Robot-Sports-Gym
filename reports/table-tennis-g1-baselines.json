@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-02T16:50:48.253655+00:00",
+  "generated_at": "2026-09-27T16:06:56.739538+00:00",
   "robot": "unitree-g1-tabletennis-v1",
   "robustness_gap": [
     {
@@ -442,7 +442,7 @@
       "episodes": 50,
       "hit_rate": 0.28,
       "level": "L1",
-      "mean_energy_joule": 0.6668543749706676,
+      "mean_energy_joule": 0.6668543749707228,
       "pass_threshold": 0.9,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -486,7 +486,7 @@
       "episodes": 50,
       "hit_rate": 0.84,
       "level": "L1",
-      "mean_energy_joule": 16.838299269381054,
+      "mean_energy_joule": 16.84539772449057,
       "pass_threshold": 0.9,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -508,7 +508,7 @@
       "episodes": 50,
       "hit_rate": 0.16,
       "level": "L2",
-      "mean_energy_joule": 0.6671350826399884,
+      "mean_energy_joule": 0.6671350826183742,
       "pass_threshold": 0.8,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -552,7 +552,7 @@
       "episodes": 50,
       "hit_rate": 0.96,
       "level": "L2",
-      "mean_energy_joule": 25.37531141548521,
+      "mean_energy_joule": 25.383902544562282,
       "pass_threshold": 0.8,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -574,7 +574,7 @@
       "episodes": 50,
       "hit_rate": 0.38,
       "level": "L3",
-      "mean_energy_joule": 0.6674669567340825,
+      "mean_energy_joule": 0.6674669568678206,
       "pass_threshold": 0.7,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -618,7 +618,7 @@
       "episodes": 50,
       "hit_rate": 0.98,
       "level": "L3",
-      "mean_energy_joule": 25.117971899807493,
+      "mean_energy_joule": 25.12040276524589,
       "pass_threshold": 0.7,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -640,7 +640,7 @@
       "episodes": 50,
       "hit_rate": 0.1,
       "level": "L4",
-      "mean_energy_joule": 0.6667683191112053,
+      "mean_energy_joule": 0.6667683191527086,
       "pass_threshold": 0.6,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -684,7 +684,7 @@
       "episodes": 50,
       "hit_rate": 0.66,
       "level": "L4",
-      "mean_energy_joule": 24.015325375626293,
+      "mean_energy_joule": 24.17870046559392,
       "pass_threshold": 0.6,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -706,7 +706,7 @@
       "episodes": 50,
       "hit_rate": 0.1,
       "level": "L5",
-      "mean_energy_joule": 0.6657082682003679,
+      "mean_energy_joule": 0.6657082682535115,
       "pass_threshold": 0.5,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -750,7 +750,7 @@
       "episodes": 50,
       "hit_rate": 0.22,
       "level": "L5",
-      "mean_energy_joule": 21.91115596568755,
+      "mean_energy_joule": 21.815355310013647,
       "pass_threshold": 0.5,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -794,7 +794,7 @@
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L0",
-      "mean_energy_joule": 25.200960014426734,
+      "mean_energy_joule": 25.1872715535739,
       "pass_threshold": 1.0,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -838,7 +838,7 @@
       "episodes": 100,
       "hit_rate": 0.35,
       "level": "L1",
-      "mean_energy_joule": 0.6666591607948561,
+      "mean_energy_joule": 0.6666591607948853,
       "pass_threshold": 0.9,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -860,7 +860,7 @@
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L1",
-      "mean_energy_joule": 25.200960014426734,
+      "mean_energy_joule": 25.1872715535739,
       "pass_threshold": 0.9,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -882,7 +882,7 @@
       "episodes": 100,
       "hit_rate": 0.85,
       "level": "L1",
-      "mean_energy_joule": 16.633824266591972,
+      "mean_energy_joule": 16.641180137141852,
       "pass_threshold": 0.9,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -904,7 +904,7 @@
       "episodes": 100,
       "hit_rate": 0.16,
       "level": "L2",
-      "mean_energy_joule": 0.66716632223552,
+      "mean_energy_joule": 0.6671663223487009,
       "pass_threshold": 0.8,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -926,7 +926,7 @@
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L2",
-      "mean_energy_joule": 25.200960014426734,
+      "mean_energy_joule": 25.1872715535739,
       "pass_threshold": 0.8,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -948,7 +948,7 @@
       "episodes": 100,
       "hit_rate": 0.91,
       "level": "L2",
-      "mean_energy_joule": 25.24041715635069,
+      "mean_energy_joule": 25.245967623957544,
       "pass_threshold": 0.8,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -970,7 +970,7 @@
       "episodes": 100,
       "hit_rate": 0.53,
       "level": "L3",
-      "mean_energy_joule": 0.6675781043462089,
+      "mean_energy_joule": 0.6675781041981506,
       "pass_threshold": 0.7,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -992,7 +992,7 @@
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L3",
-      "mean_energy_joule": 25.200960014426734,
+      "mean_energy_joule": 25.1872715535739,
       "pass_threshold": 0.7,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1014,7 +1014,7 @@
       "episodes": 100,
       "hit_rate": 0.96,
       "level": "L3",
-      "mean_energy_joule": 25.260149928517077,
+      "mean_energy_joule": 25.262390949377863,
       "pass_threshold": 0.7,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1036,7 +1036,7 @@
       "episodes": 100,
       "hit_rate": 0.15,
       "level": "L4",
-      "mean_energy_joule": 0.6667728382517152,
+      "mean_energy_joule": 0.6667728383066883,
       "pass_threshold": 0.6,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1058,7 +1058,7 @@
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L4",
-      "mean_energy_joule": 25.200960014426734,
+      "mean_energy_joule": 25.1872715535739,
       "pass_threshold": 0.6,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1078,9 +1078,9 @@
       "controller": "intercept",
       "controller_id": "scripted-g1-intercept-v1",
       "episodes": 100,
-      "hit_rate": 0.61,
+      "hit_rate": 0.62,
       "level": "L4",
-      "mean_energy_joule": 23.710235184340117,
+      "mean_energy_joule": 23.771710096233388,
       "pass_threshold": 0.6,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1102,7 +1102,7 @@
       "episodes": 100,
       "hit_rate": 0.08,
       "level": "L5",
-      "mean_energy_joule": 0.6658168348616827,
+      "mean_energy_joule": 0.6658168348422467,
       "pass_threshold": 0.5,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1124,7 +1124,7 @@
       "episodes": 100,
       "hit_rate": 0.0,
       "level": "L5",
-      "mean_energy_joule": 26.52233388605186,
+      "mean_energy_joule": 26.51027243060667,
       "pass_threshold": 0.5,
       "passed": false,
       "primary_confidence_interval_95": [
@@ -1146,7 +1146,7 @@
       "episodes": 100,
       "hit_rate": 0.22,
       "level": "L5",
-      "mean_energy_joule": 22.643701530807427,
+      "mean_energy_joule": 22.663213764515653,
       "pass_threshold": 0.5,
       "passed": false,
       "primary_confidence_interval_95": [

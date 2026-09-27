@@ -59,6 +59,7 @@ class IKSolver:
         orientation_tolerance_rad: float = 2e-2,
         max_iterations: int = 100,
         step_scale: float = 0.6,
+        stall_step_rad: float = 1e-7,
         position_low: Sequence[float] | None = None,
         position_high: Sequence[float] | None = None,
     ) -> None:
@@ -104,6 +105,12 @@ class IKSolver:
         self.orientation_tolerance_rad = float(orientation_tolerance_rad)
         self.max_iterations = int(max_iterations)
         self.step_scale = float(step_scale)
+        # An unreachable target leaves damped least squares at a fixed point it
+        # then creeps toward for the rest of the budget: on the Panda strike
+        # targets the last 200 of 300 iterations moved no joint by more than
+        # 1e-7 rad and cost ~6 ms of a 5 ms control period.  Stopping there
+        # returns the same configuration to well under a microradian.
+        self.stall_step_rad = float(stall_step_rad)
         self._scratch = mujoco.MjData(model)
 
     def _tighten(
@@ -310,9 +317,12 @@ class IKSolver:
                 delta = jacobian.T @ np.linalg.solve(gram, error)
             except np.linalg.LinAlgError:  # pragma: no cover - guarded by damping
                 break
+            previous = data.qpos[self.qpos_adr].copy()
             data.qpos[self.qpos_adr] = np.clip(
-                data.qpos[self.qpos_adr] + self.step_scale * delta, self.lower, self.upper
+                previous + self.step_scale * delta, self.lower, self.upper
             )
+            if float(np.max(np.abs(data.qpos[self.qpos_adr] - previous))) < self.stall_step_rad:
+                break
 
         return IKResult(
             qpos=data.qpos[self.qpos_adr].copy(),

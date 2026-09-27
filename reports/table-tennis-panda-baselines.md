@@ -2,7 +2,7 @@
 
 `table-tennis-return-panda-v1` on a Franka Panda, MuJoCo backend.
 Shot bank `table_tennis/return-v1`: dev has 50 and test 100 episodes per level.
-Regenerate with `python scripts/run_baselines.py`.
+Regenerate with `python scripts/run_baselines.py --robot panda`.
 
 **None of these rows is a submission.** `hold` and `random` are floors;
 `intercept` is a scripted controller reading privileged ball state, so its
@@ -16,7 +16,7 @@ privileged state, so the gap between the two is the cost of perception.
 |---|---|---|---:|---|---:|---:|---:|:---:|---:|---:|---:|---:|---:|
 | L0 | `hold` | state | 50 | `incoming_valid_rate` | 100% | 93%–100% | 100% | PASS | 0% | 0% | 0% | 0 | 0.2 |
 | L0 | `random` | state | 50 | `incoming_valid_rate` | 90% | 79%–96% | 100% | FAIL | 0% | 0% | 0% | 5 | 66.4 |
-| L0 | `intercept` | state | 50 | `incoming_valid_rate` | 100% | 93%–100% | 100% | PASS | 0% | 0% | 0% | 0 | 31.1 |
+| L0 | `intercept` | state | 50 | `incoming_valid_rate` | 100% | 93%–100% | 100% | PASS | 0% | 0% | 0% | 0 | 31.2 |
 | L0 | `vision` | vision | 50 | `incoming_valid_rate` | 100% | 93%–100% | 100% | PASS | 0% | 0% | 0% | 0 | 51.1 |
 | L1 | `hold` | state | 50 | `hit_rate` | 0% | 0%–7% | 90% | FAIL | 0% | 0% | 0% | 0 | 0.2 |
 | L1 | `random` | state | 50 | `hit_rate` | 4% | 1%–13% | 90% | FAIL | 4% | 0% | 0% | 12 | 145.6 |
@@ -25,19 +25,19 @@ privileged state, so the gap between the two is the cost of perception.
 | L2 | `hold` | state | 50 | `valid_return_rate` | 2% | 0%–10% | 80% | FAIL | 8% | 2% | 0% | 0 | 0.2 |
 | L2 | `random` | state | 50 | `valid_return_rate` | 0% | 0%–7% | 80% | FAIL | 2% | 0% | 0% | 11 | 127.5 |
 | L2 | `intercept` | state | 50 | `valid_return_rate` | 26% | 16%–40% | 80% | FAIL | 94% | 26% | 0% | 0 | 62.9 |
-| L2 | `vision` | vision | 50 | `valid_return_rate` | 12% | 6%–24% | 80% | FAIL | 68% | 12% | 0% | 4 | 90.9 |
+| L2 | `vision` | vision | 50 | `valid_return_rate` | 12% | 6%–24% | 80% | FAIL | 68% | 12% | 0% | 4 | 91.2 |
 | L3 | `hold` | state | 50 | `target_rate` | 0% | 0%–7% | 70% | FAIL | 2% | 0% | 0% | 0 | 0.2 |
 | L3 | `random` | state | 50 | `target_rate` | 0% | 0%–7% | 70% | FAIL | 4% | 0% | 0% | 10 | 132.1 |
 | L3 | `intercept` | state | 50 | `target_rate` | 0% | 0%–7% | 70% | FAIL | 100% | 10% | 0% | 0 | 63.6 |
-| L3 | `vision` | vision | 50 | `target_rate` | 2% | 0%–10% | 70% | FAIL | 80% | 10% | 2% | 2 | 95.2 |
+| L3 | `vision` | vision | 50 | `target_rate` | 2% | 0%–10% | 70% | FAIL | 80% | 10% | 2% | 1 | 96.1 |
 | L4 | `hold` | state | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–8% | 60% | FAIL | 12% | 0% | 0% | 0 | 0.2 |
 | L4 | `random` | state | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–8% | 60% | FAIL | 12% | 0% | 0% | 10 | 121.4 |
 | L4 | `intercept` | state | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–22% | 60% | FAIL | 60% | 30% | 0% | 5 | 79.1 |
-| L4 | `vision` | vision | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–22% | 60% | FAIL | 42% | 4% | 0% | 8 | 106.2 |
+| L4 | `vision` | vision | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–22% | 60% | FAIL | 42% | 4% | 0% | 8 | 105.2 |
 | L5 | `hold` | state | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–8% | 50% | FAIL | 10% | 0% | 0% | 0 | 0.2 |
 | L5 | `random` | state | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–8% | 50% | FAIL | 4% | 0% | 0% | 9 | 110.6 |
 | L5 | `intercept` | state | 50 | `worst_bucket_valid_return_rate` | 14% | 3%–51% | 50% | FAIL | 36% | 22% | 0% | 7 | 78.7 |
-| L5 | `vision` | vision | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–35% | 50% | FAIL | 20% | 6% | 0% | 11 | 81.7 |
+| L5 | `vision` | vision | 50 | `worst_bucket_valid_return_rate` | 0% | 0%–35% | 50% | FAIL | 20% | 6% | 0% | 11 | 81.8 |
 
 ## split `test` (digest `146bf82e111b`)
 
@@ -49,12 +49,12 @@ privileged state, so the gap between the two is the cost of perception.
 | L0 | `vision` | vision | 100 | `incoming_valid_rate` | 99% | 95%–100% | 100% | FAIL | 0% | 0% | 0% | 1 | 51.2 |
 | L1 | `hold` | state | 100 | `hit_rate` | 0% | 0%–4% | 90% | FAIL | 0% | 0% | 0% | 0 | 0.2 |
 | L1 | `random` | state | 100 | `hit_rate` | 2% | 1%–7% | 90% | FAIL | 2% | 0% | 0% | 18 | 149.4 |
-| L1 | `intercept` | state | 100 | `hit_rate` | 100% | 96%–100% | 90% | PASS | 100% | 0% | 0% | 0 | 48.4 |
+| L1 | `intercept` | state | 100 | `hit_rate` | 100% | 96%–100% | 90% | PASS | 100% | 0% | 0% | 0 | 48.5 |
 | L1 | `vision` | vision | 100 | `hit_rate` | 89% | 81%–94% | 90% | FAIL | 89% | 0% | 0% | 2 | 73.1 |
 | L2 | `hold` | state | 100 | `valid_return_rate` | 0% | 0%–4% | 80% | FAIL | 7% | 0% | 0% | 0 | 0.2 |
 | L2 | `random` | state | 100 | `valid_return_rate` | 0% | 0%–4% | 80% | FAIL | 2% | 0% | 0% | 16 | 134.7 |
 | L2 | `intercept` | state | 100 | `valid_return_rate` | 16% | 10%–24% | 80% | FAIL | 94% | 16% | 0% | 1 | 64.9 |
-| L2 | `vision` | vision | 100 | `valid_return_rate` | 5% | 2%–11% | 80% | FAIL | 70% | 5% | 0% | 11 | 88.6 |
+| L2 | `vision` | vision | 100 | `valid_return_rate` | 5% | 2%–11% | 80% | FAIL | 70% | 5% | 0% | 11 | 88.5 |
 | L3 | `hold` | state | 100 | `target_rate` | 0% | 0%–4% | 70% | FAIL | 0% | 0% | 0% | 0 | 0.2 |
 | L3 | `random` | state | 100 | `target_rate` | 0% | 0%–4% | 70% | FAIL | 6% | 0% | 0% | 15 | 133.0 |
 | L3 | `intercept` | state | 100 | `target_rate` | 0% | 0%–4% | 70% | FAIL | 99% | 17% | 0% | 0 | 61.4 |
@@ -62,11 +62,11 @@ privileged state, so the gap between the two is the cost of perception.
 | L4 | `hold` | state | 100 | `worst_bucket_valid_return_rate` | 0% | 0%–4% | 60% | FAIL | 19% | 0% | 0% | 0 | 0.2 |
 | L4 | `random` | state | 100 | `worst_bucket_valid_return_rate` | 0% | 0%–4% | 60% | FAIL | 4% | 0% | 0% | 16 | 125.8 |
 | L4 | `intercept` | state | 100 | `worst_bucket_valid_return_rate` | 0% | 0%–12% | 60% | FAIL | 59% | 28% | 0% | 6 | 87.9 |
-| L4 | `vision` | vision | 100 | `worst_bucket_valid_return_rate` | 0% | 0%–12% | 60% | FAIL | 45% | 17% | 0% | 22 | 87.2 |
+| L4 | `vision` | vision | 100 | `worst_bucket_valid_return_rate` | 0% | 0%–12% | 60% | FAIL | 44% | 17% | 0% | 22 | 87.8 |
 | L5 | `hold` | state | 100 | `worst_bucket_valid_return_rate` | 0% | 0%–4% | 50% | FAIL | 16% | 0% | 0% | 0 | 0.2 |
 | L5 | `random` | state | 100 | `worst_bucket_valid_return_rate` | 0% | 0%–22% | 50% | FAIL | 4% | 1% | 0% | 10 | 110.8 |
-| L5 | `intercept` | state | 100 | `worst_bucket_valid_return_rate` | 12% | 7%–20% | 50% | FAIL | 31% | 13% | 0% | 11 | 83.6 |
-| L5 | `vision` | vision | 100 | `worst_bucket_valid_return_rate` | 9% | 4%–16% | 50% | FAIL | 34% | 12% | 0% | 18 | 88.2 |
+| L5 | `intercept` | state | 100 | `worst_bucket_valid_return_rate` | 12% | 7%–20% | 50% | FAIL | 31% | 13% | 0% | 11 | 83.8 |
+| L5 | `vision` | vision | 100 | `worst_bucket_valid_return_rate` | 9% | 4%–16% | 50% | FAIL | 34% | 12% | 0% | 16 | 90.3 |
 
 ## Robustness gap
 
