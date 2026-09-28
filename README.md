@@ -6,6 +6,63 @@ Robot Sports Gym（RSG）是面向多种机器人形态的球类运动训练与�
 
 > **项目状态：Alpha（v0.3.0）。** 五项标准单回合任务均可在 MuJoCo 上运行：固定集（每级 test 100 条）、版本化 Gymnasium 环境、冻结的 L0–L5 判定、参考基线，五项任务都有 5 种子的 PPO 原语学习基线。乒乓球另有 Franka Panda 与 Unitree G1 机体任务（状态与视觉两条轨道），其 Isaac Lab 环境已实跑并与 MuJoCo 逐条对比。所有固定集仍是 `experimental`、排行榜未开放：这是 benchmark 候选版，不是认证版。缺什么见 [docs/TODO.md](docs/TODO.md)。
 
+## 已完成的工作（v0.3.0）
+
+### 五项标准任务
+
+| 运动 | 任务 | 执行体 | 判定规则 | 文档 |
+|---|---|---|---|---|
+| 乒乓球 | `table-tennis-return-*` | mocap 夹具、**Franka Panda**、**Unitree G1**（固定基座 / 自由站立），状态与视觉两条轨道 | ITTF：合法回到对方台面 | [乒乓球](docs/TABLE_TENNIS_SHOT_SKILL.md) · [机体层](docs/ROBOT_LAYER.md) · [G1](docs/G1.md) |
+| 网球 | `tennis-return-v0` | mocap 球拍夹具 | ITF 单打场地 | [网球](docs/TENNIS.md) |
+| 羽毛球 | `badminton-serve-v0` | mocap 球拍夹具 | BWF：1.15 m 击球高度、对角发球区、擦网好球 | [羽毛球](docs/BADMINTON.md) |
+| 足球 | `football-kick-v0` | mocap 球鞋夹具 | IFAB：整球越过门线 | [发射类任务](docs/LAUNCH_TASKS.md) |
+| 篮球 | `basketball-shoot-v0` | mocap 推板夹具 | FIBA：球从上方穿过篮圈 | [发射类任务](docs/LAUNCH_TASKS.md) |
+
+每项任务都有：版本化 Gymnasium 环境（共 11 个，全部通过 `check_env`）；经仿真验证的固定集（每级 train 200 / dev 50 /
+test 100，种子互不重叠）；冻结的 L0–L5 判定门槛（物理 → 击中 → 成功 → 定点 → 鲁棒 → 泛化，L5 施加观测噪声、
+延迟与域随机化）；逐回合原始结果、Wilson 区间与分桶统计的报告。L3 定点目标通过 `info["target"]`、
+`TargetObservation` 包装器和 `reset(target=...)` 交给策略。
+
+### 基线（test split）
+
+全部任务 × 级别 × 控制器汇总见 [`reports/cross-task-summary.md`](reports/cross-task-summary.md)，一条命令重跑：`make baselines-all`。
+
+- **参考控制器**：羽毛球脚本发球 L0–L5 全部达标；足球脚本射门 L0–L4 全部达标；篮球 L2 100%；网球 L1 99%、L2 59%；
+  Panda 拦截 L1 100%、L2 回球 16%（机械臂拍速是硬上限）。
+- **学习基线（M5）**：PPO（Stable-Baselines3）在一个三参数挥拍原语上学习，只看可观测几何量，五项任务各
+  5 个种子 × 8000 回合，并与"未训练原语""随机原语"两个对照并列。乒乓球 L2 从 0% 学到 **98%**，篮球从 2% 到
+  **36%**，羽毛球定点从 19% 到 **36%**；网球与先验持平；足球定点反而变差（49% → 9%）——如实报告。
+  权重、训练曲线、墙钟与硬件都在 `baselines/learned/`，见 [`docs/LEARNED_BASELINES.md`](docs/LEARNED_BASELINES.md)。
+
+### MuJoCo 与 Isaac 双后端
+
+- 乒乓球 Isaac Lab 环境在 **CPU 与 GPU PhysX** 上实跑 300 并行环境，与 MuJoCo 同批球逐条对比：飞行段中位差
+  **3.5 mm**，判定一致率 **98.7%**，台面摩擦标定后反弹后偏差 78 → 32 mm（[报告](reports/table-tennis-backend-parity.md)）。
+  实跑中发现并修复了气动力被施加两次（阻力翻倍）等缺陷。
+- **同一台 Panda 跑两个后端**：Isaac 的 Franka 与 MuJoCo 的 Panda 运动学一致（法兰位置差 ≤0.5 µm）；用 MuJoCo 基线的
+  同一个控制器打同一批球，**拦截可以迁移**（逐条一致 90%），**回球不能**（26% vs 0%），根因是拍面接触模型，
+  需要实测标定（[报告](reports/panda-backend-parity.md)，[说明](docs/ISAAC_SIM.md)）。
+
+### 物理与工程
+
+- 羽毛球：0.5 ms 步长、按物理步插值的夹具位姿、压心来流的气动力（修复了翻滚时的数值发散）；足球：滚动球从纯滚动
+  开始、PGS 求解器（修复 Newton 的方向相关伪解）、球门按 IFAB 尺寸修正。
+- 可复现与可审计：带版本号的 JSON Schema（`multisport_sim.benchmark.schemas`）；结果包 +
+  `scripts/audit_submission.py`（从原始回合重算全部指标、检查有没有删回合、核对 digest 与权重哈希，
+  流程见 [`docs/LEADERBOARD.md`](docs/LEADERBOARD.md)）；`uv.lock` 从零复现后 Python 3.10 / 3.13 全部测试通过；
+  CI（3.10–3.12）全绿。
+- 发布文档：英文 [API 参考](docs/API.md)、[逐项许可证清单](THIRD_PARTY_LICENSES.md)、`CITATION.cff`、
+  [发行说明](docs/releases/v0.3.0.md)、[CHANGELOG](CHANGELOG.md)。
+
+### 还没有做到的
+
+- 除乒乓球外四项都是 mocap 夹具任务；实测表明 Panda（拍速上限 4.7 m/s）和装腕部短拍的 G1（实测 2.8–3.9 m/s）
+  都达不到羽毛球发球所需的约 11 m/s；足球缺双足踢球控制。
+- 没有真实世界的轨迹、冲量或机器人数据（M4）；回球的跨后端一致性取决于这份数据。
+- 所有固定集仍是 `experimental`，排行榜未开放（需要维护者私下保存的隐藏测试集）；还没有外部用户复现（M6）。
+
+完整的待办与原因见 [`docs/TODO.md`](docs/TODO.md)，路线图见 [`docs/ROADMAP.md`](docs/ROADMAP.md)。
+
 ## 人形机器人视觉打球：直接运行
 
 现已提供自由站立的 **Unitree G1 + 纯深度 / RGB-D / 双目 RGB** 乒乓球回球方案。

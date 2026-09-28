@@ -6,6 +6,22 @@ Robot Sports Gym (RSG) is an in-development, cross-embodiment platform for train
 
 > **Status: Alpha (v0.3.0).** All five canonical single-shot tasks run in MuJoCo with fixed shot banks (100 test episodes per level), versioned Gymnasium environments, frozen L0–L5 criteria, reference baselines and learned PPO baselines over 5 seeds for every task. Table tennis additionally runs on an actuated Franka Panda and a Unitree G1 with state and vision tracks, and its Isaac Lab environment has been run and compared episode by episode with MuJoCo. Every shot bank is still `experimental` and no leaderboard is open: this is a benchmark candidate, not a certified benchmark. What is missing is listed in [docs/TODO.md](docs/TODO.md).
 
+## What v0.3.0 delivers
+
+| Sport | Task | Performed by | Rules | Docs |
+|---|---|---|---|---|
+| Table tennis | `table-tennis-return-*` | mocap fixture, **Franka Panda**, **Unitree G1** (fixed base / free standing); state and vision tracks | ITTF legal return | [table tennis](docs/TABLE_TENNIS_SHOT_SKILL.md) |
+| Tennis | `tennis-return-v0` | mocap racket fixture | ITF singles court | [tennis](docs/TENNIS.md) |
+| Badminton | `badminton-serve-v0` | mocap racket fixture | BWF serve (1.15 m, diagonal court) | [badminton](docs/BADMINTON.md) |
+| Football | `football-kick-v0` | mocap boot fixture | IFAB: whole ball over the line | [launch tasks](docs/LAUNCH_TASKS.md) |
+| Basketball | `basketball-shoot-v0` | mocap launcher fixture | FIBA: down through the ring | [launch tasks](docs/LAUNCH_TASKS.md) |
+
+- **Every task**: a versioned Gymnasium environment (11 in total, all pass `check_env`), a simulation-verified shot bank (train 200 / dev 50 / test 100 per level), frozen L0–L5 criteria, and reports with raw episodes, Wilson intervals and buckets.
+- **Baselines**: floors and reference controllers for every task, plus learned PPO baselines (5 seeds × 8000 episodes) with untrained- and random-primitive controls: table tennis L2 0% → **98%**, basketball 2% → **36%**, badminton placement 19% → **36%**; tennis only matches the prior and football placement gets *worse* (49% → 9%) — reported as is. One summary: [`reports/cross-task-summary.md`](reports/cross-task-summary.md).
+- **Two backends**: the Isaac Lab table-tennis environment runs on CPU and GPU PhysX and matches MuJoCo shot by shot (flight 3.5 mm, verdicts 98.7%). The same Panda runs on both: kinematics agree to 0.5 µm, interception transfers (90% shot-by-shot agreement), returning does not (26% vs 0%) — a contact-model gap that needs measured data ([report](reports/panda-backend-parity.md)).
+- **Release engineering**: versioned JSON Schemas, an auditable result-package format ([`docs/LEADERBOARD.md`](docs/LEADERBOARD.md)), [API reference](docs/API.md), [license manifest](THIRD_PARTY_LICENSES.md), `uv.lock` verified on Python 3.10 and 3.13, green CI.
+- **Not yet**: robot versions of tennis/badminton/football/basketball (measured: neither the Panda nor the wrist-paddle G1 can swing fast enough to serve), real-world calibration data (M4), an open leaderboard, external reproduction (M6). See [`docs/TODO.md`](docs/TODO.md).
+
 ## Humanoid vision-driven table tennis
 
 A free-pelvis Unitree G1 can now return simulated balls using depth only, stereo RGB, or aligned RGB-D.
